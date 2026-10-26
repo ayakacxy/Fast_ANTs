@@ -249,7 +249,11 @@ For $q>0$, each component is convolved along the three axes, a small-variance bl
 
 ```math
 \mathcal S_q(g)=w(q)(k_q*_xk_q*_yk_q*_zg)+(1-w(q))g,\qquad
-w(q)=\begin{cases}1-q/0.5,&0<q<0.5,\\1,&q\ge0.5.\end{cases}
+w(q)=
+\begin{cases}
+1-q/0.5,&0<q<0.5,\\
+1,&q\ge0.5.
+\end{cases}
 ```
 
 $\mathcal S_0$ leaves the field unchanged. For smoothed update $\widetilde g=\mathcal S_{q_u}(g)$, learning rate $\eta$, and spacing $s_d$:

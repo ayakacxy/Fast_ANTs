@@ -249,7 +249,11 @@ k_n(q)=e^{-q}I_n(q).
 
 ```math
 \mathcal S_q(g)=w(q)(k_q*_xk_q*_yk_q*_zg)+(1-w(q))g,\qquad
-w(q)=\begin{cases}1-q/0.5,&0<q<0.5,\\1,&q\ge0.5.\end{cases}
+w(q)=
+\begin{cases}
+1-q/0.5,&0<q<0.5,\\
+1,&q\ge0.5.
+\end{cases}
 ```
 
 $\mathcal S_0$ 保持场不变。设平滑更新为 $\widetilde g=\mathcal S_{q_u}(g)$、学习率为 $\eta$、间距为 $s_d$：
