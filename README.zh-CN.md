@@ -64,7 +64,7 @@ NVIDIA CUDA 后端是后续开发重点，具体实现步骤见[开发计划](do
 
 ## 📦 安装
 
-Python 发行包名和导入名均为 `fast_ants`，命令行入口为 `fast-ants`。
+Python 发行包名、导入名和命令行入口均为 `fast_ants`。
 
 要求 Python 3.11 或更新版本。从 [v0.1.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0)下载 wheel 后安装：
 
@@ -85,7 +85,7 @@ CPU 后端依赖 NumPy、NiBabel 和 Numba，Metal 后端还需要 MLX。源码�
 使用 CPU 将移动图像配准到固定图像：
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cpu --backend cpu --precision fp64 \
   --preset brain-syn --threads 10 --verbose
 ```
@@ -93,7 +93,7 @@ fast-ants register fixed.nii.gz moving.nii.gz \
 使用 Apple GPU：
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal --backend metal --precision fp32 \
   --preset brain-syn --threads 10 --verbose
 ```

@@ -15,7 +15,7 @@
 运行预设：
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration --preset brain-syn
 ```
 
@@ -24,7 +24,7 @@ fast-ants register fixed.nii.gz moving.nii.gz \
 将预设 JSON 复制到其他文件，修改支持的参数：
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-custom --config my-recipe.json
 ```
 

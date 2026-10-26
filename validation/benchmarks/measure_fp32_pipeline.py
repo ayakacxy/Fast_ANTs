@@ -131,7 +131,7 @@ def metal_logging_options(verbose, log_every):
 
 def worker_log(verbose, stage, message):
     if verbose:
-        print(f"[fast-ants][{stage}] {time.strftime('%H:%M:%S')} | INFO | {message}", flush=True)
+        print(f"[fast_ants][{stage}] {time.strftime('%H:%M:%S')} | INFO | {message}", flush=True)
 
 
 class _LiveLog:

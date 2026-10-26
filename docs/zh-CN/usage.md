@@ -7,7 +7,7 @@
 将移动图像配准到固定图像网格：
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal \
   --backend metal --precision fp32 \
   --preset brain-syn --threads 10 --verbose
@@ -44,7 +44,7 @@ fast-ants register fixed.nii.gz moving.nii.gz \
 使用其他参数时，复制[预设 JSON](../../src/fast_ants/presets/brain-syn.json)，修改后传入文件路径：
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-custom --backend cpu --precision fp64 \
   --config my-recipe.json --threads 10
 ```

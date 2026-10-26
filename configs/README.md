@@ -15,7 +15,7 @@ The rigid and affine step sizes are 0.1. SyN uses `SyN[0.2,3,0]`: step size 0.2,
 Run the preset:
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration --preset brain-syn
 ```
 
@@ -24,7 +24,7 @@ fast-ants register fixed.nii.gz moving.nii.gz \
 Copy the preset JSON to another file and edit its supported values:
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-custom --config my-recipe.json
 ```
 

@@ -2,7 +2,7 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [测试与质量评估](../docs/zh-CN/validation.md) · [优化方法](../docs/zh-CN/optimizations.md)
 
-本目录包含数值算子检查、ANTs 参考结果生成、已保存变换评估和运行时间测量工具。日常图像配准使用 `fast-ants register`，不需要这些工具。
+本目录包含数值算子检查、ANTs 参考结果生成、已保存变换评估和运行时间测量工具。日常图像配准使用 `fast_ants register`，不需要这些工具。
 
 ## 目录结构
 

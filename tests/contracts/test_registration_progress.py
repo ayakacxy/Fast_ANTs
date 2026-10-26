@@ -61,7 +61,7 @@ class RegistrationProgressTests(unittest.TestCase):
         progress.complete()
         lines=stream.getvalue().splitlines()
         for line in lines:
-            self.assertRegex(line,r'^\[fast-ants\]\[[a-z]+\] \d{2}:\d{2}:\d{2} \| INFO \| ')
+            self.assertRegex(line,r'^\[fast_ants\]\[[a-z]+\] \d{2}:\d{2}:\d{2} \| INFO \| ')
         self.assertIn('DIAGNOSTIC,Iteration,metricValue,convergenceValue,ITERATION_TIME_INDEX,SINCE_LAST,validPoints',stream.getvalue())
         rows=[line.split('DIAGNOSTIC,',1)[1].split(',') for line in lines
               if 'DIAGNOSTIC,' in line and 'DIAGNOSTIC,Iteration,' not in line]
@@ -72,7 +72,7 @@ class RegistrationProgressTests(unittest.TestCase):
         self.assertEqual(rows[-1][5],'17')
         self.assertIn('END reason=maximum_iterations; iterations=5; elapsed=2.000000s',stream.getvalue())
         self.assertNotIn('must_not_duplicate',stream.getvalue())
-        self.assertIn('[fast-ants][complete]',stream.getvalue())
+        self.assertIn('[fast_ants][complete]',stream.getvalue())
         self.assertNotIn('\x1b',stream.getvalue())
         self.assertEqual(stream.flushes,len(lines))
 

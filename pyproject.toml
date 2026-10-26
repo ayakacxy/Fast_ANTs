@@ -25,7 +25,7 @@ test = ["pytest>=8"]
 build = ["build>=1", "wheel"]
 
 [project.scripts]
-fast-ants = "fast_ants.cli:main"
+fast_ants = "fast_ants.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

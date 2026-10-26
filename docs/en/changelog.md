@@ -11,7 +11,7 @@ Fast ANTs is licensed under GPL-3.0-only, with ANTs and ITK license texts and at
 - Three-dimensional rigid, affine, and standard greedy SyN registration.
 - CPU FP64, CPU FP32, and Apple Metal FP32 backends.
 - Mattes mutual information, local cross-correlation, multiresolution image pyramids, and transform application.
-- `fast-ants register` command with the `brain-syn` preset and JSON configuration.
+- `fast_ants register` command with the `brain-syn` preset and JSON configuration.
 - NIfTI image and displacement-field I/O, affine transform I/O, and registration quality summaries.
 - English progress logs and Python registration API.
 - English and Simplified Chinese documentation, examples, and development tools.

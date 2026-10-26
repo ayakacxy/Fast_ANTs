@@ -10,7 +10,7 @@
 
 The CPU and GPU registration implementations are included in this package. Official ANTs is used by the comparison tools in `validation/`.
 
-The distribution and Python import name are `fast_ants`; the command-line entry point is `fast-ants`. The source repository is `Fast_ANTs`.
+The Python distribution, import package and command-line entry point are all named `fast_ants`. The source repository is `Fast_ANTs`.
 
 ## Install the release
 
@@ -20,7 +20,7 @@ Download `fast_ants-0.1.0-py3-none-any.whl` from the [v0.1.0 release](https://gi
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install ./fast_ants-0.1.0-py3-none-any.whl
-fast-ants --version
+fast_ants --version
 ```
 
 For Windows PowerShell, activate the environment with `.venv\Scripts\Activate.ps1`.
@@ -29,7 +29,7 @@ To enable Metal on Apple Silicon macOS:
 
 ```bash
 python -m pip install './fast_ants-0.1.0-py3-none-any.whl[metal]'
-fast-ants register --help
+fast_ants register --help
 ```
 
 The Metal backend uses FP32 arithmetic. CPU execution supports FP64 and FP32, and loads independently of MLX.

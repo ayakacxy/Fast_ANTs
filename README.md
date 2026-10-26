@@ -64,7 +64,7 @@ The [algorithm guide](docs/en/algorithms.md) gives the mathematical formulation 
 
 ## 📦 Installation
 
-The Python distribution and import name are both `fast_ants`. The command-line entry point is `fast-ants`.
+The Python distribution, import package and command-line entry point are all named `fast_ants`.
 
 Requires Python 3.11 or later. Download the wheel from [v0.1.0](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0) and install it:
 
@@ -85,7 +85,7 @@ CPU execution uses NumPy, NiBabel and Numba. The Metal backend also uses MLX. Se
 Register a moving image to a fixed image on CPU:
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cpu --backend cpu --precision fp64 \
   --preset brain-syn --threads 10 --verbose
 ```
@@ -93,7 +93,7 @@ fast-ants register fixed.nii.gz moving.nii.gz \
 Use the Apple GPU:
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal --backend metal --precision fp32 \
   --preset brain-syn --threads 10 --verbose
 ```

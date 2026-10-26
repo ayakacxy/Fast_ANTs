@@ -2,7 +2,7 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [Testing and quality assessment](../docs/en/validation.md) · [Optimizations](../docs/en/optimizations.md)
 
-This directory contains tools for checking numerical operators, generating ANTs reference results, evaluating saved transforms, and measuring execution time. Normal image registration uses `fast-ants register` and does not require these tools.
+This directory contains tools for checking numerical operators, generating ANTs reference results, evaluating saved transforms, and measuring execution time. Normal image registration uses `fast_ants register` and does not require these tools.
 
 ## Directory layout
 

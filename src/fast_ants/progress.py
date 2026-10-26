@@ -1,7 +1,7 @@
 """Scoped, dependency-free terminal progress for one registration run.
 
 The presentation follows FlashCHARM's stage prefix and ANTs' diagnostic
-columns. Records identify fast-ants explicitly. No global logger, warning
+columns. Records identify fast_ants explicitly. No global logger, warning
 handler, numerical dependency, or background thread is configured here.
 """
 
@@ -35,7 +35,7 @@ class RegistrationProgress:
     def message(self,stage,message):
         stamp=time.strftime('%H:%M:%S',time.localtime(self.wall_clock()))
         text=str(message).replace('\n','\\n').replace('\r','\\r')
-        print(f'[fast-ants][{stage}] {stamp} | INFO | {text}',file=self.stream,flush=True)
+        print(f'[fast_ants][{stage}] {stamp} | INFO | {text}',file=self.stream,flush=True)
 
     def start(self,stage,message='',*,iterations=False,started=None):
         return _ProgressStage(self,stage,message,iterations,started)

@@ -10,7 +10,7 @@
 
 CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具使用官方 ANTs。
 
-发行包名和 Python 导入名为 `fast_ants`，命令行入口为 `fast-ants`，源码仓库为 `Fast_ANTs`。
+发行包名、Python 导入名和命令行入口均为 `fast_ants`，源码仓库为 `Fast_ANTs`。
 
 ## 安装发行包
 
@@ -20,7 +20,7 @@ CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install ./fast_ants-0.1.0-py3-none-any.whl
-fast-ants --version
+fast_ants --version
 ```
 
 Windows PowerShell 中使用 `.venv\Scripts\Activate.ps1` 激活环境。
@@ -29,7 +29,7 @@ Apple Silicon macOS 启用 Metal 后端：
 
 ```bash
 python -m pip install './fast_ants-0.1.0-py3-none-any.whl[metal]'
-fast-ants register --help
+fast_ants register --help
 ```
 
 Metal 后端使用 FP32 计算；CPU 后端支持 FP64 和 FP32，可独立于 MLX 加载。

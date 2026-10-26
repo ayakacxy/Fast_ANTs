@@ -7,7 +7,7 @@
 Register the moving image on the fixed image grid:
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal \
   --backend metal --precision fp32 \
   --preset brain-syn --threads 10 --verbose
@@ -44,7 +44,7 @@ See [image geometry](inputs-outputs.md) for details.
 To use another configuration, copy [the preset JSON](../../src/fast_ants/presets/brain-syn.json), edit it, and pass its path:
 
 ```bash
-fast-ants register fixed.nii.gz moving.nii.gz \
+fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-custom --backend cpu --precision fp64 \
   --config my-recipe.json --threads 10
 ```

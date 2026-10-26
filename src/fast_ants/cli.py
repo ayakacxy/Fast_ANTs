@@ -38,7 +38,7 @@ def version():
 
 
 def parser():
-    result = argparse.ArgumentParser(prog="fast-ants", description="Independent 3-D MRI registration")
+    result = argparse.ArgumentParser(prog="fast_ants", description="Independent 3-D MRI registration")
     result.add_argument("--version", action="version", version="%(prog)s " + version())
     commands = result.add_subparsers(dest="command", required=True)
     register = commands.add_parser("register", help="Register a moving image to a fixed image")
@@ -247,7 +247,7 @@ def run_registration(args):
             try:
                 return _execute(args, recipe, provenance, threads)
             except Exception as error:
-                print(f"[fast-ants][error] {type(error).__name__}: {error}", file=sys.stderr, flush=True)
+                print(f"[fast_ants][error] {type(error).__name__}: {error}", file=sys.stderr, flush=True)
                 raise
 
 
@@ -305,10 +305,10 @@ def main(argv=None):
     try:
         return run_registration(args)
     except (OSError, ValueError, RuntimeError, ImportError) as error:
-        print(f"fast-ants: {type(error).__name__}: {error}", file=sys.stderr, flush=True)
+        print(f"fast_ants: {type(error).__name__}: {error}", file=sys.stderr, flush=True)
         return 1
     except KeyboardInterrupt:
-        print("fast-ants: Interrupted", file=sys.stderr, flush=True)
+        print("fast_ants: Interrupted", file=sys.stderr, flush=True)
         return 130
 
 
