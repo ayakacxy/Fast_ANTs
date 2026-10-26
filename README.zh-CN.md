@@ -36,7 +36,7 @@ Apple M5 · 256×256×150 MRI · [测试详情](docs/zh-CN/performance.md)
 
 ## ⚡ 性能
 
-复用已有缓存，使用 `brain-syn` 参数进行原始分辨率 MRI 配准：
+使用 `brain-syn` 参数和已有编译缓存，完成原始分辨率 MRI 配准：
 
 | 后端 | 完整进程耗时 / s |
 | --- | ---: |
@@ -44,7 +44,7 @@ Apple M5 · 256×256×150 MRI · [测试详情](docs/zh-CN/performance.md)
 | CPU FP32 | **42.57** |
 | CPU FP64 | **60.44** |
 
-测试日期为 2026-10-26，使用 Apple M5、256×256×150 MRI 图像对和 10 线程，各后端仅运行一次缓存进程。CPU FP32 在 SIMD 优化后测量；CPU FP64 与 Metal 保留当天稍早的测量。计时包含启动、导入、读入、配准、质量检查和完整写出。v0.1.0 对应精度的官方对照中，**Metal 相比 ANTs 加速 23.76×**。两组测量的具体设置见[测试详情与复现方法](docs/zh-CN/performance.md)。
+测试使用 Apple M5、256×256×150 MRI 图像对和 10 线程，各后端测量一次。计时包含进程启动、模块导入、图像读入、配准、输出质量检查和文件写出。测试条件及 ANTs 参考耗时见[性能测试](docs/zh-CN/performance.md)。
 
 ## 🧠 功能
 
@@ -64,19 +64,19 @@ NVIDIA CUDA 后端是后续开发重点，具体实现步骤见[开发计划](do
 
 ## 📦 安装
 
-要求 Python 3.11 或更新版本。在项目目录中安装：
+要求 Python 3.11 或更新版本。从 [v0.1.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0)下载 wheel 后安装：
 
 ```bash
-python -m pip install -e .
+python -m pip install ./fast_ants-0.1.0-py3-none-any.whl
 ```
 
 Apple Silicon macOS 使用 Metal 后端时：
 
 ```bash
-python -m pip install -e '.[metal]'
+python -m pip install './fast_ants-0.1.0-py3-none-any.whl[metal]'
 ```
 
-CPU 后端依赖 NumPy、NiBabel 和 Numba；Metal 后端额外依赖 MLX。conda 环境和开发环境配置见[安装说明](docs/zh-CN/installation.md)。
+CPU 后端依赖 NumPy、NiBabel 和 Numba，Metal 后端还需要 MLX。源码安装与 conda 环境配置见[安装说明](docs/zh-CN/installation.md)。
 
 ## 🚀 快速开始
 

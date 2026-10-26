@@ -8,13 +8,13 @@
 
 | 目录 | 内容 |
 | --- | --- |
-| [benchmarks/](benchmarks/) | 当前五后端计时、源码／开关对比及专项算子计时 |
+| [benchmarks/](benchmarks/) | 五后端计时、源码／开关对比及专项算子计时 |
 | [quality/](quality/) | 已保存图像、形变场评估及参考结果对比 |
 | [operators/](operators/) | 独立前缀和、规约及串行 watchdog 检查；日常算子测试位于 `tests/` |
 | [reference_tools/](reference_tools/) | 数据准备和官方参考结果生成 |
 | [maintenance/](maintenance/) | 依赖及实现检查 |
 | [common/](common/) | 共用路径、进程辅助函数和工具索引 |
-| [configs/](configs/) | 当前参考配方、质量策略和小案例矩阵 |
+| [configs/](configs/) | 参考参数、质量评估设置和小案例矩阵 |
 | [sources/](sources/) | 输入来源和校验记录 |
 | `reports/` | 本地实测输出；预热产生的大体积影像不保留 |
 
@@ -31,7 +31,7 @@ python -m validation.benchmarks.measure_fp64_cpu --help
 python -m validation.quality.assess_saved_registration --help
 ```
 
-当前原始分辨率工具按顺序运行 CPU FP64、ANTs float0、CPU FP32、Metal FP32 和 ANTs float1，使用当前 `src`，记录源码哈希，不保存冻结的旧实现副本。FP32 流程工具可对比 CPU FP32、Metal 和 ANTs float1；FP64 工具对比 CPU FP64 与 ANTs float0。已保存结果的评估工具直接读取变换和图像，不重复拟合。
+原始分辨率计时工具使用指定的源码目录，依次运行 CPU FP64、ANTs float0、CPU FP32、Metal FP32 和 ANTs float1，记录源码哈希、参数、耗时和输出文件。FP32 流程工具对比 CPU FP32、Metal 和 ANTs float1；FP64 工具对比 CPU FP64 与 ANTs float0。已保存结果的评估工具直接读取变换和图像，不重复拟合。
 
 也可以按脚本名选择工具：
 
@@ -40,7 +40,7 @@ python -B validation/legacy.py --list
 python -B validation/legacy.py verify_float1_alignment --help
 ```
 
-索引只列出维护中的命令。源码对比工具接收调用者提供的源码目录，本目录不再保存旧实验实现副本。日常算子开发使用已分组的测试。
+索引列出可用的命令。源码对比工具接收需要比较的源码目录，日常算子开发使用已分组的测试。
 
 ## 质量评估
 
@@ -56,7 +56,7 @@ Numba 和 Metal 首次运行时会编译 kernel，编译耗时应与重复执行
 
 ## 数据
 
-[cases.json](cases.json)、[输入信息](sources/input-inventory.json)、[下载校验值](sources/downloaded-files.json)和[数据来源](sources/public-data.json)记录了开发使用的三份 IXI 图像。不同分辨率存放在 `data/public`、`data/p11-half` 和 `data/prepared`。影像数据和生成结果不包含在 Python 软件包中。
+[cases.json](cases.json)、[输入信息](sources/input-inventory.json)、[下载校验值](sources/downloaded-files.json)和[数据来源](sources/public-data.json)记录三份 IXI 测试图像。不同分辨率存放在 `data/public`、`data/p11-half` 和 `data/prepared`。影像数据和生成结果不包含在 Python 软件包中。
 
 模板和图谱资源保存在本地 `templates/` 目录中，分别遵循原始来源的许可。
 

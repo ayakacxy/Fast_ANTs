@@ -26,7 +26,7 @@ Small arrays use serial paths to avoid thread scheduling overhead. `--threads` c
 
 The useful parallel unit depends on the operator: image sampling splits samples, field operations split rows or slices, and recursive filtering splits lines while retaining the recurrence order within each line.
 
-CPU FP32 also uses explicit four-lane LLVM vectors in selected metric operations. On Apple Silicon, generated assembly uses NEON instructions such as `fmla.4s`, `fsub.4s`, and `fdiv.4s`. These vectors use the host CPU instruction set; AVX2 is an x86 instruction set and is not used on Apple Silicon. Parallel execution and SIMD address different levels of work: threads process independent blocks, while vector lanes process independent values inside a block.
+Selected CPU FP32 metric operations use four-lane LLVM vectors. On Apple Silicon, these compile to 128-bit NEON instructions such as `fmla.4s`, `fsub.4s` and `fdiv.4s`. Threads process independent blocks, while vector lanes process independent values inside each block.
 
 | Operation | Four vector lanes |
 | --- | --- |
@@ -196,7 +196,7 @@ Metal SyN combines update scaling with composition. Once the global norm provide
 
 Same-grid inverse residuals use local indices and physical displacement components. Algebraically cancelling the common grid mapping avoids repeated world-coordinate round trips and preserves small offsets near large origins. Residual interpolation, error norms, finite checks, and block summaries share the same traversal.
 
-Each inverse solver still performs the residual update and its original stopping checks. Internal registration skips an additional post-update residual scan when only diagnostic output would use it. Final output quality checks remain enabled.
+Each inverse solver evaluates residuals, updates the field and checks convergence. Internal registration computes the additional post-update residual scan only when diagnostics require it. Final outputs receive the full quality checks.
 
 Source: [FP64 local residuals](../../src/fast_ants/backends/cpu/fp64/local_fields.py), [FP32 inverse workspace](../../src/fast_ants/backends/cpu/fp32/inverse.py), [Metal field filtering](../../src/fast_ants/backends/metal/filtering.py), [scaled composition](../../src/fast_ants/backends/metal/fields/composition.py).
 
@@ -274,8 +274,6 @@ Source: [Metal runtime](../../src/fast_ants/backends/metal/runtime.py), [inverse
 The Metal output path uses CPU blocks for inverse-consistency and Jacobian summaries. It reads FP32 fields directly and promotes samples before arithmetic, avoiding full FP64 field copies, residual-vector fields, and a Jacobian output volume. Exact percentile calculation still retains a scalar norm buffer of length up to $V$.
 
 The input pair is read with at most 2 threads. For compatible contiguous NIfTI payloads, a `memoryview` is written in 1 MiB chunks instead of constructing another image-sized byte string; required dtype or layout conversions may still allocate. Independent image and field outputs use up to 3 writer threads, and all writers are joined before registration returns.
-
-These optimizations reduce different costs: streaming quality checks reduce temporary arrays, chunked writes avoid byte copies, and concurrent compressed outputs overlap independent work.
 
 Source: [output quality kernels](../../src/fast_ants/quality/output_kernels.py), [image I/O](../../src/fast_ants/io/images.py), [NIfTI writer](../../src/fast_ants/io/nifti.py), [Metal output orchestration](../../src/fast_ants/backends/metal/registration.py).
 

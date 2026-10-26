@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "date": "2026-10-26",
-  "hardware": "Apple M5 (Mac17,3), 10 CPU cores",
+  "version": "0.1.0",
+  "hardware": {
+    "model": "Apple M5 (Mac17,3), 10 CPU cores",
+    "platform": "macOS-27.0.1-arm64-arm-64bit"
+  },
+  "environment": {
+    "python": "3.11.17",
+    "packages": {
+      "numpy": "2.4.6",
+      "numba": "0.68.0",
+      "nibabel": "5.4.2",
+      "mlx": "0.32.4",
+      "mlx-metal": "0.32.4"
+    }
+  },
   "case": {
     "id": "ixi002_to_ixi012",
     "shape_xyz": [
@@ -135,9 +148,15 @@
   },
   "recipe_sha256": "3ac1261661f46ee6c45e91beb7b3cbd39fc36e5ab0dd2d9339ae9bc0d1dab82e",
   "threads": 10,
-  "scope": "Target startup/import/read/register/QA/completed writes; cache observer included",
-  "cache_policy": "One fresh process using existing caches per backend; no complete warmup or added repeat. Small operator tests compiled SIMD kernels before the CPU FP32 run; its one cache miss is included.",
-  "statistics_scope": "Single observations; background load and physical temperature uncontrolled. CPU FP32 follows SIMD optimization, other backends use their unchanged earlier same-day runs.",
+  "measurement": {
+    "scope": "Fresh target process including startup, imports, image reads, registration, GPU synchronization and downloads where applicable, built-in output quality checks and completed writes",
+    "runner_startup_included": false,
+    "runs_per_backend": 1,
+    "warmup_policy": "Existing compilation caches; small operator calls compile SIMD kernels before measurement",
+    "execution": "Serial",
+    "background_load_controlled": false,
+    "temperature_controlled": false
+  },
   "runs": {
     "cpu-fp32": {
       "whole_process_seconds": 42.57037516706623,
@@ -146,7 +165,7 @@
         "disk_cache_hits": 40,
         "disk_cache_misses": 1,
         "compiled_dispatchers": 36,
-        "scope": "Python-visible dispatcher counters after registration; GPU driver cache not exposed"
+        "scope": "CPU dispatcher disk-cache counters; GPU driver cache is not exposed"
       },
       "stage_diagnostics": [
         {
@@ -369,56 +388,7 @@
         "forward_warp": "cc613e4f339c8fde437be20b7aeef817172b1573c17fd245d5cc255febade2e2",
         "inverse_warp": "93fa6e1c2ab739e5f27e577663a523d579b5670d330ca65c88c5cd3524f54c77",
         "warped": "c3315c634b6fb515cd30143c94ed9e7041023d25c3ac7b62c2b7efec3f56a862"
-      },
-      "power_before": {
-        "timestamp_utc": "2026-10-26T10:30:42.467332+00:00",
-        "battery": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "batt"
-          ],
-          "returncode": 0,
-          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
-          "stderr": ""
-        },
-        "thermal": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "therm"
-          ],
-          "returncode": 0,
-          "stdout": "Error:Failed to get thermal warning level with error code 0xe00002bc\nError: Failed to get performance warning level with error code 0xe00002bc\nError: No CPU power status with error code 0xe00002bc",
-          "stderr": ""
-        },
-        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
-      },
-      "power_after": {
-        "timestamp_utc": "2026-10-26T10:31:25.077488+00:00",
-        "battery": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "batt"
-          ],
-          "returncode": 0,
-          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
-          "stderr": ""
-        },
-        "thermal": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "therm"
-          ],
-          "returncode": 0,
-          "stdout": "Error:Failed to get thermal warning level with error code 0xe00002bc\nError: Failed to get performance warning level with error code 0xe00002bc\nError: No CPU power status with error code 0xe00002bc",
-          "stderr": ""
-        },
-        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
-      },
-      "local_report": "validation/reports/cpu32-opt-20261026/native-cached"
+      }
     },
     "cpu-fp64": {
       "whole_process_seconds": 60.4392402919475,
@@ -427,7 +397,7 @@
         "disk_cache_hits": 37,
         "disk_cache_misses": 0,
         "compiled_dispatchers": 35,
-        "scope": "Python-visible dispatcher counters after registration; GPU driver cache not exposed"
+        "scope": "CPU dispatcher disk-cache counters; GPU driver cache is not exposed"
       },
       "stage_diagnostics": [
         {
@@ -646,56 +616,7 @@
         "forward_warp": "192e5de97c9586db15c14afc277752d99e2b6725bbecf9d84f24e381a656c0b6",
         "inverse_warp": "649fcf9d81aa2af3c8b5137a66ccd73e83156b041610c847fff832b07abf53c0",
         "warped": "9885b4360afa8260a588949fae146788195d4d4b5cfb178e23454304156cc8f9"
-      },
-      "power_before": {
-        "timestamp_utc": "2026-10-26T09:28:16.555819+00:00",
-        "battery": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "batt"
-          ],
-          "returncode": 0,
-          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
-          "stderr": ""
-        },
-        "thermal": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "therm"
-          ],
-          "returncode": 0,
-          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
-          "stderr": ""
-        },
-        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
-      },
-      "power_after": {
-        "timestamp_utc": "2026-10-26T09:29:17.117960+00:00",
-        "battery": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "batt"
-          ],
-          "returncode": 0,
-          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
-          "stderr": ""
-        },
-        "thermal": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "therm"
-          ],
-          "returncode": 0,
-          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
-          "stderr": ""
-        },
-        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
-      },
-      "local_report": "validation/reports/cached-single-20261026"
+      }
     },
     "metal-fp32": {
       "whole_process_seconds": 15.340549707994796,
@@ -704,7 +625,7 @@
         "disk_cache_hits": 19,
         "disk_cache_misses": 0,
         "compiled_dispatchers": 15,
-        "scope": "Python-visible dispatcher counters after registration; GPU driver cache not exposed"
+        "scope": "CPU dispatcher disk-cache counters; GPU driver cache is not exposed"
       },
       "stage_diagnostics": [
         {
@@ -923,156 +844,44 @@
         "forward_warp": "1af94f5e17664c1db69b9a6bfac716fe40733dc7aa378bb58456737b466aca39",
         "inverse_warp": "6bf5fd52cebe546197094370ec1c6bb52814dff0e954eaf16aa3e21875957800",
         "warped": "12ff35f1a19b57969c5ee9ffb77602b1fdbf82fdf13731567f2a9bb5c76a469c"
-      },
-      "power_before": {
-        "timestamp_utc": "2026-10-26T09:26:00.980275+00:00",
-        "battery": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "batt"
-          ],
-          "returncode": 0,
-          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
-          "stderr": ""
-        },
-        "thermal": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "therm"
-          ],
-          "returncode": 0,
-          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
-          "stderr": ""
-        },
-        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
-      },
-      "power_after": {
-        "timestamp_utc": "2026-10-26T09:26:16.406797+00:00",
-        "battery": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "batt"
-          ],
-          "returncode": 0,
-          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
-          "stderr": ""
-        },
-        "thermal": {
-          "command": [
-            "/usr/bin/pmset",
-            "-g",
-            "therm"
-          ],
-          "returncode": 0,
-          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
-          "stderr": ""
-        },
-        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
-      },
-      "local_report": "validation/reports/cached-single-20261026"
+      }
     }
   },
-  "cpu_fp32_comparison": {
-    "baseline_whole_process_seconds": 59.79105854104273,
-    "optimized_whole_process_seconds": 42.57037516706623,
-    "speedup": 1.4045227063749008,
-    "time_reduction_percent": 28.801435857094926,
-    "output_sha256_equal": {
-      "affine": true,
-      "forward_warp": true,
-      "inverse_warp": true,
-      "warped": true
+  "ants_reference": {
+    "version": "2.6.5",
+    "binary_sha256": "dc932539d96aab445f9de34736e184d39981c094fba70adf42c332b14c2de861",
+    "inputs_and_recipe_match": true,
+    "runs_per_precision": 1,
+    "full_warmup_runs": 0,
+    "measurement_scope": "Process startup, image reads, registration and completed writes; no Fast ANTs output quality checks",
+    "fp64": {
+      "option": "--float 0",
+      "whole_process_seconds": 505.85248066700296
     },
-    "quality_scope": "Preservation of pre-optimization outputs, not an official ANTs equivalence assertion"
+    "fp32": {
+      "option": "--float 1",
+      "whole_process_seconds": 507.4786401669844
+    }
   },
-  "validation": {
-    "targeted_unit_tests": 19,
-    "targeted_unit_tests_passed": true,
-    "operator_microbenchmark": {
-      "value": {
-        "before": [
-          0.0018967919750139117,
-          0.0018432500073686242,
-          0.0018292090389877558
-        ],
-        "after": [
-          0.0014219169970601797,
-          0.0014462090330198407,
-          0.0014269999228417873
-        ],
-        "raw_results_exact": true,
-        "speedup": 1.2916959404580057
-      },
-      "background_support": {
-        "preparation_seconds": 0.002486624987795949,
-        "zero_cell_fraction": 0.5405069986979166,
-        "bytes": 393216,
-        "preparation_excluded_from_repeated_operator_timings": true
-      },
-      "derivative_6": {
-        "before": [
-          0.005085292039439082,
-          0.005431207944639027,
-          0.005436417064629495
-        ],
-        "after": [
-          0.003802292048931122,
-          0.003602999961003661,
-          0.0035405829548835754
-        ],
-        "raw_results_exact": true,
-        "speedup": 1.5074127125791297
-      },
-      "derivative_12": {
-        "before": [
-          0.006150750094093382,
-          0.005997291998937726,
-          0.005637624999508262
-        ],
-        "after": [
-          0.003972374950535595,
-          0.004007917013950646,
-          0.004137583076953888
-        ],
-        "raw_results_exact": true,
-        "speedup": 1.4963613213703075
-      },
-      "cc_unmasked": {
-        "before": [
-          0.014352791011333466,
-          0.013898749952204525,
-          0.01382512494456023
-        ],
-        "after": [
-          0.007372499909251928,
-          0.005922666983678937,
-          0.0055321670370176435
-        ],
-        "raw_results_exact": true,
-        "speedup": 2.3467046164346637
-      },
-      "assembly": {
-        "neon_float32_vector_instructions": 22,
-        "examples": [
-          "fsub.4s\tv2, v1, v0",
-          "fmla.4s\tv3, v1, v0",
-          "fmul.4s\tv1, v2, v2",
-          "fmla.4s\tv4, v3, v1",
-          "fdiv.4s\tv3, v4, v1",
-          "fsub.4s\tv5, v4, v0",
-          "fmul.4s\tv6, v5, v5",
-          "fmul.4s\tv6, v5, v6",
-          "fdiv.4s\tv1, v6, v1",
-          "fcmgt.4s\tv7, v6, v0",
-          "fcmgt.4s\tv4, v4, v0",
-          "fsub.4s\tv1, v1, v16"
-        ]
-      },
-      "scope": "393216 samples/voxels, 10 threads, three short alternating operator timings; JIT excluded; raw results compared exactly"
-    },
-    "official_rerun": false
+  "operator_validation": {
+    "targeted_tests_passed": 19,
+    "simd_assembly": {
+      "neon_float32_vector_instructions": 22,
+      "examples": [
+        "fsub.4s\tv2, v1, v0",
+        "fmla.4s\tv3, v1, v0",
+        "fmul.4s\tv1, v2, v2",
+        "fmla.4s\tv4, v3, v1",
+        "fdiv.4s\tv3, v4, v1",
+        "fsub.4s\tv5, v4, v0",
+        "fmul.4s\tv6, v5, v5",
+        "fmul.4s\tv6, v5, v6",
+        "fdiv.4s\tv1, v6, v1",
+        "fcmgt.4s\tv7, v6, v0",
+        "fcmgt.4s\tv4, v4, v0",
+        "fsub.4s\tv1, v1, v16"
+      ],
+      "scope": "Compiled Parzen helper"
+    }
   }
 }

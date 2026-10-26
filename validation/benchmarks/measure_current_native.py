@@ -1,9 +1,9 @@
-"""One serial, fresh five-engine native-resolution comparison of current code.
+"""Measure native-resolution registration on five engines.
 
-The existing CPU FP64 and CPU FP32/Metal workers perform registration. The
-existing time_process runner measures each complete target process. This tool
-adds provenance, one excluded warmup per Python backend, bounded retention,
-power observations, and precision-matched official speed ratios.
+Runs CPU FP64, CPU FP32, Metal FP32 and official ANTs at both precisions.
+Each Python backend has one full warmup and one measured fresh process.
+Reports include complete process times, input and source checksums, output
+checksums, power observations and precision-matched ANTs timing ratios.
 """
 
 from pathlib import Path as _ToolPath
@@ -200,7 +200,7 @@ def run_one(args, config, case, report, engine, label):
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=PROJECT / "validation/reports/current-native-20261025")
+    parser.add_argument("--output", type=Path, default=PROJECT / "validation/reports/native")
     parser.add_argument("--source", type=Path, default=PROJECT / "src")
     parser.add_argument("--config", type=Path, default=PROJECT / "src/fast_ants/presets/brain-syn.json")
     parser.add_argument("--threads", type=int, default=10)

@@ -36,7 +36,7 @@ npx --yes markdownlint-cli2@0.23.2
 
 使用 `--list` 查看选中的测试。Metal 测试需要 Apple GPU，并通过 `--suite metal` 选择，详见[测试说明](../tests/README.zh-CN.md)。数值计算改动还需按照[测试与质量评估](../docs/zh-CN/validation.md)检查配准结果。修改文档不需要运行配准。
 
-Markdown 检查需要 Node.js。项目配置覆盖中英文文档及当前测量报告，允许 README 居中排版使用的 `div` 和 `h1`，其余 HTML 继续检查。行长度检查沿用 VS Code 扩展的默认设置，不对段落、公式和宽表格设置长度限制。
+Markdown 检查需要 Node.js，使用 `.markdownlint-cli2.jsonc` 中的规则。配置覆盖中英文文档，不限制行长，并允许 README 使用 `div` 和 `h1` 居中排版。
 
 ## 提交修改
 

@@ -44,7 +44,7 @@ Native-resolution MRI registration with the `brain-syn` recipe, using existing c
 | CPU FP32 | **42.57** |
 | CPU FP64 | **60.44** |
 
-Measured on 2026-10-26 using Apple M5, a 256×256×150 MRI pair and 10 threads, with one cached process per backend. CPU FP32 was measured after SIMD optimization; CPU FP64 and Metal retain their earlier same-day measurements. Times include startup, imports, reading, registration, QA and completed writes. The precision-matched v0.1.0 comparison measured a **23.76× Metal speedup over ANTs**. See [measurement details and reproduction](docs/en/performance.md) for the two measurement scopes.
+Measured on Apple M5 with a 256×256×150 MRI pair and 10 threads. Each backend ran once using existing compilation caches. Times include process startup, imports, image reading, registration, output quality checks and writing. See [benchmark settings and ANTs reference timings](docs/en/performance.md).
 
 ## 🧠 Features
 
@@ -64,19 +64,19 @@ The [algorithm guide](docs/en/algorithms.md) gives the mathematical formulation 
 
 ## 📦 Installation
 
-Requires Python 3.11 or later. Install from the project directory:
+Requires Python 3.11 or later. Download the wheel from [v0.1.0](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0) and install it:
 
 ```bash
-python -m pip install -e .
+python -m pip install ./fast_ants-0.1.0-py3-none-any.whl
 ```
 
 For Apple Silicon macOS with Metal:
 
 ```bash
-python -m pip install -e '.[metal]'
+python -m pip install './fast_ants-0.1.0-py3-none-any.whl[metal]'
 ```
 
-CPU execution uses NumPy, NiBabel, and Numba. MLX is an optional dependency for the Metal backend. See [installation](docs/en/installation.md) for conda environments and development setup.
+CPU execution uses NumPy, NiBabel and Numba. The Metal backend also uses MLX. See [installation](docs/en/installation.md) for source installation and conda environments.
 
 ## 🚀 Quick start
 

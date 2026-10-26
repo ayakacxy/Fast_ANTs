@@ -36,7 +36,7 @@ npx --yes markdownlint-cli2@0.23.2
 
 Use `--list` to inspect the selection. Metal tests require an Apple GPU and `--suite metal`; see [tests](../tests/README.md). For numerical changes, check registration quality as described in [testing and evaluation](../docs/en/validation.md). Documentation changes do not require registration runs.
 
-The Markdown check requires Node.js. The project configuration covers both language versions and current measurement reports. It allows the `div` and `h1` elements used for README centering; all other HTML remains checked. Line-length checking follows the VS Code extension default and is disabled for prose, formulas, and wide tables.
+Markdown checks require Node.js and use `.markdownlint-cli2.jsonc`. The configuration covers both language versions, disables the line-length limit, and allows `div` and `h1` for README centering.
 
 ## Pull requests
 

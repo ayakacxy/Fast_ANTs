@@ -2,19 +2,11 @@
 
 [English](changelog.md) · [简体中文](../zh-CN/changelog.md)
 
-## Unreleased
+## 0.1.0
 
-### Performance
+Fast ANTs is licensed under GPL-3.0-only, with ANTs and ITK license texts and attribution included.
 
-- CPU FP32 uses four-lane SIMD for dense sample mapping, Parzen histogram updates, contiguous derivative channels, and unmasked local CC statistics.
-- Value-only Mattes evaluations reuse histogram workspaces. Gradient sampling shares axis calculations and can reuse cached zero-background support.
-- Sparse linear Jacobians evaluate only their active columns. Unmasked SyN skips validity-volume initialization and reuses CC merge coefficients.
-
-## 0.1.0 — 2026-10-26
-
-Initial open-source version, licensed under GPL-3.0-only. ANTs and ITK license texts and attribution are retained.
-
-### Added
+### Features
 
 - Three-dimensional rigid, affine, and standard greedy SyN registration.
 - CPU FP64, CPU FP32, and Apple Metal FP32 backends.
@@ -24,8 +16,10 @@ Initial open-source version, licensed under GPL-3.0-only. ANTs and ITK license t
 - English progress logs and Python registration API.
 - English and Simplified Chinese documentation, examples, and development tools.
 
-### Implementation
+### Performance
 
-- Numba parallel loops, fused sampling and metric operations, and reusable workspaces on CPU.
+- Multithreaded Numba CPU kernels, fused sampling and metric evaluation, and reusable workspaces.
+- Four-lane FP32 SIMD for dense sample mapping, Parzen histogram updates, derivative channels and unmasked local CC statistics.
+- Shared interpolation indices, cached zero-background gradient support, sparse linear Jacobians and reusable CC merge coefficients.
 - Device-resident Metal operations, streamed mutual-information derivatives, centred local statistics, and asynchronous submission of independent work.
 - Parallel image I/O and chunked output processing.

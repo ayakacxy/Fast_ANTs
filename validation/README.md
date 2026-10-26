@@ -8,13 +8,13 @@ This directory contains tools for checking numerical operators, generating ANTs 
 
 | Directory | Contents |
 | --- | --- |
-| [benchmarks/](benchmarks/) | Current five-engine timing, source/flag comparisons, and focused operator timing |
+| [benchmarks/](benchmarks/) | Five-engine timing, source/flag comparisons, and focused operator timing |
 | [quality/](quality/) | Saved-image/field evaluation and reference comparisons |
 | [operators/](operators/) | Independent prefix, reduction, and serial-watchdog checks; routine operator tests are in `tests/` |
 | [reference_tools/](reference_tools/) | Dataset preparation and official reference generation |
 | [maintenance/](maintenance/) | Dependency and implementation checks |
 | [common/](common/) | Shared paths, process helpers, and tool index |
-| [configs/](configs/) | Current reference recipes, quality policy, and small-case matrix |
+| [configs/](configs/) | Reference recipes, quality policy, and small-case matrix |
 | [sources/](sources/) | Input provenance and checksum records |
 | `reports/` | Local measured outputs; excluded warmup volumes are discarded |
 
@@ -31,7 +31,7 @@ python -m validation.benchmarks.measure_fp64_cpu --help
 python -m validation.quality.assess_saved_registration --help
 ```
 
-The current native runner executes CPU FP64, ANTs float0, CPU FP32, Metal FP32, and ANTs float1 serially from the current `src` tree. Reports include source hashes, parameters, timings and output files. The FP32 pipeline tool compares CPU FP32, Metal, and ANTs float1. The FP64 tool compares CPU FP64 with ANTs float0. Saved-output assessment evaluates transforms and images without repeating the fit.
+The native-resolution runner executes CPU FP64, ANTs float0, CPU FP32, Metal FP32 and ANTs float1 serially using the specified source directory. Reports include source hashes, parameters, timings and output files. The FP32 pipeline tool compares CPU FP32, Metal and ANTs float1; the FP64 tool compares CPU FP64 with ANTs float0. Saved-output assessment evaluates transforms and images without repeating the fit.
 
 A script can also be selected by name:
 
@@ -40,7 +40,7 @@ python -B validation/legacy.py --list
 python -B validation/legacy.py verify_float1_alignment --help
 ```
 
-The index lists maintained commands only. Source-comparison tools accept caller-supplied source trees; this directory does not retain old experimental copies. Use the grouped tests for routine operator development.
+The index lists the available commands. Source-comparison tools accept the source directories to compare. Use the grouped tests for routine operator development.
 
 ## Quality evaluation
 
@@ -56,7 +56,7 @@ Numba and Metal compile kernels on first use. Keep compilation separate from rep
 
 ## Data
 
-[cases.json](cases.json), [input metadata](sources/input-inventory.json), [download checksums](sources/downloaded-files.json), and [data sources](sources/public-data.json) describe the three IXI images used in development. Different resolutions are stored under `data/public`, `data/p11-half`, and `data/prepared`. Image data and generated results are not included in the Python package.
+[cases.json](cases.json), [input metadata](sources/input-inventory.json), [download checksums](sources/downloaded-files.json), and [data sources](sources/public-data.json) describe the three IXI test images. Different resolutions are stored under `data/public`, `data/p11-half`, and `data/prepared`. Image data and generated results are not included in the Python package.
 
 Template and atlas resources are kept locally under `templates/` and follow their original source licenses.
 

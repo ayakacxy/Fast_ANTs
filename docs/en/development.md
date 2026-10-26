@@ -57,6 +57,6 @@ python -B scripts/maintenance/check_markdown_links.py
 python -m build
 ```
 
-Markdown lint requires Node.js. `.markdownlint-cli2.jsonc` defines the shared editor and command-line rules and selects the project documents, including contribution guides and current reports, while excluding third-party reference sources and build artifacts. The README uses `h1` and `div` for centering. Those two HTML elements are allowed; the other lint rules remain enabled, apart from the VS Code extension's default exemption for line length.
+Markdown lint requires Node.js. `.markdownlint-cli2.jsonc` defines the editor and command-line rules for the project documentation. It excludes reference sources and build artifacts, disables the line-length limit, and allows `h1` and `div` for README centering.
 
 Check that the wheel includes `common.metal` and the preset JSON files. MRI data, generated results, reference checkouts, and caches are excluded from distribution. Preserve the applicable notices in [NOTICE](../../licenses/NOTICE.md) and the upstream license files.

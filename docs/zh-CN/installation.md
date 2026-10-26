@@ -10,15 +10,15 @@
 
 CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具使用官方 ANTs。
 
-## 使用 pip 安装
+## 安装发行包
 
-创建虚拟环境，在项目目录中安装：
+从 [v0.1.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0)下载 `fast_ants-0.1.0-py3-none-any.whl`。创建虚拟环境并安装 wheel：
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e .
-fast-ants --help
+python -m pip install ./fast_ants-0.1.0-py3-none-any.whl
+fast-ants --version
 ```
 
 Windows PowerShell 中使用 `.venv\Scripts\Activate.ps1` 激活环境。
@@ -26,11 +26,23 @@ Windows PowerShell 中使用 `.venv\Scripts\Activate.ps1` 激活环境。
 Apple Silicon macOS 启用 Metal 后端：
 
 ```bash
-python -m pip install -e '.[metal]'
+python -m pip install './fast_ants-0.1.0-py3-none-any.whl[metal]'
 fast-ants register --help
 ```
 
 Metal 后端使用 FP32 计算；CPU 后端支持 FP64 和 FP32，可独立于 MLX 加载。
+
+## 从源码安装
+
+克隆仓库，或解压发布页提供的完整源码 ZIP：
+
+```bash
+git clone https://github.com/ayakacxy/Fast_ANTs.git
+cd Fast_ANTs
+python -m pip install -e .
+```
+
+Metal 安装命令为 `python -m pip install -e '.[metal]'`。完整源码 ZIP 包含示例、测试和验证工具；Python 源码发行包包含可安装的软件包和文档。
 
 ## Conda 环境
 

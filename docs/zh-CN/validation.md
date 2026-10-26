@@ -54,7 +54,7 @@ $$r(x)=\phi^{-1}(\phi(x))-x.$$
 
 ## 评估数据
 
-开发示例使用三份 IXI T1 图像：IXI002-Guys-0828、IXI012-HH-1211 和 IXI013-HH-1212，尺寸为 256×256×150。[输入信息](../../validation/sources/input-inventory.json)、[下载校验值](../../validation/sources/downloaded-files.json)和[数据来源](../../validation/sources/public-data.json)记录文件及预处理方法。附带地标为开发时使用的粗略标注。
+评估示例使用三份 IXI T1 图像：IXI002-Guys-0828、IXI012-HH-1211 和 IXI013-HH-1212，尺寸为 256×256×150。[输入信息](../../validation/sources/input-inventory.json)、[下载校验值](../../validation/sources/downloaded-files.json)和[数据来源](../../validation/sources/public-data.json)记录文件及预处理方法。附带地标为粗略标注。
 
 原始 IXI 数据使用 CC BY-SA 3.0。Zenodo 再发布页面对新增材料标注 CC BY 4.0；MRI 文件应遵循原始数据集的许可。影像数据不包含在 Python 软件包中。
 

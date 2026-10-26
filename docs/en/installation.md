@@ -10,15 +10,15 @@
 
 The CPU and GPU registration implementations are included in this package. Official ANTs is used by the comparison tools in `validation/`.
 
-## Install with pip
+## Install the release
 
-Create a virtual environment and install from the project directory:
+Download `fast_ants-0.1.0-py3-none-any.whl` from the [v0.1.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0). Create a virtual environment and install the wheel:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e .
-fast-ants --help
+python -m pip install ./fast_ants-0.1.0-py3-none-any.whl
+fast-ants --version
 ```
 
 For Windows PowerShell, activate the environment with `.venv\Scripts\Activate.ps1`.
@@ -26,11 +26,23 @@ For Windows PowerShell, activate the environment with `.venv\Scripts\Activate.ps
 To enable Metal on Apple Silicon macOS:
 
 ```bash
-python -m pip install -e '.[metal]'
+python -m pip install './fast_ants-0.1.0-py3-none-any.whl[metal]'
 fast-ants register --help
 ```
 
 The Metal backend uses FP32 arithmetic. CPU execution supports FP64 and FP32, and loads independently of MLX.
+
+## Install from source
+
+Clone the repository or extract the complete source ZIP from the release:
+
+```bash
+git clone https://github.com/ayakacxy/Fast_ANTs.git
+cd Fast_ANTs
+python -m pip install -e .
+```
+
+For Metal, install with `python -m pip install -e '.[metal]'`. The complete source ZIP includes examples, tests and validation tools; the Python source distribution contains the installable package and documentation.
 
 ## Conda environments
 

@@ -81,13 +81,11 @@ See [implementation optimizations](optimizations.md) for details.
 
 ## Planned CUDA backend
 
-The planned NVIDIA backend will use `backends/cuda` for device arrays, kernel launches, streams, events, and memory transfers. Its operators will cover image sampling, gradients, filtering, MI/CC, field composition, inversion, and the SyN stages. The source tree above lists the implemented backends; CUDA modules will be added during development.
+The NVIDIA CUDA backend is planned and is not included in the package. Its design reuses the image geometry, transforms, stage configuration and result types in `core`, together with the linear models, optimizer control and pyramids in `pipeline`.
 
-CUDA will reuse image geometry, transforms, stage configuration, and result types from `core`, together with the shared linear models, optimizer control, and pyramids in `pipeline`. It will have its own runtime and kernels without depending on Metal. Optional CUDA dependencies will load only when that backend is selected.
+Device arrays, kernel launches, streams, events and memory transfers will have a separate runtime under `backends/cuda`. The planned operators use FP32 images and fields, reusable device workspaces and asynchronous transfers, with synchronization for metric values and stopping decisions. Optional CUDA dependencies will load only when the backend is selected.
 
-The initial implementation will use FP32 images and fields, reusable device workspaces, and asynchronous transfers for independent work. Iterations will synchronize where metric values or stopping decisions are required. FP64 support will be considered afterward according to the target hardware and application requirements.
-
-The [roadmap](roadmap.md) describes the operator port, integration, numerical comparisons, and NVIDIA end-to-end measurements.
+Operator coverage and testing requirements are listed in the [roadmap](roadmap.md).
 
 ## Development resources
 

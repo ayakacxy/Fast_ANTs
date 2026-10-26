@@ -54,7 +54,7 @@ Check both composition orders and report RMS, percentile, or maximum displacemen
 
 ## Evaluation data
 
-The development examples use three IXI T1 images: IXI002-Guys-0828, IXI012-HH-1211, and IXI013-HH-1212, with dimensions 256×256×150. [Input metadata](../../validation/sources/input-inventory.json), [download checksums](../../validation/sources/downloaded-files.json), and [data sources](../../validation/sources/public-data.json) describe the files and preparation. The supplied landmarks are coarse development annotations.
+The evaluation examples use three IXI T1 images: IXI002-Guys-0828, IXI012-HH-1211, and IXI013-HH-1212, with dimensions 256×256×150. [Input metadata](../../validation/sources/input-inventory.json), [download checksums](../../validation/sources/downloaded-files.json), and [data sources](../../validation/sources/public-data.json) describe the files and preparation. The supplied landmarks are coarse annotations.
 
 The original IXI data uses CC BY-SA 3.0. The Zenodo republication lists CC BY 4.0 for its added material; use the original dataset's terms for the MRI files. Data is not included in the Python package.
 

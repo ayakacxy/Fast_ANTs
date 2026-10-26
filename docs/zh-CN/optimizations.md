@@ -26,7 +26,7 @@ Numba 将体素和样本循环编译为本地代码，独立行、切片、样�
 
 不同算子的并行单位不同：图像采样按样本划分，场运算按行或切片划分，递归滤波按线划分，同时保持每条线内部的递推顺序。
 
-CPU FP32 的部分度量计算还使用显式四路 LLVM 向量。在 Apple Silicon 上，生成的汇编包含 `fmla.4s`、`fsub.4s`、`fdiv.4s` 等 NEON 指令。向量代码使用宿主 CPU 的指令集；AVX2 属于 x86，Apple Silicon 不使用它。多线程与 SIMD 分别处理不同层次的并行：线程负责独立分块，向量通道处理块内相互独立的数据。
+CPU FP32 的部分度量计算使用四路 LLVM 向量，在 Apple Silicon 上编译为 `fmla.4s`、`fsub.4s`、`fdiv.4s` 等 128 位 NEON 指令。线程负责独立分块，向量通道处理块内相互独立的数据。
 
 | 运算 | 四个向量通道 |
 | --- | --- |
@@ -196,7 +196,7 @@ Metal SyN 融合更新缩放与复合。全场范数提供缩放系数后，插�
 
 同网格逆残差使用局部索引和物理位移分量，通过代数消去共同的网格映射，避免反复转换到世界坐标，也保留大原点附近的小偏移。残差插值、误差范数、有限值检查和分块摘要共享同一次遍历。
 
-每个求逆器仍执行残差更新和原有停止检查。内部配准在额外更新后残差只供诊断时跳过这次扫描，最终输出质量检查仍保留。
+求逆器计算残差、更新场并检查收敛条件。内部配准仅在诊断需要时执行额外的更新后残差扫描，最终输出执行完整质量检查。
 
 源码：[FP64 局部残差](../../src/fast_ants/backends/cpu/fp64/local_fields.py)、[FP32 逆场工作区](../../src/fast_ants/backends/cpu/fp32/inverse.py)、[Metal 场滤波](../../src/fast_ants/backends/metal/filtering.py)、[缩放与复合](../../src/fast_ants/backends/metal/fields/composition.py)。
 
@@ -274,8 +274,6 @@ sequenceDiagram
 Metal 输出路径按 CPU 分块计算逆一致性和 Jacobian 摘要，直接读取 FP32 场并在计算前提升采样值精度，避免完整 FP64 场副本、残差向量场和 Jacobian 输出体积。精确分位数仍保留长度最多为 $V$ 的标量范数缓冲。
 
 输入图像对使用最多 2 个线程读取。对布局兼容的连续 NIfTI 数据，`memoryview` 按 1 MiB 分块写入，避免再构造完整图像大小的字节串；需要转换 dtype 或存储布局时仍可能分配。独立图像和场使用最多 3 个写出线程，配准返回前等待全部线程完成。
-
-这些优化分别减少不同开销：流式质量检查减少临时数组，分块写出省去字节复制，并行压缩输出重叠独立工作。
 
 源码：[输出质量 kernel](../../src/fast_ants/quality/output_kernels.py)、[图像 I/O](../../src/fast_ants/io/images.py)、[NIfTI 写出](../../src/fast_ants/io/nifti.py)、[Metal 输出流程](../../src/fast_ants/backends/metal/registration.py)。
 
