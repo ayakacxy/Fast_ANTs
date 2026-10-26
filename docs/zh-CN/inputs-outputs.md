@@ -17,7 +17,9 @@
 
 对于索引向量 `i`、原点 `o`、方向矩阵 `D` 和体素间距矩阵 `S`，物理坐标为
 
-$$x=o+DSi.$$
+```math
+x=o+DSi.
+```
 
 ## 读取选项
 
@@ -36,7 +38,9 @@ $$x=o+DSi.$$
 
 `result.fixed_to_moving` 将固定图像的物理坐标映射到移动图像的采样位置：
 
-$$W(x)=M(T(x)),\qquad T:\Omega_F\rightarrow\Omega_M.$$
+```math
+W(x)=M(T(x)),\qquad T:\Omega_F\rightarrow\Omega_M.
+```
 
 因此，`warped.nii.gz` 是在固定图像网格上重采样的移动图像。将移动空间中的点映射到固定空间时，使用逆变换 `result.moving_to_fixed`。
 

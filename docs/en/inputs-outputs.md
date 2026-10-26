@@ -17,7 +17,9 @@ NIfTI RAS+ coordinates are converted to LPS on loading. Spatial units in metres 
 
 For index vector `i`, origin `o`, direction matrix `D`, and voxel-spacing matrix `S`, physical coordinates are
 
-$$x=o+DSi.$$
+```math
+x=o+DSi.
+```
 
 ## Loading options
 
@@ -36,7 +38,9 @@ Choose the same options when comparing runs. To preserve integer labels, pass th
 
 `result.fixed_to_moving` maps fixed-grid physical points to sampling positions in the moving image:
 
-$$W(x)=M(T(x)),\qquad T:\Omega_F\rightarrow\Omega_M.$$
+```math
+W(x)=M(T(x)),\qquad T:\Omega_F\rightarrow\Omega_M.
+```
 
 `warped.nii.gz` is therefore the moving image resampled on the fixed grid. To map moving-space points into fixed space, use the inverse transform, `result.moving_to_fixed`.
 

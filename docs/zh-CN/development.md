@@ -51,6 +51,8 @@ python -B scripts/maintenance/run_tests.py --suite metal --pattern test_metal_cc
 
 中英文文档同步维护，命令、默认值、文件名和数学符号保持一致。运行日志和 CLI 消息使用英文。
 
+独立公式使用 `math` 代码围栏，行内公式使用 `$...$`，并与相邻中文文字或标点留一个空格。正体标签和函数名使用 `\mathrm{...}`。
+
 ```bash
 npx --yes markdownlint-cli2@0.23.2
 python -B scripts/maintenance/check_markdown_links.py

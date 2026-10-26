@@ -38,7 +38,9 @@ Evaluate both implementations on the same fixed-image grid and the same foregrou
 
 For fixed landmarks `p_i`, corresponding moving landmarks `q_i`, and the fixed-to-moving map `T`,
 
-$$\mathrm{TRE}_{\mathrm{RMS}}=\sqrt{\frac{1}{N}\sum_i\|T(p_i)-q_i\|^2}.$$
+```math
+\mathrm{TRE}_{\mathrm{RMS}}=\sqrt{\frac{1}{N}\sum_i\|T(p_i)-q_i\|^2}.
+```
 
 Image similarity and landmark error measure different aspects of alignment. Report the region used for image statistics and the source of landmark annotations.
 
@@ -48,7 +50,9 @@ For a displacement field `u`, the spatial Jacobian is `J=I+∇u`. Inspect the mi
 
 Inverse consistency measures the residual after composing the two maps:
 
-$$r(x)=\phi^{-1}(\phi(x))-x.$$
+```math
+r(x)=\phi^{-1}(\phi(x))-x.
+```
 
 Check both composition orders and report RMS, percentile, or maximum displacement in millimetres, using points where the composed samples are valid. Also check that fields, resampled images, and summary values are finite. These statistics are saved in `quality.json` or a separate evaluation report; they do not replace visual inspection of the registered images.
 

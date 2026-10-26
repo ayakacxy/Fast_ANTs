@@ -38,7 +38,9 @@ python -B scripts/maintenance/run_tests.py --suite metal
 
 设固定图像地标为 `p_i`、对应移动图像地标为 `q_i`，固定到移动的映射为 `T`，则
 
-$$\mathrm{TRE}_{\mathrm{RMS}}=\sqrt{\frac{1}{N}\sum_i\|T(p_i)-q_i\|^2}.$$
+```math
+\mathrm{TRE}_{\mathrm{RMS}}=\sqrt{\frac{1}{N}\sum_i\|T(p_i)-q_i\|^2}.
+```
 
 图像相似性与地标误差反映不同方面的对齐情况。报告结果时，说明图像统计所用区域及地标标注来源。
 
@@ -48,7 +50,9 @@ $$\mathrm{TRE}_{\mathrm{RMS}}=\sqrt{\frac{1}{N}\sum_i\|T(p_i)-q_i\|^2}.$$
 
 逆一致性通过复合两侧映射后的残差计算：
 
-$$r(x)=\phi^{-1}(\phi(x))-x.$$
+```math
+r(x)=\phi^{-1}(\phi(x))-x.
+```
 
 两个复合方向都需要检查，在复合采样有效的位置统计 RMS、百分位数或最大位移，单位为毫米。同时检查形变场、重采样图像和统计结果是否为有限值。这些指标保存在 `quality.json` 或独立评估报告中，仍需结合配准图像进行目视检查。
 
