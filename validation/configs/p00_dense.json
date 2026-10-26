@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "purpose": "P00 numerical reference; not a final accuracy or performance benchmark",
+  "threads": 1,
+  "random_seed": 20261022,
+  "dimensionality": 3,
+  "interpolation": "Linear",
+  "initialization_feature": 1,
+  "histogram_matching": false,
+  "winsorization": null,
+  "masks": null,
+  "sampling": {"strategy": "None", "fraction": 1.0, "gradient_filter": false},
+  "convergence": {"threshold": 1e-7, "window": 8},
+  "stages": [
+    {"transform": "Rigid[0.1]", "metric": "MI", "bins_or_radius": 32, "iterations": [30, 15], "shrink_factors": [2, 1], "smoothing_sigmas": [1, 0], "smoothing_units": "vox"},
+    {"transform": "Affine[0.1]", "metric": "MI", "bins_or_radius": 32, "iterations": [30, 15], "shrink_factors": [2, 1], "smoothing_sigmas": [1, 0], "smoothing_units": "vox"},
+    {"transform": "SyN[0.1,3,0]", "metric": "CC", "bins_or_radius": 2, "iterations": [8, 4], "shrink_factors": [2, 1], "smoothing_sigmas": [1, 0], "smoothing_units": "vox"}
+  ],
+  "default_cases": ["synthetic_affine", "synthetic_smooth", "ixi002_to_ixi012"],
+  "repeat_fp64_case": "ixi002_to_ixi012",
+  "timeout_per_command_seconds": 240
+}

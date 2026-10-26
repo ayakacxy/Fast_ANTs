@@ -1,0 +1,10 @@
+* text=auto
+*.py text eol=lf
+*.metal text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.nii binary
+*.gz binary
+*.npz binary
+*.png binary
+*.pdf binary

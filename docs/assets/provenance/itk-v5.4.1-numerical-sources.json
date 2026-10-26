@@ -1,0 +1,61 @@
+{
+  "version": "v5.4.1",
+  "purpose": "Installed ANTs ITK numerical audit; supplements the unchanged 5.4.7 snapshot",
+  "files": [
+    {
+      "path": "Modules/Registration/Metricsv4/include/itkImageToImageMetricv4.hxx",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/Registration/Metricsv4/include/itkImageToImageMetricv4.hxx",
+      "sha256": "f6226e496d2dab3036e299dcec1ae07667e6175a47b4fad4c680752bb47ad3a7"
+    },
+    {
+      "path": "Modules/Filtering/ImageStatistics/include/itkImageMomentsCalculator.hxx",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/Filtering/ImageStatistics/include/itkImageMomentsCalculator.hxx",
+      "sha256": "06da425a34fbeab9278a19657202632993d99cf9692bcda42310c2191fdceaa4"
+    },
+    {
+      "path": "Modules/Core/Common/include/itkMatrix.h",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/Core/Common/include/itkMatrix.h",
+      "sha256": "14c14098795eb62ffce1f2c9d9ceaf3337332d6a71be63c148d4adc2043eb0d2"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/core/vnl/algo/vnl_svd.hxx",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/core/vnl/algo/vnl_svd.hxx",
+      "sha256": "6974dac82bf44b4b3df5f2254b329db9d89a6187e9a705fecf1fbbd8634b286e"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/linpack/dsvdc.c",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/linpack/dsvdc.c",
+      "sha256": "88d28da7286417e8db9bf48d43e5b434251893e78eb514c9cffa488ef1764af2"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/README.md",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/README.md",
+      "sha256": "6f89eb665708646859f66e56d27c7ecad4093eb0368a4e4bfe5212ab5385c12c"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/dnrm2.c",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/dnrm2.c",
+      "sha256": "dcd724111a337852cfe074a9fa3aca7172bd4af9c89f37b43506367873ada975"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/ddot.c",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/ddot.c",
+      "sha256": "a84278b02bbc7ed2442dd42831ee5bc7fff56b71e849ac4f3b111c24dded2b5d"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/drotg.c",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/drotg.c",
+      "sha256": "a61681baf4555a200e03b7b83abd574d8bff6d195ec89666524dc2b23b1bb98d"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/drot.c",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/drot.c",
+      "sha256": "ac7fbccebc2104513b593c3329f561943e031cc76618ae0a8344d26ed8f9a6d2"
+    },
+    {
+      "path": "Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/daxpy.c",
+      "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/v5.4.1/Modules/ThirdParty/VNL/src/vxl/v3p/netlib/blas/daxpy.c",
+      "sha256": "0981dad08d60ab533b6a73c773d6de4a3e2e0c51aaa533fb00badd7ed5805dc6"
+    }
+  ]
+}

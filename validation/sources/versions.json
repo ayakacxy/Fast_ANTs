@@ -1,0 +1,20 @@
+{
+  "verified_on": "2026-10-21",
+  "timezone": "Asia/Shanghai",
+  "ants_latest_release": "v2.6.5",
+  "ants_release_commit": "fdce4d2f84b60ac75d7e45aafe18488b1f9f5303",
+  "ants_main_commit": "38144917d78c20144f4a70e4a6e03c059aaefef8",
+  "itk_version_required_by_ants_main": "5.4.7",
+  "itk_commit_required_by_ants_main": "4c49df934c316ff87dbbd971b89e63df6bbd1836",
+  "installed_ants": "2.6.5",
+  "installed_itk": "5.4.7",
+  "release_url": "https://github.com/ANTsX/ANTs/releases/tag/v2.6.5",
+  "analysis_scope": "3D Rigid, Affine, standard SyN, registration metrics and transform application",
+  "rechecked_on": "2026-10-22",
+  "verification_sources": [
+    "https://api.github.com/repos/ANTsX/ANTs/branches/main",
+    "https://api.github.com/repos/ANTsX/ANTs/releases/latest"
+  ],
+  "binary_environment": "validation/baseline/p00/environment.json",
+  "note": "Local ANTs 2.6.5 is the numerical reference; installed ITK library version does not identify all template headers used at build time"
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "record_doi": "10.5281/zenodo.7047668",
+  "record_url": "https://zenodo.org/records/7047668",
+  "original_source": "https://brain-development.org/ixi-dataset/",
+  "original_mri_license": "CC-BY-SA-3.0",
+  "zenodo_record_license": "cc-by-4.0",
+  "creators": [
+    {
+      "name": "Biondi, Lorenzo",
+      "affiliation": null
+    }
+  ],
+  "selection_rule": "user capped source data at 3 MRI subjects; IXI002 and IXI012 development, IXI013 reserved for numerical cross-check; not an independent clinical validation cohort",
+  "files": [
+    {
+      "name": "IXI002-Guys-0828-T1.nii.gz",
+      "subject": "IXI002-Guys-0828",
+      "split": "development",
+      "bytes": 6943524,
+      "publisher_checksum": "md5:b7873629cbb6eebfa8264179271da09c",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI002-Guys-0828-T1.nii.gz/content"
+    },
+    {
+      "name": "IXI002-Guys-0828-T1_annot.json",
+      "subject": "IXI002-Guys-0828",
+      "split": "development",
+      "bytes": 3786,
+      "publisher_checksum": "md5:8d31b526d2da221b93402b4449fe6bd8",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI002-Guys-0828-T1_annot.json/content"
+    },
+    {
+      "name": "IXI012-HH-1211-T1.nii.gz",
+      "subject": "IXI012-HH-1211",
+      "split": "development",
+      "bytes": 10120330,
+      "publisher_checksum": "md5:f742444bbe54c278641aa874f3aa1f00",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI012-HH-1211-T1.nii.gz/content"
+    },
+    {
+      "name": "IXI012-HH-1211-T1_annot.json",
+      "subject": "IXI012-HH-1211",
+      "split": "development",
+      "bytes": 3788,
+      "publisher_checksum": "md5:9e86fec2c9d237e341f5fb8391dc63e3",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI012-HH-1211-T1_annot.json/content"
+    },
+    {
+      "name": "IXI013-HH-1212-T1.nii.gz",
+      "subject": "IXI013-HH-1212",
+      "split": "reserved",
+      "bytes": 9885697,
+      "publisher_checksum": "md5:bd742716605ed35f41dc25e77137c444",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI013-HH-1212-T1.nii.gz/content"
+    },
+    {
+      "name": "IXI013-HH-1212-T1_annot.json",
+      "subject": "IXI013-HH-1212",
+      "split": "reserved",
+      "bytes": 3788,
+      "publisher_checksum": "md5:22c944f6b94ca6fac4b89ab4d3c6951d",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI013-HH-1212-T1_annot.json/content"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+# Python and Numba caches
+__pycache__/
+*.py[cod]
+*.nbc
+*.nbi
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Local images, reference checkouts, generated results, and host-specific state
+*.nii
+*.nii.gz
+*.npz
+reference/
+templates/
+validation/data/
+validation/reports/
+validation/frozen/
+validation/experiments/
+results/
+runs/
+.cleanup-records/
+setup/
+.DS_Store

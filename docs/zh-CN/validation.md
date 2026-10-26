@@ -1,0 +1,70 @@
+# 测试与配准质量评估
+
+[English](../en/validation.md) · [简体中文](validation.md) · [文档目录](index.md)
+
+## 测试分组
+
+测试覆盖影像几何与 I/O、数值算子、优化器和完整配准流程。CPU FP64 与 ANTs `--float 0` 对照，CPU FP32 和 Metal 与 `--float 1` 对照。
+
+```bash
+python -B scripts/maintenance/run_tests.py --suite core
+python -B scripts/maintenance/run_tests.py --suite cpu-fp64
+python -B scripts/maintenance/run_tests.py --suite cpu-fp32
+```
+
+Metal 测试需要 Apple GPU：
+
+```bash
+python -B scripts/maintenance/run_tests.py --suite metal
+```
+
+小范围改动可通过 `--pattern` 选择相关文件。分组说明见[测试目录](../../tests/README.zh-CN.md)。
+
+## 数值测试
+
+算子测试使用小数组和已知变换，检查插值、物理梯度、平滑、局部统计、直方图导数、形变场复合和求逆。测试点应包含图像内部与边界；常量图像、近常量区域、大坐标原点和各向异性网格有助于发现数值问题。
+
+完整配准可使用具有已知位移的合成变换。正向和逆向映射都要检查，同时确认单位和复合顺序。不同后端的浮点规约可能产生小幅差异，比较时关注数值误差及最终对齐效果，不要求优化轨迹逐步相同。
+
+## 图像与地标对齐
+
+在同一固定图像网格、同一前景区域上评估不同实现。已保存结果的评估工具计算以下指标：
+
+| 指标 | 含义 |
+| --- | --- |
+| 归一化互相关（NCC） | 重采样后的强度相似性，越大表示相关性越强 |
+| 归一化均方误差 | 强度归一化后的残差，越小表示越接近 |
+| 目标配准误差（TRE） | 对应地标经变换后的距离，单位为毫米 |
+
+设固定图像地标为 `p_i`、对应移动图像地标为 `q_i`，固定到移动的映射为 `T`，则
+
+$$\mathrm{TRE}_{\mathrm{RMS}}=\sqrt{\frac{1}{N}\sum_i\|T(p_i)-q_i\|^2}.$$
+
+图像相似性与地标误差反映不同方面的对齐情况。报告结果时，说明图像统计所用区域及地标标注来源。
+
+## 形变场质量
+
+位移场 `u` 的空间 Jacobian 为 `J=I+∇u`。检查行列式的最小值，以及行列式非正的体素数量。内置质量统计分别评估非线性的正向场和逆向场。
+
+逆一致性通过复合两侧映射后的残差计算：
+
+$$r(x)=\phi^{-1}(\phi(x))-x.$$
+
+两个复合方向都需要检查，在复合采样有效的位置统计 RMS、百分位数或最大位移，单位为毫米。同时检查形变场、重采样图像和统计结果是否为有限值。这些指标保存在 `quality.json` 或独立评估报告中，仍需结合配准图像进行目视检查。
+
+## 评估数据
+
+开发示例使用三份 IXI T1 图像：IXI002-Guys-0828、IXI012-HH-1211 和 IXI013-HH-1212，尺寸为 256×256×150。[输入信息](../../validation/sources/input-inventory.json)、[下载校验值](../../validation/sources/downloaded-files.json)和[数据来源](../../validation/sources/public-data.json)记录文件及预处理方法。附带地标为开发时使用的粗略标注。
+
+原始 IXI 数据使用 CC BY-SA 3.0。Zenodo 再发布页面对新增材料标注 CC BY 4.0；MRI 文件应遵循原始数据集的许可。影像数据不包含在 Python 软件包中。
+
+## 评估工具
+
+[验证目录](../../validation/README.zh-CN.md)包含参考结果生成与已保存结果评估工具。使用前查看其参数：
+
+```bash
+python -m validation.quality.assess_saved_registration --help
+python -m validation.quality.run_float1_quality_matrix --help
+```
+
+与 ANTs 对比时，保持图像、几何信息、预处理、阶段参数、插值、采样方法和精度一致，并随结果保存配置及软件版本。[质量评估配置](../../validation/configs/registration_quality_policy.json)列出了评估脚本所用检查项。

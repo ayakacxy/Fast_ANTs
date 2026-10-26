@@ -1,0 +1,12 @@
+name: fast-ants-metal
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - numpy
+  - nibabel
+  - numba=0.68.0
+  - pip
+  - pip:
+      - 'mlx==0.32.4; sys_platform == "darwin" and platform_machine == "arm64"'

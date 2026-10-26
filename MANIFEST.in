@@ -1,0 +1,18 @@
+include README.md README.zh-CN.md
+include CHANGELOG.md CHANGELOG.zh-CN.md
+include CONTRIBUTING.md CONTRIBUTING.zh-CN.md
+include LICENSE NOTICE.md NOTICE.zh-CN.md LICENSE-ANTs LICENSE-ITK
+include .editorconfig .gitattributes
+include .markdownlint.json .markdownlint-cli2.jsonc
+recursive-include docs/en *.md
+recursive-include docs/zh-CN *.md
+recursive-include docs/assets *.json *.svg
+recursive-include configs *.md
+recursive-include examples *.py
+recursive-include environments *.yml
+recursive-include src/fast_ants *.metal *.json
+prune reference
+prune templates
+prune validation
+prune .cleanup-records
+global-exclude __pycache__ *.py[cod] *.nbc *.nbi .DS_Store

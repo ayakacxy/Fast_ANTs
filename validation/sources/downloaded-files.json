@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "name": "IXI002-Guys-0828-T1.nii.gz",
+      "subject": "IXI002-Guys-0828",
+      "split": "development",
+      "bytes": 6943524,
+      "publisher_checksum": "md5:b7873629cbb6eebfa8264179271da09c",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI002-Guys-0828-T1.nii.gz/content",
+      "path": "validation/data/public/IXI002-Guys-0828-T1.nii.gz",
+      "sha256": "71c5d110a352f943c96e08f75f5087066b608da6f8d203eb15d8d596d1f80f47"
+    },
+    {
+      "name": "IXI002-Guys-0828-T1_annot.json",
+      "subject": "IXI002-Guys-0828",
+      "split": "development",
+      "bytes": 3786,
+      "publisher_checksum": "md5:8d31b526d2da221b93402b4449fe6bd8",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI002-Guys-0828-T1_annot.json/content",
+      "path": "validation/data/public/IXI002-Guys-0828-T1_annot.json",
+      "sha256": "25be8fbc15e74a9dc3e31109b2feb310b0b0c27d81c22975f0b4da1c6e11c6a1"
+    },
+    {
+      "name": "IXI012-HH-1211-T1.nii.gz",
+      "subject": "IXI012-HH-1211",
+      "split": "development",
+      "bytes": 10120330,
+      "publisher_checksum": "md5:f742444bbe54c278641aa874f3aa1f00",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI012-HH-1211-T1.nii.gz/content",
+      "path": "validation/data/public/IXI012-HH-1211-T1.nii.gz",
+      "sha256": "073461dcd7bdec3324c5624bade7f31e75d580c67d22cb24f2de4f1389800c0e"
+    },
+    {
+      "name": "IXI012-HH-1211-T1_annot.json",
+      "subject": "IXI012-HH-1211",
+      "split": "development",
+      "bytes": 3788,
+      "publisher_checksum": "md5:9e86fec2c9d237e341f5fb8391dc63e3",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI012-HH-1211-T1_annot.json/content",
+      "path": "validation/data/public/IXI012-HH-1211-T1_annot.json",
+      "sha256": "3445430f6ed6b3c34bf9457705970eedd420d5723787f0e6aaf20ec0c56eacea"
+    },
+    {
+      "name": "IXI013-HH-1212-T1.nii.gz",
+      "subject": "IXI013-HH-1212",
+      "split": "reserved",
+      "bytes": 9885697,
+      "publisher_checksum": "md5:bd742716605ed35f41dc25e77137c444",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI013-HH-1212-T1.nii.gz/content",
+      "path": "validation/data/public/IXI013-HH-1212-T1.nii.gz",
+      "sha256": "eda65d2111c9f3a7e2a766471bb29cc442b668d2101489871ef3f3ecde6e0530"
+    },
+    {
+      "name": "IXI013-HH-1212-T1_annot.json",
+      "subject": "IXI013-HH-1212",
+      "split": "reserved",
+      "bytes": 3788,
+      "publisher_checksum": "md5:22c944f6b94ca6fac4b89ab4d3c6951d",
+      "url": "https://zenodo.org/api/records/7047668/files/IXI013-HH-1212-T1_annot.json/content",
+      "path": "validation/data/public/IXI013-HH-1212-T1_annot.json",
+      "sha256": "2a305c0896ae2c87fa2ae7e116c71c0b29706ad1a7a35a8c302cc5c5eea61b29"
+    }
+  ]
+}

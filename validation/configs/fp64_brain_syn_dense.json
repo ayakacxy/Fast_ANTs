@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "purpose": "Full-resolution brain MRI performance: controlled dense variant of pinned antsRegistrationSyN.sh -t s; not the unmodified stock preset",
+  "threads": 10,
+  "random_seed": 20261022,
+  "dimensionality": 3,
+  "interpolation": "Linear",
+  "initialization_feature": 1,
+  "histogram_matching": false,
+  "winsorization": null,
+  "masks": null,
+  "sampling": {
+    "strategy": "None",
+    "fraction": 1.0,
+    "gradient_filter": false
+  },
+  "convergence": {
+    "threshold": 1e-06,
+    "window": 10
+  },
+  "stages": [
+    {
+      "transform": "Rigid[0.1]",
+      "metric": "MI",
+      "bins_or_radius": 32,
+      "iterations": [
+        1000,
+        500,
+        250,
+        100
+      ],
+      "shrink_factors": [
+        8,
+        4,
+        2,
+        1
+      ],
+      "smoothing_sigmas": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "smoothing_units": "vox"
+    },
+    {
+      "transform": "Affine[0.1]",
+      "metric": "MI",
+      "bins_or_radius": 32,
+      "iterations": [
+        1000,
+        500,
+        250,
+        100
+      ],
+      "shrink_factors": [
+        8,
+        4,
+        2,
+        1
+      ],
+      "smoothing_sigmas": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "smoothing_units": "vox"
+    },
+    {
+      "transform": "SyN[0.2,3,0]",
+      "metric": "CC",
+      "bins_or_radius": 2,
+      "iterations": [
+        100,
+        70,
+        50,
+        20
+      ],
+      "shrink_factors": [
+        8,
+        4,
+        2,
+        1
+      ],
+      "smoothing_sigmas": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "smoothing_units": "vox"
+    }
+  ],
+  "default_cases": [
+    "ixi002_to_ixi012"
+  ],
+  "repeat_fp64_case": "ixi002_to_ixi012",
+  "timeout_per_command_seconds": 7200,
+  "source_recipe": {
+    "url": "https://github.com/ANTsX/ANTs/blob/38144917d78c20144f4a70e4a6e03c059aaefef8/Scripts/antsRegistrationSyN.sh",
+    "local_script_sha256": "1b183b5365bc89821b5ec794090151cab4c8a305e262223041083a8aaf288819",
+    "intentional_deviations": [
+      "linear dense sampling instead of Regular 0.25",
+      "winsorization disabled instead of [0.005,0.995]",
+      "one final warped image for both engines; no inverse-warped intensity image"
+    ],
+    "scope": "current independently implemented CPU FP64 options only; stock preset retained separately"
+  },
+  "shrink_factor_policy": "ants_physical_spacing"
+}

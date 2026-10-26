@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fast-ants"
+version = "0.1.0"
+description = "Accelerated Python implementation of ANTs registration on CPU and GPU"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "GPL-3.0-only"
+license-files = [
+  "LICENSE",
+  "LICENSE-ITK",
+  "LICENSE-ANTs",
+  "NOTICE.md",
+  "NOTICE.zh-CN.md",
+  "docs/assets/provenance/*.json",
+]
+dependencies = ["numpy", "nibabel", "numba"]
+
+[project.optional-dependencies]
+metal = ["mlx==0.32.4; sys_platform == 'darwin' and platform_machine == 'arm64'"]
+test = ["pytest>=8"]
+build = ["build>=1", "wheel"]
+
+[project.scripts]
+fast-ants = "fast_ants.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"fast_ants.backends.metal" = ["*.metal"]
+"fast_ants.presets" = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["validation", "reference", "templates", ".cleanup-records", "build", "dist"]

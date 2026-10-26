@@ -1,0 +1,10 @@
+name: fast-ants-cpu
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - numpy
+  - nibabel
+  - numba=0.68.0
+  - pip

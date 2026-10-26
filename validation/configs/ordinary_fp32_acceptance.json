@@ -1,0 +1,25 @@
+{
+  "schema_version": 3,
+  "primary_reference": {
+    "executable": "antsRegistration",
+    "float_option": 1,
+    "precision_description": "official mixed single precision mode"
+  },
+  "fp64_reference_policy": "optional diagnostic only; neither CPU FP64 nor ANTs --float 0 is the acceptance target",
+  "arithmetic_policy": "ordinary FP32 image and field arithmetic; no software-expanded floating point",
+  "maximum_deformation_l2_mm": 0.01,
+  "stricter_diagnostic_l2_mm": 0.001,
+  "comparison_domain": "all declared forward and inverse grid points, including boundaries",
+  "host_fp64": "native CPU bounded geometry/filter coefficients, joint-PDF total, scalar controls and output QA; parameter/CG and PDF states are float32",
+  "synthetic_failure_policy": "preserve differences; distinguish algorithm/quality regressions from floating-point trajectory differences without assuming either cause",
+  "require_reference_map_match": false,
+  "acceptance_basis": [
+    "registration formulas, transform direction, geometry, boundaries and update order",
+    "finite results, deformation regularity and inverse consistency",
+    "synthetic known-transform accuracy and real-MRI registration quality",
+    "CPU/Metal reproducibility within useful numerical accuracy",
+    "performance with documented recipe and synchronization"
+  ],
+  "reference_map_difference_role": "diagnostic; rounding/FMA/reduction-dependent optimizer trajectories are not a hard failure by themselves",
+  "quality_policy": "registration_quality_policy.json"
+}

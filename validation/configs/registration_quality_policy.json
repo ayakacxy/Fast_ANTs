@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "updated_on": "2026-10-25",
+  "authority": "User: judge FP64 as well as FP32/Metal by consistent algorithm logic and final registration quality, rather than complete numerical identity",
+  "applies_to": [
+    "cpu-fp64",
+    "cpu-fp32",
+    "metal-fp32"
+  ],
+  "official_behavior_reference": {
+    "cpu-fp64": "ANTs --float 0",
+    "cpu-fp32": "ANTs --float 1",
+    "metal-fp32": "ANTs --float 1"
+  },
+  "reference_map_equality_required": false,
+  "trajectory_or_iteration_equality_required": false,
+  "diagnostic_map_tolerances_mm": [
+    0.01,
+    0.001
+  ],
+  "requirements": [
+    "correct objective, derivatives and update direction",
+    "consistent LPS coordinates, transform ordering and interpolation/boundary conventions",
+    "finite stable calculations without software-expanded floating point",
+    "registration quality on known-transform fixtures and real MRI, with matched evaluation domains",
+    "deformation regularity and inverse consistency",
+    "documented performance comparisons with matching recipe, resolution, threads, IO and GPU synchronization"
+  ],
+  "interpretation": [
+    "floating-point reduction/FMA differences alone do not establish an algorithm bug or quality regression",
+    "similar formula alone does not establish numerical stability or registration quality",
+    "fixed-state operator error bounds remain useful to catch implementation mistakes",
+    "official final maps are useful diagnostics but not ground-truth anatomy",
+    "existing frozen strict-reproduction reports are preserved unchanged",
+    "this policy update does not authorize silent CPU FP64 voxel fallbacks in the Metal fitting backend",
+    "User resumed FP64 implementation optimization on 2026-10-25: local coordinates and deterministic block reductions are permitted; preserve formulas, geometry conventions, stability and final registration quality."
+  ]
+}

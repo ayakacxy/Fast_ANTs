@@ -1,0 +1,307 @@
+[
+  {
+    "path": "Modules/Registration/RegistrationMethodsv4/include/itkSyNImageRegistrationMethod.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/RegistrationMethodsv4/include/itkSyNImageRegistrationMethod.hxx",
+    "sha256": "11331c6313d6c3c096a65f3bd8b4c30334c139dd21aa887683a111779ad43470"
+  },
+  {
+    "path": "Modules/Registration/RegistrationMethodsv4/include/itkSyNImageRegistrationMethod.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/RegistrationMethodsv4/include/itkSyNImageRegistrationMethod.h",
+    "sha256": "434e061eb558fc4035a09c3b8535132428ba2dd58eadf355172640a0458abc48"
+  },
+  {
+    "path": "Modules/Registration/RegistrationMethodsv4/include/itkImageRegistrationMethodv4.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/RegistrationMethodsv4/include/itkImageRegistrationMethodv4.hxx",
+    "sha256": "6ac70900498479dffbb59d26181625ec8858f908e82f6633ca37d705d16d16b8"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4.hxx",
+    "sha256": "69471c1425195f282ca0072f66336b1b22c5f5aad51489b989a55e35b2552f20"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.hxx",
+    "sha256": "072ef0e64989dd9d30fd994b1bbb24544291a7d199e0964bb62fa1fbd520f4c1"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkMattesMutualInformationImageToImageMetricv4.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkMattesMutualInformationImageToImageMetricv4.hxx",
+    "sha256": "cc8142679f6a82e83286a4acbde01b36faaa24ace553c66ae7aa4e1e0d9cdaa3"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkMattesMutualInformationImageToImageMetricv4GetValueAndDerivativeThreader.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkMattesMutualInformationImageToImageMetricv4GetValueAndDerivativeThreader.hxx",
+    "sha256": "21a0eee7435a38c049ede91b89346049923747616a1a7b006441d1d85d04cee3"
+  },
+  {
+    "path": "Modules/Filtering/DisplacementField/include/itkComposeDisplacementFieldsImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/DisplacementField/include/itkComposeDisplacementFieldsImageFilter.hxx",
+    "sha256": "e138d5ac354708443b7e643af09b31277db83a286715e4caa2e3d45f1a2347bc"
+  },
+  {
+    "path": "Modules/Filtering/DisplacementField/include/itkInvertDisplacementFieldImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/DisplacementField/include/itkInvertDisplacementFieldImageFilter.hxx",
+    "sha256": "e88a9a94131ca45ea543261836f624157f7e360d0f17dfd0d73f563a2dba13b2"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkGradientDescentOptimizerv4.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkGradientDescentOptimizerv4.hxx",
+    "sha256": "8f846acca42e9f7806399c024a718577e1e4cad2f01e07580baa552c98a90207"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4.h",
+    "sha256": "e67eb77a5513bfe33d85574ad6501a0e099caac9dab6e162cca167ed1c322795"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkANTSNeighborhoodCorrelationImageToImageMetricv4GetValueAndDerivativeThreader.h",
+    "sha256": "946a820d400815c04596d72892883477f4e9862a3c0af7243288045fe12e9cd1"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkMattesMutualInformationImageToImageMetricv4.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkMattesMutualInformationImageToImageMetricv4.h",
+    "sha256": "65b684d693b32c7d4645359e0ca53cad50284987b09f8bb3659f0219295dc17f"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkDefaultImageToImageMetricTraitsv4.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkDefaultImageToImageMetricTraitsv4.h",
+    "sha256": "fea5c59f5e3d7b423d6bd2278d9e983ca36b696c0b8280107230b1dc27b927ba"
+  },
+  {
+    "path": "Modules/Registration/Metricsv4/include/itkImageToImageMetricv4.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Registration/Metricsv4/include/itkImageToImageMetricv4.h",
+    "sha256": "57ef96da15cde919571355cae3115f4bc5f4caf490148a18970656621a44e93a"
+  },
+  {
+    "path": "Modules/Core/Common/include/itkNumericTraits.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Common/include/itkNumericTraits.h",
+    "sha256": "381fc6db2a0bed1ed8fa6aa1bd9d77106cfec4ce03a7f46c171226a4ba22fe0a"
+  },
+  {
+    "path": "Modules/Core/Common/include/itkNumericTraitsVectorPixel.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Common/include/itkNumericTraitsVectorPixel.h",
+    "sha256": "4e619ad9279a0640d57d82873a6152a86d324d5581933461ce5a02655710be0e"
+  },
+  {
+    "path": "Modules/Core/Common/include/itkImageBase.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Common/include/itkImageBase.h",
+    "sha256": "8099c042bfdfe92f832d2898d4c26df061b924731ae2f05be17b034b1e92a1f5"
+  },
+  {
+    "path": "Modules/Core/Common/include/itkIntTypes.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Common/include/itkIntTypes.h",
+    "sha256": "c01eab8597cd3ca61a534365f0837664fd3b94ae2a09214221f0a70f51a4e2a0"
+  },
+  {
+    "path": "Modules/Core/Common/include/itkFloatTypes.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Common/include/itkFloatTypes.h",
+    "sha256": "863f28db4fa4d2aeb50b2a8e061cead183b615ace250e0993cee8f63139ea898"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkInterpolateImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkInterpolateImageFunction.h",
+    "sha256": "bfcdc5505b033b5a431ad336003067d45e310646fe407e387e93c7c7e3d34b10"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkLinearInterpolateImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkLinearInterpolateImageFunction.h",
+    "sha256": "16cabee265b24291e9dfe51d1de49c89d55f06f976a931acf85bc55d97cb1e42"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkCentralDifferenceImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkCentralDifferenceImageFunction.h",
+    "sha256": "d43cf50bb2b8ee43018dd4ef443c9b8604e0411212af1f218a253885a6d7c7ef"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkVectorInterpolateImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkVectorInterpolateImageFunction.h",
+    "sha256": "603823a3e020a3e56e00decfe8f22949e0b06b242db765a3a1b20aff2af2e109"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkVectorLinearInterpolateImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkVectorLinearInterpolateImageFunction.h",
+    "sha256": "b736af7e8104250fdbde242668473ca6c8f13e2caaa79a34b95995035f3869b1"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkVectorLinearInterpolateImageFunction.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkVectorLinearInterpolateImageFunction.hxx",
+    "sha256": "77252b4ce4ee02c7cba8dc3713aae4debaff13597b096d75c4c6974e96632183"
+  },
+  {
+    "path": "Modules/Filtering/ImageGrid/include/itkResampleImageFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageGrid/include/itkResampleImageFilter.h",
+    "sha256": "1bfd21c94fb3610371e833a80bd4b6c633dd4a6fd7cb15ce7ecbf7375fba19a3"
+  },
+  {
+    "path": "Modules/Filtering/DisplacementField/include/itkInvertDisplacementFieldImageFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/DisplacementField/include/itkInvertDisplacementFieldImageFilter.h",
+    "sha256": "7b0751250c8f58d24f31463f14d34e5f25c2d6ddd7589f62145f268b5cd0556a"
+  },
+  {
+    "path": "Modules/Filtering/DisplacementField/include/itkComposeDisplacementFieldsImageFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/DisplacementField/include/itkComposeDisplacementFieldsImageFilter.h",
+    "sha256": "6de2dff8e1a1e1a7c8128c4a8bea06f3b655191c5f15e4034afeab24b9b0cb9b"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkImageFunction.h",
+    "sha256": "15fc44d1ababa452fd09d02498714caf3dbfa2939296d88a8a40d3c0caa5d044"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkImageFunction.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkImageFunction.hxx",
+    "sha256": "d2bbacadc7967f09437428dd8fc378b6d0cd8f106bdb0a988b449d88360ebce5"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkNearestNeighborInterpolateImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkNearestNeighborInterpolateImageFunction.h",
+    "sha256": "eee38e6245a409921174f2c2839380fa785b796fc1cdd9fec5469876ebe24b4d"
+  },
+  {
+    "path": "Modules/Filtering/DisplacementField/include/itkDisplacementFieldTransform.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/DisplacementField/include/itkDisplacementFieldTransform.hxx",
+    "sha256": "7b75a3de384c0dc1fa139690736a5aab4199757dfb48d72eb8735708bacec7b7"
+  },
+  {
+    "path": "Modules/Filtering/Smoothing/include/itkRecursiveGaussianImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/Smoothing/include/itkRecursiveGaussianImageFilter.hxx",
+    "sha256": "fe672edee5dbc680550dc65dd4c8e70cfbf483ef0f3299aafc89043b830673d6"
+  },
+  {
+    "path": "Modules/Filtering/Smoothing/include/itkSmoothingRecursiveGaussianImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/Smoothing/include/itkSmoothingRecursiveGaussianImageFilter.hxx",
+    "sha256": "4e525114d9c2613de504d8fa2ab58e1059d09e8cdb302ebf21c92e99956769c5"
+  },
+  {
+    "path": "Modules/Filtering/ImageFilterBase/include/itkRecursiveSeparableImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageFilterBase/include/itkRecursiveSeparableImageFilter.hxx",
+    "sha256": "a8637058280de18afd72cb29ed0f4989978fb2d168bcfead11f535b77201bfb1"
+  },
+  {
+    "path": "Modules/Core/Common/include/itkGaussianOperator.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Common/include/itkGaussianOperator.hxx",
+    "sha256": "e114fca84e80bc4c9e6329e55fd770c4a759ff368d851efead63bd72d2611cc4"
+  },
+  {
+    "path": "Modules/Filtering/ImageGrid/include/itkShrinkImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageGrid/include/itkShrinkImageFilter.hxx",
+    "sha256": "66e399fd7dd0bd5c2d76f1dfdfcf0862ff1618541069dfd8c9cdb3c793c4e05d"
+  },
+  {
+    "path": "Modules/Core/ImageFunction/include/itkCentralDifferenceImageFunction.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/ImageFunction/include/itkCentralDifferenceImageFunction.hxx",
+    "sha256": "bf87ba6a886daf352f9f9b9992c1d89bb17c11c6ed426f40681cd3c1dc69d3d2"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkConjugateGradientLineSearchOptimizerv4.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkConjugateGradientLineSearchOptimizerv4.hxx",
+    "sha256": "15dead70b83f5e028f78f0a80e88b23fc7a14ce10aac803c0231ad8fd984026d"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkGradientDescentLineSearchOptimizerv4.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkGradientDescentLineSearchOptimizerv4.hxx",
+    "sha256": "5af55115e9abf0b22ce544980d4c2bb4f98f7670cb2838303e2b3a8674e2774d"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkWindowConvergenceMonitoringFunction.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkWindowConvergenceMonitoringFunction.hxx",
+    "sha256": "07ef5cdf33078f695d31ef2d7fb5a30892d1080d84764f8e8f717cf7fe19939c"
+  },
+  {
+    "path": "Modules/Filtering/Smoothing/include/itkSmoothingRecursiveGaussianImageFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/Smoothing/include/itkSmoothingRecursiveGaussianImageFilter.h",
+    "sha256": "5ff3343b91ec92394fff83f9ef9534c6d2de627159dad7e7af987addb4ece4ae"
+  },
+  {
+    "path": "Modules/Core/Transform/include/itkEuler3DTransform.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Transform/include/itkEuler3DTransform.hxx",
+    "sha256": "d681858dccd2bf7eff71cca21dbf6eea9bbfcc63735cc05801e4c5cd30b9a9dc"
+  },
+  {
+    "path": "Modules/Core/Transform/include/itkAffineTransform.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Transform/include/itkAffineTransform.hxx",
+    "sha256": "f6e48e02dd6e0a092e2356afcf3e841d298c61de531a04d90ab00484bc9ed40b"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkRegistrationParameterScalesFromPhysicalShift.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkRegistrationParameterScalesFromPhysicalShift.hxx",
+    "sha256": "1818731dc20d8fd991fbb520cab052bdd47502ac66448355505518b529900147"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkRegistrationParameterScalesFromShiftBase.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkRegistrationParameterScalesFromShiftBase.hxx",
+    "sha256": "bdb527b41889dc1007e9a3d7ee7293c722117dc15a782fbd91632ecc9def31d2"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkRegistrationParameterScalesEstimator.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkRegistrationParameterScalesEstimator.hxx",
+    "sha256": "b200c07021c652ef7284a531f48557e38cc4956645071a2830cc4abb3454c803"
+  },
+  {
+    "path": "Modules/Numerics/Optimizersv4/include/itkWindowConvergenceMonitoringFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Optimizersv4/include/itkWindowConvergenceMonitoringFunction.h",
+    "sha256": "cee45bc158be2faaeb6b26d63a69f76eb9980f25f01f5cc9ec7db7030f1a934c"
+  },
+  {
+    "path": "Modules/Filtering/ImageGrid/include/itkBSplineScatteredDataPointSetToImageFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageGrid/include/itkBSplineScatteredDataPointSetToImageFilter.hxx",
+    "sha256": "67d5a38041d1dd37339904ba852b19860bf51159bb8c747cb7d6d4af698c9ab4"
+  },
+  {
+    "path": "Modules/Filtering/ImageGrid/include/itkBSplineControlPointImageFunction.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageGrid/include/itkBSplineControlPointImageFunction.hxx",
+    "sha256": "fef18144053153f3105e5fb879248f83055024e6561afdd54b8309b2e65345c9"
+  },
+  {
+    "path": "Modules/Filtering/ImageGrid/include/itkBSplineScatteredDataPointSetToImageFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageGrid/include/itkBSplineScatteredDataPointSetToImageFilter.h",
+    "sha256": "1113d292de639c309d65ab52fe9b847047f85dc4591153262e75bb268a26df50"
+  },
+  {
+    "path": "Modules/Filtering/ImageGrid/include/itkBSplineControlPointImageFunction.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageGrid/include/itkBSplineControlPointImageFunction.h",
+    "sha256": "a5b8e68952b6aab9b6e90077da72e1474f49d85edfd8a0d7c2d9b5f4f3525ae4"
+  },
+  {
+    "path": "Modules/IO/NIFTI/src/itkNiftiImageIO.cxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/IO/NIFTI/src/itkNiftiImageIO.cxx",
+    "sha256": "5d656d1e89f5807e3563f05fadcabeb272cff303e3afc8a9913147321b421324"
+  },
+  {
+    "path": "Modules/Numerics/Statistics/include/itkImageToHistogramFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Statistics/include/itkImageToHistogramFilter.h",
+    "sha256": "c487ccadf31706972ca4fae1cfdf1b9ca95761feee10059ad4020761cc52abcd"
+  },
+  {
+    "path": "Modules/Numerics/Statistics/include/itkImageToHistogramFilter.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Statistics/include/itkImageToHistogramFilter.hxx",
+    "sha256": "74c55b5b217beb5a8145d7a81abf01a1e34e5fa182a86020cf0da7c890c42154"
+  },
+  {
+    "path": "Modules/Numerics/Statistics/include/itkHistogram.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Numerics/Statistics/include/itkHistogram.hxx",
+    "sha256": "bc008bdd892eca56e77fffbadd716ee89f128b06175acff08f776b3de39d1a8e"
+  },
+  {
+    "path": "Modules/Filtering/ImageIntensity/include/itkIntensityWindowingImageFilter.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Filtering/ImageIntensity/include/itkIntensityWindowingImageFilter.h",
+    "sha256": "061c1752b8dc38efd37d48adcd1194e0e6973c7a71429605e56945ed7190a289"
+  },
+  {
+    "path": "Modules/Core/Transform/include/itkMatrixOffsetTransformBase.h",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Transform/include/itkMatrixOffsetTransformBase.h",
+    "sha256": "f0749595c6487fa6e2468a69f49d25c6ad746bfafed32cf36087149433b85ce3"
+  },
+  {
+    "path": "Modules/Core/Transform/include/itkMatrixOffsetTransformBase.hxx",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/Modules/Core/Transform/include/itkMatrixOffsetTransformBase.hxx",
+    "sha256": "f0e71721c873e1a6122ff6e048091edf0a818d1f9f3c89132d654732d2b652a4"
+  },
+  {
+    "path": "LICENSE",
+    "url": "https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/4c49df934c316ff87dbbd971b89e63df6bbd1836/LICENSE",
+    "sha256": "aac73b3148f6d1d7111dbca32099f68d26c644c6813ae1e4f05f6579aa2663fe"
+  }
+]

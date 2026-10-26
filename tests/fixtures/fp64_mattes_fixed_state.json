@@ -1,0 +1,47 @@
+{
+  "provenance": {
+    "native_affine": "validation/reports/fp64-alignment-20261023/before-linear/30/native/reg_0GenericAffine.mat",
+    "native_log": "validation/reports/fp64-alignment-20261023/same-state/30-s1/console.log",
+    "native_affine_sha256": "13f1a728368e0e1a7a991bebd81d90161e15d73fe1213c5c89fb309e5d2f8d5e",
+    "native_log_sha256": "2cc8bdc602f30f0fbb43491b0dec3610138a2ab2f12174f69357c987c750c3e7",
+    "note": "First native metric after loading saved coarse-rigid affine, shrink=1 sigma=0vox, 32-bin dense unfiltered MI, --float 0"
+  },
+  "fixed": "validation/data/p11-half/IXI002-Guys-0828-T1.nii.gz",
+  "moving": "validation/data/p11-half/IXI012-HH-1211-T1.nii.gz",
+  "input_sha256": {
+    "fixed": "c26afb53879b5f2d89c798cc298279d08bb0c56facbd58237e445e3143d99bb7",
+    "moving": "ede02fbd2d8dccc2b2b1af8c99cfe1a14af6680bb2b178898e85f00efe6b318b"
+  },
+  "matrix": [
+    [
+      0.9946498482848314,
+      -0.060917803513698056,
+      0.08343081278537622,
+      -0.06526218281624485
+    ],
+    [
+      0.06004244001149104,
+      0.9981116420764823,
+      0.012963616349409502,
+      -20.628577165728785
+    ],
+    [
+      -0.08406298058258771,
+      -0.00788486946338703,
+      0.9964292469257999,
+      -3.707590768074178
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "center": [
+    -1.1151054954811241,
+    2.032034644267021,
+    6.0440275416182665
+  ],
+  "native_metric": -0.4694051800152
+}
