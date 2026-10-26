@@ -64,6 +64,8 @@ The [algorithm guide](docs/en/algorithms.md) gives the mathematical formulation 
 
 ## 📦 Installation
 
+The Python distribution and import name are both `fast_ants`. The command-line entry point is `fast-ants`.
+
 Requires Python 3.11 or later. Download the wheel from [v0.1.0](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0) and install it:
 
 ```bash

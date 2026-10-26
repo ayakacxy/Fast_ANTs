@@ -32,7 +32,7 @@ def positive_integer(value):
 
 def version():
     try:
-        return metadata.version("fast-ants")
+        return metadata.version("fast_ants")
     except metadata.PackageNotFoundError:
         return "0.1.0"
 

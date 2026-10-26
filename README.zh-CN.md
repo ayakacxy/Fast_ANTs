@@ -64,6 +64,8 @@ NVIDIA CUDA 后端是后续开发重点，具体实现步骤见[开发计划](do
 
 ## 📦 安装
 
+Python 发行包名和导入名均为 `fast_ants`，命令行入口为 `fast-ants`。
+
 要求 Python 3.11 或更新版本。从 [v0.1.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0)下载 wheel 后安装：
 
 ```bash

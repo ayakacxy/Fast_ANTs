@@ -10,6 +10,8 @@
 
 The CPU and GPU registration implementations are included in this package. Official ANTs is used by the comparison tools in `validation/`.
 
+The distribution and Python import name are `fast_ants`; the command-line entry point is `fast-ants`. The source repository is `Fast_ANTs`.
+
 ## Install the release
 
 Download `fast_ants-0.1.0-py3-none-any.whl` from the [v0.1.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0). Create a virtual environment and install the wheel:

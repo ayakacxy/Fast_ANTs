@@ -10,6 +10,8 @@
 
 CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具使用官方 ANTs。
 
+发行包名和 Python 导入名为 `fast_ants`，命令行入口为 `fast-ants`，源码仓库为 `Fast_ANTs`。
+
 ## 安装发行包
 
 从 [v0.1.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0)下载 `fast_ants-0.1.0-py3-none-any.whl`。创建虚拟环境并安装 wheel：
