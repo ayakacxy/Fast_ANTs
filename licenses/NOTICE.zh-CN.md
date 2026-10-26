@@ -5,7 +5,7 @@
 ## Fast ANTs
 
 Fast ANTs 采用 GNU General Public License version 3，许可证标识为
-`GPL-3.0-only`，原文见 [LICENSE](LICENSE)。下述上游代码保留原有版权、
+`GPL-3.0-only`，原文见 [LICENSE](../LICENSE)。下述上游代码保留原有版权、
 许可条件和来源声明，其 Apache-2.0 许可证原文与项目许可证一并提供。
 
 ## ITK
@@ -15,7 +15,7 @@ Fast ANTs 的部分实现由 ITK 源码翻译并修改，版权归 NumFOCUS 所�
 
 主要参考版本为 ITK 提交
 `4c49df934c316ff87dbbd971b89e63df6bbd1836`（5.4.7）。参考文件及校验值见
-[ITK 源码清单](docs/assets/provenance/itk-v5.4.7-sources.json)。
+[ITK 源码清单](../docs/assets/provenance/itk-v5.4.7-sources.json)。
 
 | 组件 | ITK 源码 | Python 实现 |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ ANTs 和 ITK 参考文件保留各自原有的版权与许可证声明。
 `core/linalg.py` 将 LINPACK DSVDC 的双对角 SVD／QR 算法及其 BLAS 缩放范数、
 Givens 旋转运算专用于 3×3 FP64 几何矩阵。算法参考为 ITK 5.4.1 包含的
 原始 Netlib 例程，来源地址与校验值保留在
-[数值源码清单](docs/assets/provenance/itk-v5.4.1-numerical-sources.json)。
+[数值源码清单](../docs/assets/provenance/itk-v5.4.1-numerical-sources.json)。
 
 Python／Numba 实现采用从零开始的数组索引、专用标量 QR 运算和显式硬件 FMA。
 VNL 仅供独立参考工具使用，不是配准运行依赖。

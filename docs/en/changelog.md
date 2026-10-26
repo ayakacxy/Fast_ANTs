@@ -1,6 +1,6 @@
 # Changelog
 
-[English](CHANGELOG.md) · [简体中文](CHANGELOG.zh-CN.md)
+[English](changelog.md) · [简体中文](../zh-CN/changelog.md)
 
 ## 0.1.0 — 2026-10-26
 

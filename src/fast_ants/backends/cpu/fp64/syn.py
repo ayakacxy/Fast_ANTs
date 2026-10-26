@@ -3,7 +3,7 @@ from fast_ants.core.state import SyNState
 """Standard greedy SyN with two sides and four fields, CPU reference path.
 
 Control flow is a modified translation of ITK's SyNImageRegistrationMethod,
-Copyright NumFOCUS, Apache-2.0; upstream notices are retained in LICENSE-ITK.
+Copyright NumFOCUS, Apache-2.0; upstream notices are retained in licenses/LICENSE-ITK.
 """
 
 from dataclasses import dataclass

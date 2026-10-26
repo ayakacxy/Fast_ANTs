@@ -11,10 +11,10 @@ requires-python = ">=3.11"
 license = "GPL-3.0-only"
 license-files = [
   "LICENSE",
-  "LICENSE-ITK",
-  "LICENSE-ANTs",
-  "NOTICE.md",
-  "NOTICE.zh-CN.md",
+  "licenses/LICENSE-ITK",
+  "licenses/LICENSE-ANTs",
+  "licenses/NOTICE.md",
+  "licenses/NOTICE.zh-CN.md",
   "docs/assets/provenance/*.json",
 ]
 dependencies = ["numpy", "nibabel", "numba"]

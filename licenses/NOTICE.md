@@ -5,7 +5,7 @@
 ## Fast ANTs
 
 Fast ANTs is distributed under the GNU General Public License version 3
-only (`GPL-3.0-only`); the license text is in [LICENSE](LICENSE).
+only (`GPL-3.0-only`); the license text is in [LICENSE](../LICENSE).
 The upstream portions described below retain their original copyright,
 license terms and attribution. Their Apache-2.0 license texts are included
 alongside the project license.
@@ -18,7 +18,7 @@ is included in [LICENSE-ITK](LICENSE-ITK).
 
 The main source reference is ITK commit
 `4c49df934c316ff87dbbd971b89e63df6bbd1836` (5.4.7). Reference files and
-checksums are listed in the [ITK source manifest](docs/assets/provenance/itk-v5.4.7-sources.json).
+checksums are listed in the [ITK source manifest](../docs/assets/provenance/itk-v5.4.7-sources.json).
 
 | Component | ITK source | Python implementation |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ ANTs and ITK reference files retain their original copyright and license notices
 and its BLAS scaled norms and Givens rotations to 3×3 FP64 geometry.
 The references are unmodified Netlib routines included in ITK 5.4.1;
 source URLs and checksums are retained in the
-[numerical source manifest](docs/assets/provenance/itk-v5.4.1-numerical-sources.json).
+[numerical source manifest](../docs/assets/provenance/itk-v5.4.1-numerical-sources.json).
 
 The Python/Numba implementation uses zero-based arrays, specialized scalar
 QR operations and explicit hardware FMA. VNL is used only by separate

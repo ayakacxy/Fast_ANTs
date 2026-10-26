@@ -24,7 +24,8 @@ Fast ANTs 面向 ANTs 的刚体、仿射和标准 greedy SyN 配准流程提供�
 | [测试与质量评估](validation.md) | 数值测试和配准质量指标 |
 | [开发说明](development.md) | 测试、实现规范、软件包构建 |
 | [开发计划](roadmap.md) | CUDA 支持及后续改进 |
+| [更新日志](changelog.md) | 版本变更记录 |
 
-参与开发请阅读[贡献指南](../../CONTRIBUTING.zh-CN.md)，实现来源与版权声明见 [NOTICE](../../NOTICE.zh-CN.md)。
+参与开发请阅读[贡献指南](../../.github/CONTRIBUTING.zh-CN.md)，实现来源与版权声明见 [NOTICE](../../licenses/NOTICE.zh-CN.md)。
 
 - [性能测试](performance.md)

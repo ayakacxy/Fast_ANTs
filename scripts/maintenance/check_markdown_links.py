@@ -6,10 +6,10 @@ import re
 from urllib.parse import unquote, urlsplit
 
 PROJECT = Path(__file__).resolve().parents[2]
-DEFAULTS = ("README.md", "README.zh-CN.md", "CHANGELOG.md", "CHANGELOG.zh-CN.md",
-            "CONTRIBUTING.md", "CONTRIBUTING.zh-CN.md", "docs/en", "docs/zh-CN", "configs",
+DEFAULTS = ("README.md", "README.zh-CN.md", ".github", "licenses",
+            "docs/en", "docs/zh-CN", "configs",
             "validation/README.md", "validation/README.zh-CN.md", "templates/README.md",
-            "templates/README.zh-CN.md", "NOTICE.md", "NOTICE.zh-CN.md",
+            "templates/README.zh-CN.md",
             "tests/README.md", "tests/README.zh-CN.md")
 
 

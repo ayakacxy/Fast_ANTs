@@ -1,5 +1,5 @@
 // Independently implemented ordinary FP32 operators, Apache-2.0.
-// ITK recurrence/registration rules: Copyright NumFOCUS, see LICENSE-ITK.
+// ITK recurrence/registration rules: Copyright NumFOCUS, see licenses/LICENSE-ITK.
 #pragma clang fp contract(off)
 #pragma clang fp reassociate(off)
 

@@ -24,7 +24,8 @@ Fast ANTs accelerates the ANTs rigid, affine, and standard greedy SyN registrati
 | [Testing and quality assessment](validation.md) | Numerical tests and registration quality metrics |
 | [Development](development.md) | Tests, implementation guidelines, package builds |
 | [Roadmap](roadmap.md) | CUDA support and planned improvements |
+| [Changelog](changelog.md) | Release history |
 
-See [CONTRIBUTING](../../CONTRIBUTING.md) to contribute and [NOTICE](../../NOTICE.md) for implementation references and copyright notices.
+See [CONTRIBUTING](../../.github/CONTRIBUTING.md) to contribute and [NOTICE](../../licenses/NOTICE.md) for implementation references and copyright notices.
 
 - [Performance](performance.md)

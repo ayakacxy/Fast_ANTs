@@ -3,7 +3,7 @@
 Recursive Gaussian recurrence adapted to Python/Numba from ITK 5.4.7
 itkRecursiveSeparableImageFilter.hxx (Copyright NumFOCUS, Apache-2.0).
 This translation replaces ITK pipelines/iterators with arrays and explicit loops.
-See LICENSE-ITK and NOTICE.md for the original notice and fixed source version.
+See licenses/LICENSE-ITK and licenses/NOTICE.md for the original notice and fixed source version.
 """
 
 import numpy as np

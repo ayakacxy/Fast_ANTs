@@ -57,6 +57,6 @@ python -B scripts/maintenance/check_markdown_links.py
 python -m build
 ```
 
-Markdown 格式检查需要 Node.js。`.markdownlint.json` 定义编辑器和命令行共用的规则，`.markdownlint-cli2.jsonc` 选择项目文档及当前报告，并排除第三方参考源码和构建产物。README 使用 `h1` 和 `div` 居中排版，配置仅允许这两个 HTML 标签；其他规则保持启用，行长度沿用 VS Code 扩展默认不限制的设置。
+Markdown 格式检查需要 Node.js。`.markdownlint-cli2.jsonc` 统一定义编辑器和命令行共用的规则，选择贡献指南、项目文档及当前报告，并排除第三方参考源码和构建产物。README 使用 `h1` 和 `div` 居中排版，配置仅允许这两个 HTML 标签；其他规则保持启用，行长度沿用 VS Code 扩展默认不限制的设置。
 
-检查 wheel 是否包含 `common.metal` 和预设 JSON。影像数据、生成结果、参考源码和缓存不进入发行包。保留 [NOTICE](../../NOTICE.zh-CN.md) 及上游许可证中的适用声明。
+检查 wheel 是否包含 `common.metal` 和预设 JSON。影像数据、生成结果、参考源码和缓存不进入发行包。保留 [NOTICE](../../licenses/NOTICE.zh-CN.md) 及上游许可证中的适用声明。

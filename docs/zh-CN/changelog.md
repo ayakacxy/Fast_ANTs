@@ -1,6 +1,6 @@
 # 更新日志
 
-[English](CHANGELOG.md) · [简体中文](CHANGELOG.zh-CN.md)
+[English](../en/changelog.md) · [简体中文](changelog.md)
 
 ## 0.1.0 — 2026-10-26
 

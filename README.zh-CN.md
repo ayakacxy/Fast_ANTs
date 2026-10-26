@@ -4,7 +4,7 @@
 
 **基于 ANTs 配准算法的 Python 加速项目。**
 
-[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-5D5FEF)](CHANGELOG.zh-CN.md)
+[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-5D5FEF)](docs/zh-CN/changelog.md)
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-blue)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![CPU: Numba](https://img.shields.io/badge/CPU-Numba-00A3E0)](docs/zh-CN/optimizations.md)
@@ -125,11 +125,11 @@ warped = result.warped
 - [优化实现](docs/zh-CN/optimizations.md)：CPU 并行、算子融合、内存复用与 GPU 调度。
 - [代码结构](docs/zh-CN/architecture.md)：模块组织和各后端实现。
 - [测试与质量评估](docs/zh-CN/validation.md)。
-- [开发说明](docs/zh-CN/development.md)与[贡献指南](CONTRIBUTING.zh-CN.md)。
+- [开发说明](docs/zh-CN/development.md)与[贡献指南](.github/CONTRIBUTING.zh-CN.md)。
 - [开发计划](docs/zh-CN/roadmap.md)。
 
 ## 📄 许可与致谢
 
 Fast ANTs 采用 [GNU General Public License v3.0](LICENSE)，许可证标识为 `GPL-3.0-only`。
 
-项目参考 ANTs 和 ITK 中的配准方法，保留其 Apache-2.0 许可证原文：[LICENSE-ANTs](LICENSE-ANTs) 和 [LICENSE-ITK](LICENSE-ITK)。版权声明与实现来源见 [第三方声明](NOTICE.zh-CN.md)。
+项目参考 ANTs 和 ITK 中的配准方法，保留其 Apache-2.0 许可证原文：[LICENSE-ANTs](licenses/LICENSE-ANTs) 和 [LICENSE-ITK](licenses/LICENSE-ITK)。版权声明与实现来源见 [第三方声明](licenses/NOTICE.zh-CN.md)。

@@ -4,7 +4,7 @@
 
 **An accelerated Python implementation of ANTs registration algorithms.**
 
-[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-5D5FEF)](CHANGELOG.md)
+[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-5D5FEF)](docs/en/changelog.md)
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-blue)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![CPU: Numba](https://img.shields.io/badge/CPU-Numba-00A3E0)](docs/en/optimizations.md)
@@ -125,11 +125,11 @@ Use `register` for CPU FP64 and `register32` for CPU FP32. The Python API defaul
 - [Optimizations](docs/en/optimizations.md): CPU parallelism, operator fusion, memory reuse, and GPU scheduling.
 - [Architecture](docs/en/architecture.md): modules and backend implementations.
 - [Testing and quality assessment](docs/en/validation.md).
-- [Development](docs/en/development.md) and [contributing](CONTRIBUTING.md).
+- [Development](docs/en/development.md) and [contributing](.github/CONTRIBUTING.md).
 - [Roadmap](docs/en/roadmap.md).
 
 ## 📄 License and acknowledgements
 
 Fast ANTs is licensed under the [GNU General Public License v3.0 only](LICENSE) (`GPL-3.0-only`).
 
-The project follows registration methods implemented in ANTs and ITK. Their Apache-2.0 license texts are retained in [LICENSE-ANTs](LICENSE-ANTs) and [LICENSE-ITK](LICENSE-ITK), with copyright notices and implementation references in [Third-party notices](NOTICE.md).
+The project follows registration methods implemented in ANTs and ITK. Their Apache-2.0 license texts are retained in [LICENSE-ANTs](licenses/LICENSE-ANTs) and [LICENSE-ITK](licenses/LICENSE-ITK), with copyright notices and implementation references in [Third-party notices](licenses/NOTICE.md).
