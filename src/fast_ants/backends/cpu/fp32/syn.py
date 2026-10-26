@@ -88,12 +88,14 @@ def syn_step32(fixed,moving,state,*,linear_transform=None,radius=2,gradient_step
         raise ValueError('SyN workspace must occupy the state grid')
     fmid=pull_image32(fixed,state.grid,state.fixed_inverse)
     mmid=pull_image32(moving,state.grid,state.moving_inverse,linear_transform)
-    valid=np.ones(state.grid.shape_zyx,bool) if private is None else private.valid
-    if private is not None:valid.fill(True)
-    for mask,field,linear in ((fixed_mask,state.fixed_inverse,None),(moving_mask,state.moving_inverse,linear_transform)):
-        if mask is not None:
-            if not np.all((mask.data==0)|(mask.data==1)):raise ValueError("Mask must be binary")
-            valid&=pull_image32(image32(mask),state.grid,field,linear,nearest=True).data!=0
+    valid=None
+    if fixed_mask is not None or moving_mask is not None:
+        valid=np.ones(state.grid.shape_zyx,bool) if private is None else private.valid
+        if private is not None:valid.fill(True)
+        for mask,field,linear in ((fixed_mask,state.fixed_inverse,None),(moving_mask,state.moving_inverse,linear_transform)):
+            if mask is not None:
+                if not np.all((mask.data==0)|(mask.data==1)):raise ValueError("Mask must be binary")
+                valid&=pull_image32(image32(mask),state.grid,field,linear,nearest=True).data!=0
     fm,mf=neighborhood_cc_pair32(fmid,mmid,radius,valid=valid)
     forward_value,reverse_value=fm.value,mf.value
     forward_count,reverse_count=fm.valid_points,mf.valid_points

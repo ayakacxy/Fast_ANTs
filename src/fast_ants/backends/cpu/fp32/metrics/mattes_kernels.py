@@ -290,6 +290,28 @@ def _local_at32(data,bx,by,bz,x,y,z,anchor):
 
 
 @njit(cache=True,fastmath=False,inline='always')
+def _interpolate_axes32(data,x0,x1,y0,y1,z0,z1,dx,dy,dz,anchor):
+    """Interpolate already checked axes without repeating floors and clipping."""
+    a=fma32(data[z0,y0,x1]-data[z0,y0,x0],dx,data[z0,y0,x0]-anchor)
+    b=fma32(data[z0,y1,x1]-data[z0,y1,x0],dx,data[z0,y1,x0]-anchor)
+    c=fma32(data[z1,y0,x1]-data[z1,y0,x0],dx,data[z1,y0,x0]-anchor)
+    d=fma32(data[z1,y1,x1]-data[z1,y1,x0],dx,data[z1,y1,x0]-anchor)
+    lo=fma32(b-a,dy,a);hi=fma32(d-c,dy,c)
+    return fma32(hi-lo,dz,lo)
+
+
+@njit(cache=True,fastmath=False,inline='always')
+def _sample_inside32(data,base,offset):
+    x0,x1,dx,vx=_local_axis32(base[0],offset[0],data.shape[2])
+    if not vx:return ZERO,False
+    y0,y1,dy,vy=_local_axis32(base[1],offset[1],data.shape[1])
+    if not vy:return ZERO,False
+    z0,z1,dz,vz=_local_axis32(base[2],offset[2],data.shape[0])
+    if not vz:return ZERO,False
+    return _interpolate_axes32(data,x0,x1,y0,y1,z0,z1,dx,dy,dz,ZERO),True
+
+
+@njit(cache=True,fastmath=False,inline='always')
 def local_sample32(data,base,offset,anchor,nearest=False):
     if nearest:
         x=base[0]+int(np.floor(offset[0]+HALF));y=base[1]+int(np.floor(offset[1]+HALF));z=base[2]+int(np.floor(offset[2]+HALF))

@@ -124,11 +124,11 @@ class StreamingDerivativeMI32Tests(unittest.TestCase):
         translation=np.zeros((5,3),np.float32)
         linear[0,2,1]=np.float32(1)
         translation[1,0]=np.float32(1)
-        linear[2,1,0]=np.float32(2)  # Nonunit coefficients are generic.
+        linear[2,1,0]=np.float32(2)  # A nonunit single column uses its sparse plan.
         linear[3,0,2]=np.float32(1);translation[3,1]=np.float32(.1)
         linear[4,0,1]=np.float32(1);linear[4,2,0]=np.float32(1)
         np.testing.assert_array_equal(_jacobian_plan32(linear,translation),
-            np.array([[1,2,1],[2,0,0],[0,0,0],[0,0,0],[0,0,0]],np.int32))
+            np.array([[1,2,1],[2,0,0],[3,0,0],[0,0,0],[0,0,0]],np.int32))
         shape=(3,4,5);z,y,x=np.indices(shape,dtype=np.float32)
         data=z.copy();points=k.index_points32(shape);bins=16
         fixed_bins=np.full(len(points),2,np.int32)

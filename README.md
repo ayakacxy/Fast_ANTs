@@ -16,7 +16,7 @@
 
 🧠 **Rigid / affine / SyN** · ⚙️ **Multithreaded CPU** · ⚡ **Apple GPU** · 🐍 **Python API & CLI**
 
-**21.36 s on Metal · 23.76× measured speedup over ANTs**  
+**15.34 s on Metal · 42.57 s on CPU FP32**\
 Apple M5 · 256×256×150 MRI · [Benchmark details](docs/en/performance.md)
 
 </div>
@@ -36,15 +36,15 @@ Fast ANTs follows the rigid → affine → greedy SyN workflow from ANTs/ITK, re
 
 ## ⚡ Performance
 
-Native-resolution MRI registration with the `brain-syn` recipe:
+Native-resolution MRI registration with the `brain-syn` recipe, using existing caches:
 
-| Backend | Fast ANTs / s | ANTs / s | Speedup |
-| --- | ---: | ---: | ---: |
-| Metal FP32 | 21.36 | 507.48 | **23.76×** |
-| CPU FP64 | 59.27 | 505.85 | **8.53×** |
-| CPU FP32 | 92.01 | 507.48 | **5.52×** |
+| Backend | Complete process / s |
+| --- | ---: |
+| Metal FP32 | **15.34** |
+| CPU FP32 | **42.57** |
+| CPU FP64 | **60.44** |
 
-Measured on Apple M5 with a 256×256×150 MRI pair, the `brain-syn` recipe and 10 threads, with one formal run per engine. CPU FP64 is compared with ANTs `--float 0`; CPU FP32 and Metal with `--float 1`. Times include process startup, reading, registration and output writing. See [test settings and reproduction](docs/en/performance.md).
+Measured on 2026-10-26 using Apple M5, a 256×256×150 MRI pair and 10 threads, with one cached process per backend. CPU FP32 was measured after SIMD optimization; CPU FP64 and Metal retain their earlier same-day measurements. Times include startup, imports, reading, registration, QA and completed writes. The precision-matched v0.1.0 comparison measured a **23.76× Metal speedup over ANTs**. See [measurement details and reproduction](docs/en/performance.md) for the two measurement scopes.
 
 ## 🧠 Features
 
@@ -54,7 +54,7 @@ Measured on Apple M5 with a 256×256×150 MRI pair, the `brain-syn` recipe and 1
 - ANTs-compatible affine and displacement-field I/O.
 - Command-line and Python interfaces, English progress logs, and output quality checks.
 
-CPU kernels use multithreading, fused metric evaluation, and reusable workspaces. The Metal backend keeps images and fields in GPU arrays, combines sampling and histogram operations, and batches independent work to reduce synchronization. See [implementation optimizations](docs/en/optimizations.md).
+CPU kernels use multithreading, SIMD, fused metric evaluation, and reusable workspaces. The Metal backend keeps images and fields in GPU arrays, combines sampling and histogram operations, and batches independent work to reduce synchronization. See [implementation optimizations](docs/en/optimizations.md).
 
 An NVIDIA CUDA backend is the next development priority; see the [roadmap](docs/en/roadmap.md) for the implementation plan.
 

@@ -2,6 +2,14 @@
 
 [English](changelog.md) · [简体中文](../zh-CN/changelog.md)
 
+## Unreleased
+
+### Performance
+
+- CPU FP32 uses four-lane SIMD for dense sample mapping, Parzen histogram updates, contiguous derivative channels, and unmasked local CC statistics.
+- Value-only Mattes evaluations reuse histogram workspaces. Gradient sampling shares axis calculations and can reuse cached zero-background support.
+- Sparse linear Jacobians evaluate only their active columns. Unmasked SyN skips validity-volume initialization and reuses CC merge coefficients.
+
 ## 0.1.0 — 2026-10-26
 
 Initial open-source version, licensed under GPL-3.0-only. ANTs and ITK license texts and attribution are retained.

@@ -16,7 +16,7 @@
 
 🧠 **刚体 / 仿射 / SyN** · ⚙️ **CPU 多线程** · ⚡ **Apple GPU** · 🐍 **Python 与命令行**
 
-**Metal 实测 21.36 秒 · 相比官方 ANTs 加速 23.76×**  
+**Metal 实测 15.34 秒 · CPU FP32 实测 42.57 秒**\
 Apple M5 · 256×256×150 MRI · [测试详情](docs/zh-CN/performance.md)
 
 </div>
@@ -36,15 +36,15 @@ Apple M5 · 256×256×150 MRI · [测试详情](docs/zh-CN/performance.md)
 
 ## ⚡ 性能
 
-使用 `brain-syn` 参数进行原始分辨率 MRI 配准：
+复用已有缓存，使用 `brain-syn` 参数进行原始分辨率 MRI 配准：
 
-| 后端 | Fast ANTs / s | ANTs / s | 加速倍数 |
-| --- | ---: | ---: | ---: |
-| Metal FP32 | 21.36 | 507.48 | **23.76×** |
-| CPU FP64 | 59.27 | 505.85 | **8.53×** |
-| CPU FP32 | 92.01 | 507.48 | **5.52×** |
+| 后端 | 完整进程耗时 / s |
+| --- | ---: |
+| Metal FP32 | **15.34** |
+| CPU FP32 | **42.57** |
+| CPU FP64 | **60.44** |
 
-测试使用 Apple M5、256×256×150 MRI 图像对、`brain-syn` 参数和 10 线程，各引擎正式运行一次。CPU FP64 对照官方 `--float 0`，CPU FP32 和 Metal 对照 `--float 1`。计时包含进程启动、读入、配准和输出写入，详见[测试设置与复现方法](docs/zh-CN/performance.md)。
+测试日期为 2026-10-26，使用 Apple M5、256×256×150 MRI 图像对和 10 线程，各后端仅运行一次缓存进程。CPU FP32 在 SIMD 优化后测量；CPU FP64 与 Metal 保留当天稍早的测量。计时包含启动、导入、读入、配准、质量检查和完整写出。v0.1.0 对应精度的官方对照中，**Metal 相比 ANTs 加速 23.76×**。两组测量的具体设置见[测试详情与复现方法](docs/zh-CN/performance.md)。
 
 ## 🧠 功能
 
@@ -54,7 +54,7 @@ Apple M5 · 256×256×150 MRI · [测试详情](docs/zh-CN/performance.md)
 - 支持 ANTs 兼容的仿射变换与形变场读写。
 - 提供命令行和 Python 接口、英文运行日志及输出质量检查。
 
-CPU 内核采用多线程、度量计算融合和工作区复用。Metal 后端在 GPU 数组中保存图像与形变场，融合采样和直方图计算，并批量提交独立任务以减少同步。详见[优化实现](docs/zh-CN/optimizations.md)。
+CPU 内核采用多线程、SIMD、度量计算融合和工作区复用。Metal 后端在 GPU 数组中保存图像与形变场，融合采样和直方图计算，并批量提交独立任务以减少同步。详见[优化实现](docs/zh-CN/optimizations.md)。
 
 NVIDIA CUDA 后端是后续开发重点，具体实现步骤见[开发计划](docs/zh-CN/roadmap.md)。
 

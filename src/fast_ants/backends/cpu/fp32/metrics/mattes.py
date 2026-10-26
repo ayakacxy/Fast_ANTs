@@ -3,7 +3,7 @@
 import numpy as np
 from fast_ants.backends.cpu.fp32.metrics import mattes_kernels as k
 from fast_ants.backends.cpu.fp32.metrics.value import fixed_bins32
-from fast_ants.backends.cpu.fp32.metrics.value import value_histogram32
+from fast_ants.backends.cpu.fp32.metrics.value import value_histogram32,ValueWorkspace32
 from fast_ants.backends.cpu.fp32.metrics.derivative import DerivativeWorkspace32
 from fast_ants.backends.cpu.fp32.metrics.derivative import derivative_histogram32
 from fast_ants.core.results import MetricEvaluation
@@ -33,6 +33,7 @@ def evaluate_mattes_samples32(fixed,moving,intensity_derivatives=None,bins=32,fi
 
 
 class MattesMetric32:
+    """Cache fixed sampling and moving support for unchanged images and grids."""
     def __init__(self,fixed,moving,virtual_grid=None,bins=32,points_lps=None,fixed_mask=None,moving_mask=None):
         require32(fixed.data);require32(moving.data)
         self.fixed,self.moving,self.bins=fixed,moving,bins
@@ -59,6 +60,8 @@ class MattesMetric32:
         self.fixed_bins=fixed_bins32(self.fixed_values,bins,
                                     np.float32(self.fixed_range[0]),np.float32(self.fixed_range[1]))
         self._derivative_workspace=None
+        self._value_workspace=None
+        self._zero_gradient_support=None
         self.derivative_workspace_bytes=0
         self._gradient_geometry=(array32(self.moving.grid.lps_to_index[:3,:3]@
             np.diag(self.moving.grid.spacing_xyz*.5)),array32(self.moving.grid.spacing_xyz))
@@ -101,10 +104,14 @@ class MattesMetric32:
     def evaluate(self,model,parameters,derivative=True):
         transform=model.transform(parameters)
         if not derivative and self.moving_mask is None:
+            workspace=self._value_workspace
+            if workspace is None or (workspace.count,workspace.bins)!=(len(self.indices),self.bins):
+                workspace=ValueWorkspace32(len(self.indices),self.bins)
+                self._value_workspace=workspace
             hist,counts,count,geometric=value_histogram32(require32(self.moving.data),self.indices,
                 self.fixed_bins,self.mapping_parameters(self.moving,transform),self.bins,
                 self.moving_range,self.bin_width_control,self.bin_normalized_min,
-                points_are_integer=self.points_are_integer)
+                points_are_integer=self.points_are_integer,workspace=workspace)
             if not geometric:raise NoValidSamplesError("All FP32 samples map outside moving")
             return self._finish(hist,counts,np.empty((self.bins,self.bins,0),np.float32),count,False)
         if derivative and self.moving_mask is None:
@@ -118,19 +125,27 @@ class MattesMetric32:
                     self._derivative_workspace=workspace
                     self.derivative_workspace_bytes=sum(a.nbytes for a in vars(workspace).values()
                                                         if isinstance(a,np.ndarray))
+                zero_support=self._zero_gradient_support
+                if (zero_support is None and len(self.indices)>=1048576
+                        and np.isfinite(self._gradient_geometry[0]).all()
+                        and np.all(np.abs(self._gradient_geometry[0])<=1)):
+                    from fast_ants.backends.cpu.fp32.metrics.background import zero_support32
+                    zero_support=zero_support32(self.moving.data)
+                    self._zero_gradient_support=zero_support
                 hist,counts,pdf,count,geometric,bad=derivative_histogram32(
                     require32(self.moving.data),self.indices,self.fixed_bins,
                     self.mapping_parameters(self.moving,transform),self.bins,self.moving_range,
                     self.bin_width_control,self.bin_normalized_min,self._gradient_geometry,
                     (self._local_derivative_linear,array32(self.grid.center-model.center),
                      self._local_derivative_center),array32(linear),array32(translation),
-                    points_are_integer=self.points_are_integer,workspace=workspace)
+                    points_are_integer=self.points_are_integer,workspace=workspace,zero_support=zero_support)
                 if not geometric:raise NoValidSamplesError("All FP32 samples map outside moving")
                 if bad:raise ValueError('Intensity derivatives must be finite')
                 # Finalization copies both raw PDFs. Borrowed workspace arrays
                 # never escape in the public MetricEvaluation result.
                 result=self._finish(hist,counts,pdf,count,True)
                 result.details.update(fused_derivative=True,
+                                      cached_zero_gradient_support=zero_support is not None,
                                       derivative_workspace_bytes=self.derivative_workspace_bytes)
                 return result
         moving,valid,indices=self.sample(self.moving,transform)

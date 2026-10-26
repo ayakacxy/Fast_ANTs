@@ -26,7 +26,18 @@ Small arrays use serial paths to avoid thread scheduling overhead. `--threads` c
 
 The useful parallel unit depends on the operator: image sampling splits samples, field operations split rows or slices, and recursive filtering splits lines while retaining the recurrence order within each line.
 
-Source: [shared geometry](../../src/fast_ants/backends/cpu/common/geometry.py), [FP64 filter kernels](../../src/fast_ants/backends/cpu/fp64/filter_kernels.py), [FP32 dense kernels](../../src/fast_ants/backends/cpu/fp32/dense_kernels.py).
+CPU FP32 also uses explicit four-lane LLVM vectors in selected metric operations. On Apple Silicon, generated assembly uses NEON instructions such as `fmla.4s`, `fsub.4s`, and `fdiv.4s`. These vectors use the host CPU instruction set; AVX2 is an x86 instruction set and is not used on Apple Silicon. Parallel execution and SIMD address different levels of work: threads process independent blocks, while vector lanes process independent values inside a block.
+
+| Operation | Four vector lanes |
+| --- | --- |
+| Dense integer sample mapping | Four adjacent samples, with separate integer cells and FP32 offsets |
+| Cubic Parzen accumulation | Four adjacent moving-image bins, each with its own compensated sum |
+| Derivative PDF accumulation | Four contiguous transform-parameter channels |
+| Unmasked CC statistics | Four neighbouring x planes, each retaining its own yz accumulation order |
+
+The histogram lanes do not sum across samples. Each bin or parameter channel retains its scalar accumulation order, without enabling `fastmath` reassociation. Scalar tails handle counts that are not multiples of four.
+
+Source: [shared geometry](../../src/fast_ants/backends/cpu/common/geometry.py), [FP64 filter kernels](../../src/fast_ants/backends/cpu/fp64/filter_kernels.py), [FP32 dense kernels](../../src/fast_ants/backends/cpu/fp32/dense_kernels.py), [FP32 Parzen SIMD](../../src/fast_ants/backends/cpu/fp32/metrics/parzen.py), [four-sample mapping](../../src/fast_ants/backends/cpu/fp32/metrics/coordinates.py).
 
 ## 2. Mattes MI: separate value and derivative work
 
@@ -102,9 +113,13 @@ The dispatcher enables parallel sampling from 16384 samples when multiple worker
 
 ### CPU FP32: reusable streaming workspace
 
-`DerivativeWorkspace32` uses block length `max(4096, ceil(N/128))`, giving at most 128 blocks. Its main partial arrays are `[C,B,B]` for the joint PDF and `[C,B,B,P]` for derivatives, each with a compensation array. Counts, validity flags, and final PDFs are reused on later evaluations.
+`ValueWorkspace32` and `DerivativeWorkspace32` use block length `max(4096, ceil(N/128))`, giving at most 128 blocks. Their main partial arrays are `[C,B,B]` for the joint PDF and, for derivative evaluations, `[C,B,B,P]` for derivatives, each with a compensation array. Counts, validity flags, and final PDFs are reused on later evaluations. Public metric results copy the finalized PDFs so that later workspace reuse does not overwrite earlier results.
 
 Within a block, the kernel maps a sample, interpolates it, computes its gradient and parameter contributions, and immediately adds those contributions to its private PDF. The workspace size depends on $C$, $B$, and $P$, rather than allocating $N\times P$ derivatives.
+
+Dense integer plans map four samples at a time. Support checks and trilinear interpolation share the same axis indices, avoiding repeated floor and clipping operations. Cubic Parzen weights and contiguous derivative channels use four-lane updates; histogram block boundaries and merge order remain fixed.
+
+For large dense metrics with gradient shifts bounded by one voxel per axis, a cached Boolean image identifies cells whose complete gradient interpolation support is zero. Three separable passes check the clipped `[i-1,i+2]` range on each axis. A marked cell can skip six shifted image interpolations and use a zero gradient. The support is prepared once per unchanged moving image, costs one retained byte per voxel, and uses no intensity threshold. Nonzero regions and unsupported shift geometry use the usual interpolation; unsafe Jacobian arithmetic retains its finite-value checks.
 
 ### Metal: share samples across parameter channels
 
@@ -121,7 +136,7 @@ With a fixed-bin plan, derivative rows are divided into 128 parts. Value-only ev
 
 These expressions are array-size estimates, not total process or GPU peak memory. All methods retain some input or fixed-plan data proportional to $N$.
 
-Source: [FP64 block accumulation](../../src/fast_ants/backends/cpu/fp64/metrics/linear_fused.py), [FP32 streaming workspace](../../src/fast_ants/backends/cpu/fp32/metrics/derivative.py), [Metal fixed-bin plan](../../src/fast_ants/backends/metal/metrics/mattes/histogram.py), [Metal derivatives](../../src/fast_ants/backends/metal/metrics/mattes/derivative.py), [Metal value path](../../src/fast_ants/backends/metal/metrics/mattes/sampling.py).
+Source: [FP64 block accumulation](../../src/fast_ants/backends/cpu/fp64/metrics/linear_fused.py), [FP32 value workspace](../../src/fast_ants/backends/cpu/fp32/metrics/value.py), [FP32 derivative workspace](../../src/fast_ants/backends/cpu/fp32/metrics/derivative.py), [zero-gradient support](../../src/fast_ants/backends/cpu/fp32/metrics/background.py), [Metal fixed-bin plan](../../src/fast_ants/backends/metal/metrics/mattes/histogram.py), [Metal derivatives](../../src/fast_ants/backends/metal/metrics/mattes/derivative.py), [Metal value path](../../src/fast_ants/backends/metal/metrics/mattes/sampling.py).
 
 ## 4. Jacobian specialization and GPU finalization
 
@@ -139,7 +154,7 @@ Source: [Jacobian plans](../../src/fast_ants/backends/metal/metrics/mattes/deriv
 
 Adjacent CC windows share most of their voxels. Re-reading the entire three-dimensional window for every centre repeats both image loads and statistics.
 
-CPU FP32 processes each `(z,y)` row with a queue of yz-plane summaries. A plane is computed in two passes relative to a local intensity anchor, storing means, centred squared sums, covariance, and count. Moving the centre along x adds one incoming plane and overwrites the outgoing queue slot.
+CPU FP32 computes yz-plane summaries in two passes relative to a local intensity anchor, storing means, centred squared sums, covariance, and count. For masked or strided inputs, each `(z,y)` row uses the queue below: moving the centre along x adds one incoming plane and overwrites the outgoing queue slot.
 
 ```mermaid
 flowchart TD
@@ -161,6 +176,8 @@ flowchart TD
 
 The queue retains at most $W=\min(n_x,2r_x+1)$ summaries per active row. A summary has 7 FP32 statistics and an integer count. Current planes are merged in order with Chan formulas; the implementation does not subtract an outgoing raw variance from a running squared-sum expression.
 
+Contiguous inputs without masks use a separate SIMD path. It computes four neighbouring x planes together and stores seven statistics per plane in `[7,n_x]` row scratch. All planes in that row have the same valid count, so Chan merge fractions and cross weights are calculated once for each window length. The centre traversal then merges planes in the same order as the queue path. This uses $O(Kn_x)$ row scratch rather than full-volume statistic arrays. The SyN driver passes the absence of masks directly, avoiding per-iteration validity-volume initialization. Dispatch does not need to scan a Boolean array to identify unmasked inputs.
+
 Both update directions share the same statistics. The ordinary CPU FP32 path evaluates the required centre gradients directly, avoiding two full `[3,z,y,x]` gradient arrays. CPU FP64 also reuses queued plane statistics and shares unmasked paired traversal.
 
 ### Metal windows and tiles
@@ -169,7 +186,7 @@ The short-window path uses 3 passes: x computes centred statistics; y merges gro
 
 This path handles radii 0–4. A separate tiled path loads fixed/moving intensities and validity into threadgroup memory, including the halo around a `16x4x4` output tile; it handles radii up to 2. Both use the general neighbourhood implementation outside their supported radius. Masks and clipped edge windows are included in the statistics.
 
-Source: [CPU FP32 queue](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py), [FP64 paired CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc_pair.py), [Metal window passes](../../src/fast_ants/backends/metal/metrics/cc/window.py), [Metal shared-memory tiles](../../src/fast_ants/backends/metal/metrics/cc/tiled.py).
+Source: [CPU FP32 queue](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py), [CPU FP32 unmasked SIMD](../../src/fast_ants/backends/cpu/fp32/metrics/cc_simd.py), [FP64 paired CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc_pair.py), [Metal window passes](../../src/fast_ants/backends/metal/metrics/cc/window.py), [Metal shared-memory tiles](../../src/fast_ants/backends/metal/metrics/cc/tiled.py).
 
 ## 6. Field filtering, composition, and inversion
 

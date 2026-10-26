@@ -40,6 +40,9 @@ local statistics, streaming derivative histograms, reusable buffers, local
 coordinate arithmetic and asynchronous submission of independent GPU work.
 FP32 recursive Gaussian filtering uses two second-order sections with
 adjacent-pixel differences. Scalar FMA uses native hardware instructions.
+Selected CPU FP32 sampling, histogram and neighbourhood operations use
+four-lane LLVM vectors, reusable value workspaces and cached zero-background
+gradient support.
 
 ## ANTs
 

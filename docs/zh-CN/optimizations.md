@@ -26,7 +26,18 @@ Numba 将体素和样本循环编译为本地代码，独立行、切片、样�
 
 不同算子的并行单位不同：图像采样按样本划分，场运算按行或切片划分，递归滤波按线划分，同时保持每条线内部的递推顺序。
 
-源码：[共享几何](../../src/fast_ants/backends/cpu/common/geometry.py)、[FP64 滤波 kernel](../../src/fast_ants/backends/cpu/fp64/filter_kernels.py)、[FP32 稠密 kernel](../../src/fast_ants/backends/cpu/fp32/dense_kernels.py)。
+CPU FP32 的部分度量计算还使用显式四路 LLVM 向量。在 Apple Silicon 上，生成的汇编包含 `fmla.4s`、`fsub.4s`、`fdiv.4s` 等 NEON 指令。向量代码使用宿主 CPU 的指令集；AVX2 属于 x86，Apple Silicon 不使用它。多线程与 SIMD 分别处理不同层次的并行：线程负责独立分块，向量通道处理块内相互独立的数据。
+
+| 运算 | 四个向量通道 |
+| --- | --- |
+| 稠密整数采样映射 | 四个相邻样本，各自保留整数单元与 FP32 偏移 |
+| 三次 Parzen 累加 | 四个相邻移动图像分箱，各自维护补偿求和 |
+| 导数 PDF 累加 | 四个连续的变换参数通道 |
+| 无掩膜 CC 统计 | 四个相邻 x 平面，各自保留原有 yz 累加顺序 |
+
+直方图向量通道不跨样本求和。各分箱和参数通道保留标量累加顺序，不启用 `fastmath` 重排；不足四个元素的尾部使用标量处理。
+
+源码：[共享几何](../../src/fast_ants/backends/cpu/common/geometry.py)、[FP64 滤波 kernel](../../src/fast_ants/backends/cpu/fp64/filter_kernels.py)、[FP32 稠密 kernel](../../src/fast_ants/backends/cpu/fp32/dense_kernels.py)、[FP32 Parzen SIMD](../../src/fast_ants/backends/cpu/fp32/metrics/parzen.py)、[四样本映射](../../src/fast_ants/backends/cpu/fp32/metrics/coordinates.py)。
 
 ## 2. Mattes MI：区分仅值计算与导数计算
 
@@ -102,9 +113,13 @@ flowchart LR
 
 ### CPU FP32：可复用流式工作区
 
-`DerivativeWorkspace32` 的块长为 `max(4096, ceil(N/128))`，因此最多有 128 个块。主要局部数组为联合 PDF 的 `[C,B,B]` 和导数的 `[C,B,B,P]`，两者均有补偿数组；计数、有效标志和最终 PDF 在后续求值时复用。
+`ValueWorkspace32` 和 `DerivativeWorkspace32` 的块长为 `max(4096, ceil(N/128))`，因此最多有 128 个块。主要局部数组为联合 PDF 的 `[C,B,B]`，导数求值还使用 `[C,B,B,P]`，两者均有补偿数组；计数、有效标志和最终 PDF 在后续求值时复用。公共度量结果会复制最终 PDF，后续工作区复用不会覆盖已返回的结果。
 
 块内每处理一个样本，就完成映射、插值、梯度和参数贡献计算，并立即累加到私有 PDF。工作区大小由 $C$、$B$ 和 $P$ 决定，无须分配 $N\times P$ 导数。
+
+稠密整数采样计划每次映射四个样本。有效性检查与三线性插值共享各轴的索引，省去重复的取整和边界截断。三次 Parzen 权重与连续导数通道使用四路更新，直方图分块边界和合并顺序保持固定。
+
+对于梯度位移各轴不超过一个体素的大型度量，缓存一个布尔图像，标记梯度插值支持域完全为零的单元。预处理通过三次可分离遍历，检查各轴截断后的 `[i-1,i+2]` 范围；命中后直接使用零梯度，省去六次偏移插值。支持域只针对每幅不变的移动图像准备一次，保留空间为每体素一个字节，不使用强度阈值。非零区域和不支持的位移几何继续执行常规插值，不安全的 Jacobian 运算仍保留有限值检查。
 
 ### Metal：参数通道共享采样结果
 
@@ -121,7 +136,7 @@ flowchart LR
 
 这些是数组规模估算，不是进程或 GPU 峰值内存。各方法仍会保留一部分随 $N$ 增长的输入或固定计划数据。
 
-源码：[FP64 分块累加](../../src/fast_ants/backends/cpu/fp64/metrics/linear_fused.py)、[FP32 流式工作区](../../src/fast_ants/backends/cpu/fp32/metrics/derivative.py)、[Metal 固定分箱计划](../../src/fast_ants/backends/metal/metrics/mattes/histogram.py)、[Metal 导数](../../src/fast_ants/backends/metal/metrics/mattes/derivative.py)、[Metal 仅值路径](../../src/fast_ants/backends/metal/metrics/mattes/sampling.py)。
+源码：[FP64 分块累加](../../src/fast_ants/backends/cpu/fp64/metrics/linear_fused.py)、[FP32 仅值工作区](../../src/fast_ants/backends/cpu/fp32/metrics/value.py)、[FP32 导数工作区](../../src/fast_ants/backends/cpu/fp32/metrics/derivative.py)、[零梯度支持域](../../src/fast_ants/backends/cpu/fp32/metrics/background.py)、[Metal 固定分箱计划](../../src/fast_ants/backends/metal/metrics/mattes/histogram.py)、[Metal 导数](../../src/fast_ants/backends/metal/metrics/mattes/derivative.py)、[Metal 仅值路径](../../src/fast_ants/backends/metal/metrics/mattes/sampling.py)。
 
 ## 4. Jacobian 专用计算与 GPU 终结处理
 
@@ -139,7 +154,7 @@ flowchart LR
 
 相邻 CC 窗口共享大部分体素。如果每个中心都重新读取整个三维窗口，会重复访问图像并计算统计量。
 
-CPU FP32 按 `(z,y)` 行维护 yz 平面统计队列。每个平面以局部强度为参考，用两遍计算保存均值、离均差平方和、协方差和计数；中心沿 x 移动时加入一个新平面，覆盖离开窗口的队列槽位。
+CPU FP32 对 yz 平面以局部强度为参考，用两遍计算保存均值、离均差平方和、协方差和计数。带掩膜或非连续输入按 `(z,y)` 行使用下图的统计队列：中心沿 x 移动时加入一个新平面，覆盖离开窗口的队列槽位。
 
 ```mermaid
 flowchart TD
@@ -161,6 +176,8 @@ flowchart TD
 
 每个活跃行保留最多 $W=\min(n_x,2r_x+1)$ 个统计，每个统计包含 7 个 FP32 数值和一个整数计数。当前平面按顺序用 Chan 公式合并，并不通过从平方和中直接减去移出平面的原始方差来更新。
 
+连续且无掩膜的输入使用独立 SIMD 路径，一次计算四个相邻 x 平面，在 `[7,n_x]` 行缓冲区保存各平面的七个统计量。同一行各平面的有效计数相同，因此每种窗口长度的 Chan 合并比例和交叉权重只计算一次；中心遍历仍按队列路径的顺序合并平面。行缓冲区规模为 $O(Kn_x)$，无须保存全图统计数组。SyN 直接传递无掩膜状态，省去每轮有效性图初始化；调度时无须扫描布尔数组判断是否有掩膜。
+
 两侧更新共用统计量。普通 CPU FP32 路径直接计算所需中心梯度，省去两份完整 `[3,z,y,x]` 梯度数组。CPU FP64 也复用平面队列，并在无掩膜双向计算中共享遍历。
 
 ### Metal 窗口与分块
@@ -169,7 +186,7 @@ flowchart TD
 
 该路径支持半径 0–4。独立的分块路径将固定／移动强度及有效性加载到 threadgroup 共享内存，包括 `16x4x4` 输出块周围的 halo，支持半径不超过 2。两者在半径超出支持范围时使用通用邻域实现，掩膜和边缘截断窗口都计入统计。
 
-源码：[CPU FP32 队列](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py)、[FP64 双向 CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc_pair.py)、[Metal 窗口遍历](../../src/fast_ants/backends/metal/metrics/cc/window.py)、[Metal 共享内存分块](../../src/fast_ants/backends/metal/metrics/cc/tiled.py)。
+源码：[CPU FP32 队列](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py)、[CPU FP32 无掩膜 SIMD](../../src/fast_ants/backends/cpu/fp32/metrics/cc_simd.py)、[FP64 双向 CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc_pair.py)、[Metal 窗口遍历](../../src/fast_ants/backends/metal/metrics/cc/window.py)、[Metal 共享内存分块](../../src/fast_ants/backends/metal/metrics/cc/tiled.py)。
 
 ## 6. 场滤波、复合与求逆
 

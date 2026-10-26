@@ -1,0 +1,1078 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "hardware": "Apple M5 (Mac17,3), 10 CPU cores",
+  "case": {
+    "id": "ixi002_to_ixi012",
+    "shape_xyz": [
+      256,
+      256,
+      150
+    ],
+    "inputs": [
+      {
+        "role": "fixed",
+        "path": "validation/data/public/IXI002-Guys-0828-T1.nii.gz",
+        "sha256": "71c5d110a352f943c96e08f75f5087066b608da6f8d203eb15d8d596d1f80f47"
+      },
+      {
+        "role": "moving",
+        "path": "validation/data/public/IXI012-HH-1211-T1.nii.gz",
+        "sha256": "073461dcd7bdec3324c5624bade7f31e75d580c67d22cb24f2de4f1389800c0e"
+      }
+    ]
+  },
+  "recipe": {
+    "schema_version": 1,
+    "purpose": "Full-resolution brain MRI performance: controlled dense variant of pinned antsRegistrationSyN.sh -t s; not the unmodified stock preset",
+    "threads": 10,
+    "random_seed": 20261022,
+    "dimensionality": 3,
+    "interpolation": "Linear",
+    "initialization_feature": 1,
+    "histogram_matching": false,
+    "winsorization": null,
+    "masks": null,
+    "sampling": {
+      "strategy": "None",
+      "fraction": 1.0,
+      "gradient_filter": false
+    },
+    "convergence": {
+      "threshold": 1e-06,
+      "window": 10
+    },
+    "stages": [
+      {
+        "transform": "Rigid[0.1]",
+        "metric": "MI",
+        "bins_or_radius": 32,
+        "iterations": [
+          1000,
+          500,
+          250,
+          100
+        ],
+        "shrink_factors": [
+          8,
+          4,
+          2,
+          1
+        ],
+        "smoothing_sigmas": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "smoothing_units": "vox"
+      },
+      {
+        "transform": "Affine[0.1]",
+        "metric": "MI",
+        "bins_or_radius": 32,
+        "iterations": [
+          1000,
+          500,
+          250,
+          100
+        ],
+        "shrink_factors": [
+          8,
+          4,
+          2,
+          1
+        ],
+        "smoothing_sigmas": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "smoothing_units": "vox"
+      },
+      {
+        "transform": "SyN[0.2,3,0]",
+        "metric": "CC",
+        "bins_or_radius": 2,
+        "iterations": [
+          100,
+          70,
+          50,
+          20
+        ],
+        "shrink_factors": [
+          8,
+          4,
+          2,
+          1
+        ],
+        "smoothing_sigmas": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "smoothing_units": "vox"
+      }
+    ],
+    "default_cases": [
+      "ixi002_to_ixi012"
+    ],
+    "repeat_fp64_case": "ixi002_to_ixi012",
+    "timeout_per_command_seconds": 7200,
+    "source_recipe": {
+      "url": "https://github.com/ANTsX/ANTs/blob/38144917d78c20144f4a70e4a6e03c059aaefef8/Scripts/antsRegistrationSyN.sh",
+      "local_script_sha256": "1b183b5365bc89821b5ec794090151cab4c8a305e262223041083a8aaf288819",
+      "intentional_deviations": [
+        "linear dense sampling instead of Regular 0.25",
+        "winsorization disabled instead of [0.005,0.995]",
+        "one final warped image for both engines; no inverse-warped intensity image"
+      ],
+      "scope": "current independently implemented CPU FP64 options only; stock preset retained separately"
+    },
+    "shrink_factor_policy": "ants_physical_spacing"
+  },
+  "recipe_sha256": "3ac1261661f46ee6c45e91beb7b3cbd39fc36e5ab0dd2d9339ae9bc0d1dab82e",
+  "threads": 10,
+  "scope": "Target startup/import/read/register/QA/completed writes; cache observer included",
+  "cache_policy": "One fresh process using existing caches per backend; no complete warmup or added repeat. Small operator tests compiled SIMD kernels before the CPU FP32 run; its one cache miss is included.",
+  "statistics_scope": "Single observations; background load and physical temperature uncontrolled. CPU FP32 follows SIMD optimization, other backends use their unchanged earlier same-day runs.",
+  "runs": {
+    "cpu-fp32": {
+      "whole_process_seconds": 42.57037516706623,
+      "formal_repeats": 1,
+      "numba_cache": {
+        "disk_cache_hits": 40,
+        "disk_cache_misses": 1,
+        "compiled_dispatchers": 36,
+        "scope": "Python-visible dispatcher counters after registration; GPU driver cache not exposed"
+      },
+      "stage_diagnostics": [
+        {
+          "kind": "Rigid",
+          "level": 0,
+          "iterations": 25,
+          "seconds": 0.2628760419320315,
+          "line_search_evaluations": 118
+        },
+        {
+          "kind": "Rigid",
+          "level": 1,
+          "iterations": 37,
+          "seconds": 0.45383666700217873,
+          "line_search_evaluations": 187
+        },
+        {
+          "kind": "Rigid",
+          "level": 2,
+          "iterations": 32,
+          "seconds": 1.3139222910394892,
+          "line_search_evaluations": 150
+        },
+        {
+          "kind": "Rigid",
+          "level": 3,
+          "iterations": 31,
+          "seconds": 8.098596457974054,
+          "line_search_evaluations": 153
+        },
+        {
+          "kind": "Affine",
+          "level": 0,
+          "iterations": 28,
+          "seconds": 0.2266016670037061,
+          "line_search_evaluations": 128
+        },
+        {
+          "kind": "Affine",
+          "level": 1,
+          "iterations": 32,
+          "seconds": 0.4145012079970911,
+          "line_search_evaluations": 161
+        },
+        {
+          "kind": "Affine",
+          "level": 2,
+          "iterations": 37,
+          "seconds": 1.448106666910462,
+          "line_search_evaluations": 173
+        },
+        {
+          "kind": "Affine",
+          "level": 3,
+          "iterations": 32,
+          "seconds": 8.405023333034478,
+          "line_search_evaluations": 157
+        },
+        {
+          "kind": "SyN",
+          "level": 0,
+          "iterations": 27,
+          "seconds": 0.2482568749692291,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 1,
+          "iterations": 57,
+          "seconds": 1.0627430829918012,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 2,
+          "iterations": 50,
+          "seconds": 4.116566666983999,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 3,
+          "iterations": 20,
+          "seconds": 12.101926082978025,
+          "line_search_evaluations": 0
+        }
+      ],
+      "source_sha256": {
+        "fast_ants/__init__.py": "4191d0b052c2606b447146c19a3c0e41b91e8ba07fb734b90e12a81be44b06bb",
+        "fast_ants/__main__.py": "55384ff094855148b33e408a70554b7424dd7a4ee15c80df5c9fe2d4465d0a54",
+        "fast_ants/_compat.py": "8d7bead1ac3b636bac6ca95a729d0d88867810179f7ace130f943d3ae1bd7c2b",
+        "fast_ants/api.py": "a275bfe9f22f5a52869f5c885b5aed584c656fdc0ab2ef01fb3bdbb897f5bd52",
+        "fast_ants/backends/__init__.py": "dfa0189c49f38854daa996c5f0f42a52d9f7d6c6e39b0ffe6ee06489b70559e5",
+        "fast_ants/backends/cpu/__init__.py": "e38306d01fd21faffb10ae2fd2f777916740978c028c812d8a818265581a3f43",
+        "fast_ants/backends/cpu/common/__init__.py": "16843380c9a3a1b5afe2faf0da9f3649e826a98cdf12f2b7c0d19a9170e1df5b",
+        "fast_ants/backends/cpu/common/geometry.py": "b8bee9dd0940b45252088986d096526913d7b1e895269ef7df290ae4d1826c6c",
+        "fast_ants/backends/cpu/common/reductions.py": "d10d9af0a16a9e6cd2d430d62fbc4f37f34e0d012d8f650425d7088d335d843f",
+        "fast_ants/backends/cpu/fp32/__init__.py": "1967a04baba3372e023e5cbe11bc14982fcbb5deceab22df0ca5a7344e5a0cb4",
+        "fast_ants/backends/cpu/fp32/dense_kernels.py": "277854d14fd360a0979c3172363c76688b8c36f7fce94ebd74ef0512b3bbbe55",
+        "fast_ants/backends/cpu/fp32/fields.py": "eef1ad61a03d4d551a80b11e63893ab0e394b097de919b79657c2884e19dffcf",
+        "fast_ants/backends/cpu/fp32/filtering.py": "be470f0d006bfd28db7dc7e9cbc769fac9770d7ba9ddf66327d4fdf35fee3d62",
+        "fast_ants/backends/cpu/fp32/gaussian_sections.py": "4b3202ab13e8e639cc1b26adad8a3c502ece791fd09b2c708cb7784347c4b63c",
+        "fast_ants/backends/cpu/fp32/images.py": "1db2d6ec28b4ad2b4caf1b287da89147dfbd20acf42fafc136af6b43a6a39a26",
+        "fast_ants/backends/cpu/fp32/inverse.py": "84862ccda359238ad2be58bb27d8ec5069b035b1d7d3700fdee577c93700f079",
+        "fast_ants/backends/cpu/fp32/kernels.py": "8f5dd80df80d2323273ae10e9007f5585151685eb56a06f7c8ec1eaffa97daed",
+        "fast_ants/backends/cpu/fp32/linear.py": "b5de712a11b8aa6f687cbeccae63857e062ff0945e824341c8275282ea7a8a00",
+        "fast_ants/backends/cpu/fp32/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/cpu/fp32/metrics/background.py": "40da5b2c4723b2a69c5643ddcf1954737e8cf6ac6fab609eb0e429890e3e0dc2",
+        "fast_ants/backends/cpu/fp32/metrics/cc.py": "85f68a46ee45bbb68fbd178e465a1449db12c22d8a8be2cdda7791d6fe31315d",
+        "fast_ants/backends/cpu/fp32/metrics/cc_pair.py": "0d9eb823010fff4359bfa3fd0bf9ccecd29d03d970e5a05079ddf9096ae81da3",
+        "fast_ants/backends/cpu/fp32/metrics/cc_queue.py": "f8e44c133a73940fcc73d593234a0e18f874a627d0058c3d5a0766e0ea346a84",
+        "fast_ants/backends/cpu/fp32/metrics/cc_simd.py": "d963270ebc956292d970f0c68bd6f0968c4ed0db833c47817ed9617de9ebdb06",
+        "fast_ants/backends/cpu/fp32/metrics/coordinates.py": "5fd9938df4225af6031f977121bb04e3dfc3f69357d15aaf6e4a6c5d3b51bcb0",
+        "fast_ants/backends/cpu/fp32/metrics/derivative.py": "200e0d011018c2091993cc13487ff98e6fefeb039cfc4d7dd382212dc77c6df6",
+        "fast_ants/backends/cpu/fp32/metrics/mattes.py": "b828ad8514146329c22ebe7e99c06c4b025332c8537f9f8340421ddffa94a029",
+        "fast_ants/backends/cpu/fp32/metrics/mattes_kernels.py": "16717277a84757eeafc7eca882b09a6998d2ac5a252a0c588ab83c15f7aae096",
+        "fast_ants/backends/cpu/fp32/metrics/parzen.py": "275395ace64833db6a9b582f4787e79dfaf6080378b23e17ced4e07ed52ef8d4",
+        "fast_ants/backends/cpu/fp32/metrics/value.py": "923898036b7bf1fb1881b8bec083ac713fa62a785bedf921c9440efb1231b59b",
+        "fast_ants/backends/cpu/fp32/norms.py": "132a3f4b300cfb85f38201bfe9a12096f6869db75d2e99f91ebc00a728338079",
+        "fast_ants/backends/cpu/fp32/precision.py": "7b696b3b4518412c5f0d4c2e9c9a47b802893c7cae4b1be5cd04c6aa29ce8761",
+        "fast_ants/backends/cpu/fp32/registration.py": "8c388b469d0006383e47e41fd836fd656ee86c8f863df775cd1399b943fcd5c4",
+        "fast_ants/backends/cpu/fp32/syn.py": "e37218c581fe22b44f601e7ebda38c07d4d64c615d9b322c93b8a2c4f67a043a",
+        "fast_ants/backends/cpu/fp64/__init__.py": "ab09ed900e030981ef8f9aeefae1985575b25283150c9723917dc7fd8bdcf8d4",
+        "fast_ants/backends/cpu/fp64/field_kernels.py": "d95603767d22eab18a6de29c592cbbe384d2094b2ccb5ea29c222d8f49dd7a35",
+        "fast_ants/backends/cpu/fp64/fields.py": "f54cbf8d1bb80188f1046365b5bda0ca194d69f31153079a04c6e82292b96e05",
+        "fast_ants/backends/cpu/fp64/filter_kernels.py": "249180d01c44f83eb6f70ba8affef2293cce3da18c6ba5e6f1d9b2175c8f9262",
+        "fast_ants/backends/cpu/fp64/filtering.py": "362c50b10beaf2db892b94d1bbec38f7e4a522edbfcc384420ab57031da4a436",
+        "fast_ants/backends/cpu/fp64/gradients.py": "751fb2876a19ea74bac6e31f56aa3baf9873dbd27c645c57864780287e28a907",
+        "fast_ants/backends/cpu/fp64/linear.py": "80369dfd4a8de02a4095f5b6a8403d7bdba43fca80140f3245de05f1a27f1e60",
+        "fast_ants/backends/cpu/fp64/local_fields.py": "131e50ab8da582784497f9b98faf4047133532248c398910dd1b13e156213580",
+        "fast_ants/backends/cpu/fp64/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/cpu/fp64/metrics/cc.py": "6c25eb94272414b210a5560ffb99440734057a25d2fb910d8e31246cd85292c0",
+        "fast_ants/backends/cpu/fp64/metrics/cc_kernels.py": "a2a6f09dc6f4bf2213af2df115eb545f82b55317e4f73cd13f11ad8ac21f5dc1",
+        "fast_ants/backends/cpu/fp64/metrics/cc_pair.py": "111b4586b427d6b90e24834dc9e2a023140daceffce765327086106d5964b4dd",
+        "fast_ants/backends/cpu/fp64/metrics/linear_fused.py": "cc5c097bd3f048016a313a422ae26c28557d72dcf5ff49361f97dd25b1d9aaf6",
+        "fast_ants/backends/cpu/fp64/metrics/mattes.py": "cbc86021ee84789b21ffd640e9ca56d05a9d1c65faf2bd315ad8d7b3692232ec",
+        "fast_ants/backends/cpu/fp64/metrics/mattes_kernels.py": "70ae0d663c222e94538c36c0d5dc2e567c1d158d31127e60dcc9d9a4580ff3d3",
+        "fast_ants/backends/cpu/fp64/preprocessing.py": "22be9aae2178a48f2da3021d344a2efbf0cd9376b27d220f649c6bbcb0b2598f",
+        "fast_ants/backends/cpu/fp64/pull.py": "da1f401031f0eef472564639a818e085837e91cc9738a08ecc833672dd356c74",
+        "fast_ants/backends/cpu/fp64/registration.py": "c88d3903c5314d78983dd9f0c2064668dd6cae3e9630e30f3d67ae7c0fd42fbe",
+        "fast_ants/backends/cpu/fp64/sampling.py": "ce989a15089af9cbfef21dbdb0b945755733eab6f4ae2d6d1025d3c5056fdee6",
+        "fast_ants/backends/cpu/fp64/sampling_kernels.py": "6681fd242db09ffe40de91f8aeebfb2062d00be147b4dab60a1379f3bf4b2fad",
+        "fast_ants/backends/cpu/fp64/syn.py": "1aa1b174866402a5cbac4132535b4cb31f5a1fa4c19e45e62956d05bed6c0273",
+        "fast_ants/backends/metal/__init__.py": "f243a4145e574d7e7345527978f9c2c88698f1199955eca32524c11983bcc74a",
+        "fast_ants/backends/metal/common.metal": "744d2ddd70d8a83f8681b3e51e62c44ea783d6271921cf80b58f551c78a9710b",
+        "fast_ants/backends/metal/dense.py": "59ed6d31885453c684aa5e9ee452bc48893c2b6d3bc0d557321cfca1ac8d0fc3",
+        "fast_ants/backends/metal/fields/__init__.py": "c988c8fa6b0a028828054fc76224bd2b16b36a93d226be1141dd6773473290d7",
+        "fast_ants/backends/metal/fields/composition.py": "17e6e3a92afdd69556289384f3997b640cc2774a15341047c70f874d544cd988",
+        "fast_ants/backends/metal/fields/inverse.py": "e210bd5eee6b932597df6d7e5136c5b0e584a492e79aa4b5d91ba8601868d77a",
+        "fast_ants/backends/metal/fields/kernels.py": "f76c9ef9c7138746cf6296faffb9d5b390ad746e5b4c2720fa506c4f153b9341",
+        "fast_ants/backends/metal/fields/operators.py": "0d26230f24b28479eed2085a61e7d955ad1ffb4f3dabb9eddf0ed5c7e400c7d5",
+        "fast_ants/backends/metal/fields/overlap.py": "00590882d05bd8c133c91e59239cc7447a9e2f6e5ffd597f56563bf79fc23e58",
+        "fast_ants/backends/metal/filtering.py": "85e3989f545a304082c41cc9de53b27f2e1e09bfcd760cf0963d2c9af08d036e",
+        "fast_ants/backends/metal/gaussian_sections.py": "96b948daf2d39ebb32970b05eba8745e6522fa16dd3f70b3eeafd561b774790e",
+        "fast_ants/backends/metal/geometry.py": "e4f07c5b94100f5040370545eb0ddd1d2a3269f21d34d40184e2985028e8d8df",
+        "fast_ants/backends/metal/images.py": "7fe9a30e64e243900bc3674509050dd16ac33a1fbfd022598d5e35e4488fded1",
+        "fast_ants/backends/metal/linear.py": "3d942a24abdb6a15e3de2c819d55b95e2297b1f46950ab98d6c3e3da5bd81873",
+        "fast_ants/backends/metal/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/metal/metrics/cc/__init__.py": "b9f4d2d8832734bdcbe841999e8aedd1c12c07bb63a6ecf1ad84a72e10707831",
+        "fast_ants/backends/metal/metrics/cc/control.py": "c32325a7cb3fb4143f81d7108ac7c6eb03e291170c96ca0fd3fdb2752dc408bd",
+        "fast_ants/backends/metal/metrics/cc/dense.py": "589edb21382cab595e378297ae445dc656f645aeacb5edd6b5c686305a875c18",
+        "fast_ants/backends/metal/metrics/cc/gradient.py": "cf9db4069a0dafb440bc31d491274f44cd167b128070e3a2f95b6b2f39a1ecc4",
+        "fast_ants/backends/metal/metrics/cc/operators.py": "0e7702a44717e62aa5db03667bb4af8df81d093090fe85cd6a1bac8bd3dbf6e2",
+        "fast_ants/backends/metal/metrics/cc/tiled.py": "6456faabc8170cba00d04a87a8f35e41019047ce7beb102301248f966ec31242",
+        "fast_ants/backends/metal/metrics/cc/window.py": "e44c632c65b37e1df84972bcefd4a7e4d335cd57ce75775faf606126045fcccd",
+        "fast_ants/backends/metal/metrics/mattes/__init__.py": "e3d78b307de5a10d50111abc869f03a9aec7b068332af3b54165473611cd4e00",
+        "fast_ants/backends/metal/metrics/mattes/derivative.py": "cc19af64b62b8159552b2da8c680308f6a6ce3e7efa5e23cbf526776ca7fee68",
+        "fast_ants/backends/metal/metrics/mattes/finalize.py": "6b6d0abbd7dbc5697661b49daf5337f2b88256f31a575636bf4f9c01bb118645",
+        "fast_ants/backends/metal/metrics/mattes/finalize_fused.py": "feb447b394a72d2a58b081986d837c4b588c0b8bbee99f60f16219881f943025",
+        "fast_ants/backends/metal/metrics/mattes/histogram.py": "ed64f2b1f57ba13d94ccf48915d417376235a8e84703fa1a3a57432f073f3e3e",
+        "fast_ants/backends/metal/metrics/mattes/metric.py": "57b5036181c8789c315dc351a355582fcdb0cc681197269ae573cda05b08db50",
+        "fast_ants/backends/metal/metrics/mattes/sampling.py": "49a381aff7d4c32f9a72054f11a0e972ab6ad9f0e08d8ac7f912028ba1d30ae6",
+        "fast_ants/backends/metal/moments.py": "b80dc5e7f293dcbb24343f5a278f2d3c40a9a7879a810a46a136f8936660e226",
+        "fast_ants/backends/metal/ops.py": "c8d34d844e968928943d4b69f527fd62801a85652dee77264d9546cb5c0dc0e1",
+        "fast_ants/backends/metal/preparation.py": "915eba1f35c5ac157024a2eacc00ec66bd7bf73ee034c9a5043e057d57928711",
+        "fast_ants/backends/metal/reductions.py": "13c819d4107397d375058b7571800af60ef22c64b498cc20558ad3266713aaa6",
+        "fast_ants/backends/metal/registration.py": "799b28e70d2837c160e918806d3d988dc6c1358f79ccbff632a22ab4260c0c26",
+        "fast_ants/backends/metal/runtime.py": "4fe58191e0d399277cfe2750b782b817a68925cbaca33dcc463982992b5a0bc0",
+        "fast_ants/backends/metal/serial.py": "95ad01c5185b8406e925f928852b4cc1818aabc0be5fc63a109d9d2354d63ea0",
+        "fast_ants/backends/metal/syn.py": "1f7bcfa5082764877cf507834f3601c3e05a9e55b1a2594c18f75c88916447a4",
+        "fast_ants/backends/metal/types.py": "f501fbd7b24d66d4f50301b0c10bc93cc58956aae2455c32812b81460778e01a",
+        "fast_ants/cli.py": "892f8adddfa6fc45bbba453a73edec7a4f57e7ecbf0339b4251a17b11c00a102",
+        "fast_ants/core/__init__.py": "29edc42bddb8493b94fb4eea16c9b50255abd98cc5da90bce39af520c92bf9dc",
+        "fast_ants/core/arithmetic32.py": "48cd7b74330acbfcd0f3ceffb6a58e303a098f501f175c5ccd5961d7ff25e555",
+        "fast_ants/core/arithmetic64.py": "671d833bc4011c8c913f99112d39f764b53a1d8058d413052aef982b80ebed92",
+        "fast_ants/core/config.py": "ea712b5d24d831979e3a164723a7fa424c66d87d723c24158731b42d6c854c40",
+        "fast_ants/core/fields.py": "5675b95d9d51c8b4a6cf00994fb48cd34f8a297d3ea643528097839ddd81a53d",
+        "fast_ants/core/linalg.py": "644aee59a6e75f4a52dad046350027ac18a153acc8ea7860eb092e29e339db51",
+        "fast_ants/core/results.py": "722bcd2410b2b7ae6a3acc393d57742a78ee32a8e21ac2ee054f6e6692777444",
+        "fast_ants/core/state.py": "61ef3080f71c16c3895ebc6d66b684495c344b64639344c3be28b69a18bc54dd",
+        "fast_ants/core/transforms.py": "19a645eba7819ff2aa0cae6d48df3212655c1f3f75fd711ae9675cfa58181ede",
+        "fast_ants/core/types.py": "f81ac6782cf8ddbef0ed58b82ed47cfeb3bd52d80a204e4b1364d1e9a63b6f84",
+        "fast_ants/io/__init__.py": "c934962b4598342698feb58e7915f8b863eeea9e7ed44e2336ca2f41329fda0b",
+        "fast_ants/io/images.py": "ea591d7b57004d307c1c1b605d9a88e6c55275f663c3bcb7e71d061003b54645",
+        "fast_ants/io/nifti.py": "23bd652184b94e87c137716aeb0d336e83284968ab1040e3fafa3d9147529602",
+        "fast_ants/io/transforms.py": "fbadf4d9e998aab4e3af59f9ee9d85c6620d3c0a466043229a657c6f0a184cf5",
+        "fast_ants/pipeline/__init__.py": "1d53b82bd3384971bd92d0b830382b2e1d9c7abb4dc436cee9471ba41731fe2c",
+        "fast_ants/pipeline/convergence.py": "ff5e5b24dfd92d6a8ca189bceaecb024babdfa86066addd9f1f81bca40dcdb46",
+        "fast_ants/pipeline/float1_policy.py": "a235d3244ebcdb93e50c61580a35b4a47894122fdaa630cb63560b95a12f5faa",
+        "fast_ants/pipeline/gaussian.py": "95fa1ce8c4d4418467ec2cfbde9db35ad69f963d4118a8463d685903786fa7a5",
+        "fast_ants/pipeline/masks.py": "287772c2ad2340f067d8ad8bac98a94299bbfad2ed567cf5a89e4a67728f8744",
+        "fast_ants/pipeline/mattes32.py": "6a06df102bac6d729dcd153857e9b9b21191e8493ee23ea73bfadf6ff2cfe3c4",
+        "fast_ants/pipeline/mattes64.py": "45cd9c8f9942b8bcc12c05c1f1ac78fb26a582d6b9d20c4bd0dec7098f396d5e",
+        "fast_ants/pipeline/models32.py": "614e3d70b14b73d994a12d0d7c75191e668bad8fc01a3727af7610259d2035ef",
+        "fast_ants/pipeline/models64.py": "7dd2025e7009f8d80903a3a99536adc4fb73ff5123a260f50c87b1b0035072d5",
+        "fast_ants/pipeline/optimizer32.py": "e501a40afb3dc2a765ec769356f8f8df2dd1717737ffe762796d3a2da157c310",
+        "fast_ants/pipeline/optimizer64.py": "326ccdcb4541edb1abc0e99c731af16092a361287d1d9ee021fff8c132f739de",
+        "fast_ants/pipeline/preprocessing.py": "4364eb524bde7f34aff97649db09e9294e7fdf0a9964a865d1faa9be5c9499fd",
+        "fast_ants/pipeline/pyramid.py": "5549b0b1f6341d8241ad8b93da30d5ec0a902dddec916881a0c6c7d9979fb514",
+        "fast_ants/pipeline/sampling_plan.py": "4b0d70679b4bdb2c0b8db52e8773bf303997d69fc12881d7047ca63513f99e58",
+        "fast_ants/presets/__init__.py": "f6af1193f69b8f99373570f5f0a41d3b1de7cd95e2f3b65028ced6c4d30ec215",
+        "fast_ants/presets/brain-syn.json": "3ac1261661f46ee6c45e91beb7b3cbd39fc36e5ab0dd2d9339ae9bc0d1dab82e",
+        "fast_ants/progress.py": "1ea7937967f6016466f71cc2f1f9de88239f1d726d3fa4fc71b31bf57075d161",
+        "fast_ants/quality/__init__.py": "07ae700646db48a5a66b30e898adcb516e5ada6a45dcc99c9b31e948e6c7c60d",
+        "fast_ants/quality/metrics.py": "c98f0aea12f6b7f43fe13dd6e552e3c0f83580bcf6ee77a897a7458bd79d26d8",
+        "fast_ants/quality/output_kernels.py": "f9f8d1bbed94876a7de5e096e83c3190e7bd2fa777b23beff0a662c3aba479fb"
+      },
+      "output_sha256": {
+        "affine": "86f2c815f7da63a453424204a8fef12455638d1a0042557681c0d2689b7af27c",
+        "forward_warp": "cc613e4f339c8fde437be20b7aeef817172b1573c17fd245d5cc255febade2e2",
+        "inverse_warp": "93fa6e1c2ab739e5f27e577663a523d579b5670d330ca65c88c5cd3524f54c77",
+        "warped": "c3315c634b6fb515cd30143c94ed9e7041023d25c3ac7b62c2b7efec3f56a862"
+      },
+      "power_before": {
+        "timestamp_utc": "2026-10-26T10:30:42.467332+00:00",
+        "battery": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "batt"
+          ],
+          "returncode": 0,
+          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
+          "stderr": ""
+        },
+        "thermal": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "therm"
+          ],
+          "returncode": 0,
+          "stdout": "Error:Failed to get thermal warning level with error code 0xe00002bc\nError: Failed to get performance warning level with error code 0xe00002bc\nError: No CPU power status with error code 0xe00002bc",
+          "stderr": ""
+        },
+        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
+      },
+      "power_after": {
+        "timestamp_utc": "2026-10-26T10:31:25.077488+00:00",
+        "battery": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "batt"
+          ],
+          "returncode": 0,
+          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
+          "stderr": ""
+        },
+        "thermal": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "therm"
+          ],
+          "returncode": 0,
+          "stdout": "Error:Failed to get thermal warning level with error code 0xe00002bc\nError: Failed to get performance warning level with error code 0xe00002bc\nError: No CPU power status with error code 0xe00002bc",
+          "stderr": ""
+        },
+        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
+      },
+      "local_report": "validation/reports/cpu32-opt-20261026/native-cached"
+    },
+    "cpu-fp64": {
+      "whole_process_seconds": 60.4392402919475,
+      "formal_repeats": 1,
+      "numba_cache": {
+        "disk_cache_hits": 37,
+        "disk_cache_misses": 0,
+        "compiled_dispatchers": 35,
+        "scope": "Python-visible dispatcher counters after registration; GPU driver cache not exposed"
+      },
+      "stage_diagnostics": [
+        {
+          "kind": "Rigid",
+          "level": 0,
+          "iterations": 26,
+          "seconds": null,
+          "line_search_evaluations": 121
+        },
+        {
+          "kind": "Rigid",
+          "level": 1,
+          "iterations": 30,
+          "seconds": null,
+          "line_search_evaluations": 149
+        },
+        {
+          "kind": "Rigid",
+          "level": 2,
+          "iterations": 32,
+          "seconds": null,
+          "line_search_evaluations": 188
+        },
+        {
+          "kind": "Rigid",
+          "level": 3,
+          "iterations": 32,
+          "seconds": null,
+          "line_search_evaluations": 165
+        },
+        {
+          "kind": "Affine",
+          "level": 0,
+          "iterations": 23,
+          "seconds": null,
+          "line_search_evaluations": 108
+        },
+        {
+          "kind": "Affine",
+          "level": 1,
+          "iterations": 24,
+          "seconds": null,
+          "line_search_evaluations": 115
+        },
+        {
+          "kind": "Affine",
+          "level": 2,
+          "iterations": 32,
+          "seconds": null,
+          "line_search_evaluations": 158
+        },
+        {
+          "kind": "Affine",
+          "level": 3,
+          "iterations": 32,
+          "seconds": null,
+          "line_search_evaluations": 196
+        },
+        {
+          "kind": "SyN",
+          "level": 0,
+          "iterations": 60,
+          "seconds": 0.6274492499651387,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 1,
+          "iterations": 70,
+          "seconds": 1.9129398330114782,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 2,
+          "iterations": 50,
+          "seconds": 6.064390667015687,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 3,
+          "iterations": 20,
+          "seconds": 20.193590000038967,
+          "line_search_evaluations": 0
+        }
+      ],
+      "source_sha256": {
+        "fast_ants/__init__.py": "4191d0b052c2606b447146c19a3c0e41b91e8ba07fb734b90e12a81be44b06bb",
+        "fast_ants/__main__.py": "55384ff094855148b33e408a70554b7424dd7a4ee15c80df5c9fe2d4465d0a54",
+        "fast_ants/_compat.py": "8d7bead1ac3b636bac6ca95a729d0d88867810179f7ace130f943d3ae1bd7c2b",
+        "fast_ants/api.py": "a275bfe9f22f5a52869f5c885b5aed584c656fdc0ab2ef01fb3bdbb897f5bd52",
+        "fast_ants/backends/__init__.py": "dfa0189c49f38854daa996c5f0f42a52d9f7d6c6e39b0ffe6ee06489b70559e5",
+        "fast_ants/backends/cpu/__init__.py": "e38306d01fd21faffb10ae2fd2f777916740978c028c812d8a818265581a3f43",
+        "fast_ants/backends/cpu/common/__init__.py": "16843380c9a3a1b5afe2faf0da9f3649e826a98cdf12f2b7c0d19a9170e1df5b",
+        "fast_ants/backends/cpu/common/geometry.py": "b8bee9dd0940b45252088986d096526913d7b1e895269ef7df290ae4d1826c6c",
+        "fast_ants/backends/cpu/common/reductions.py": "d10d9af0a16a9e6cd2d430d62fbc4f37f34e0d012d8f650425d7088d335d843f",
+        "fast_ants/backends/cpu/fp32/__init__.py": "1967a04baba3372e023e5cbe11bc14982fcbb5deceab22df0ca5a7344e5a0cb4",
+        "fast_ants/backends/cpu/fp32/dense_kernels.py": "277854d14fd360a0979c3172363c76688b8c36f7fce94ebd74ef0512b3bbbe55",
+        "fast_ants/backends/cpu/fp32/fields.py": "eef1ad61a03d4d551a80b11e63893ab0e394b097de919b79657c2884e19dffcf",
+        "fast_ants/backends/cpu/fp32/filtering.py": "be470f0d006bfd28db7dc7e9cbc769fac9770d7ba9ddf66327d4fdf35fee3d62",
+        "fast_ants/backends/cpu/fp32/gaussian_sections.py": "4b3202ab13e8e639cc1b26adad8a3c502ece791fd09b2c708cb7784347c4b63c",
+        "fast_ants/backends/cpu/fp32/images.py": "1db2d6ec28b4ad2b4caf1b287da89147dfbd20acf42fafc136af6b43a6a39a26",
+        "fast_ants/backends/cpu/fp32/inverse.py": "84862ccda359238ad2be58bb27d8ec5069b035b1d7d3700fdee577c93700f079",
+        "fast_ants/backends/cpu/fp32/kernels.py": "8f5dd80df80d2323273ae10e9007f5585151685eb56a06f7c8ec1eaffa97daed",
+        "fast_ants/backends/cpu/fp32/linear.py": "b5de712a11b8aa6f687cbeccae63857e062ff0945e824341c8275282ea7a8a00",
+        "fast_ants/backends/cpu/fp32/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/cpu/fp32/metrics/cc.py": "ff61ab429e5eef00e875e43b9ebf577b8489ca07cf8996708cabdea47adc93e1",
+        "fast_ants/backends/cpu/fp32/metrics/cc_pair.py": "0d9eb823010fff4359bfa3fd0bf9ccecd29d03d970e5a05079ddf9096ae81da3",
+        "fast_ants/backends/cpu/fp32/metrics/cc_queue.py": "f8e44c133a73940fcc73d593234a0e18f874a627d0058c3d5a0766e0ea346a84",
+        "fast_ants/backends/cpu/fp32/metrics/derivative.py": "accf3284b43a13ff70cb726e037d446e5432d9b5966b628c5e0cc1fe1ccbbffc",
+        "fast_ants/backends/cpu/fp32/metrics/mattes.py": "e162f71fbda54995d47767a7bebfeaae8c15d71c2b5d0d834c7ad7fc8a61510e",
+        "fast_ants/backends/cpu/fp32/metrics/mattes_kernels.py": "d7c8ef6ec64c8f914c09ce91d6b0f9743b12b54b65973e36660b81a27e67b3fa",
+        "fast_ants/backends/cpu/fp32/metrics/value.py": "88d988b1fd2a19e134609c6b9494ad98f868f2f238cbcf70df5eced8694f2c8b",
+        "fast_ants/backends/cpu/fp32/norms.py": "132a3f4b300cfb85f38201bfe9a12096f6869db75d2e99f91ebc00a728338079",
+        "fast_ants/backends/cpu/fp32/precision.py": "7b696b3b4518412c5f0d4c2e9c9a47b802893c7cae4b1be5cd04c6aa29ce8761",
+        "fast_ants/backends/cpu/fp32/registration.py": "8c388b469d0006383e47e41fd836fd656ee86c8f863df775cd1399b943fcd5c4",
+        "fast_ants/backends/cpu/fp32/syn.py": "0658cd6e9e15a0c08fd5488c4569972bb3de1248169e384807fba1145ad66342",
+        "fast_ants/backends/cpu/fp64/__init__.py": "ab09ed900e030981ef8f9aeefae1985575b25283150c9723917dc7fd8bdcf8d4",
+        "fast_ants/backends/cpu/fp64/field_kernels.py": "d95603767d22eab18a6de29c592cbbe384d2094b2ccb5ea29c222d8f49dd7a35",
+        "fast_ants/backends/cpu/fp64/fields.py": "f54cbf8d1bb80188f1046365b5bda0ca194d69f31153079a04c6e82292b96e05",
+        "fast_ants/backends/cpu/fp64/filter_kernels.py": "249180d01c44f83eb6f70ba8affef2293cce3da18c6ba5e6f1d9b2175c8f9262",
+        "fast_ants/backends/cpu/fp64/filtering.py": "362c50b10beaf2db892b94d1bbec38f7e4a522edbfcc384420ab57031da4a436",
+        "fast_ants/backends/cpu/fp64/gradients.py": "751fb2876a19ea74bac6e31f56aa3baf9873dbd27c645c57864780287e28a907",
+        "fast_ants/backends/cpu/fp64/linear.py": "80369dfd4a8de02a4095f5b6a8403d7bdba43fca80140f3245de05f1a27f1e60",
+        "fast_ants/backends/cpu/fp64/local_fields.py": "131e50ab8da582784497f9b98faf4047133532248c398910dd1b13e156213580",
+        "fast_ants/backends/cpu/fp64/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/cpu/fp64/metrics/cc.py": "6c25eb94272414b210a5560ffb99440734057a25d2fb910d8e31246cd85292c0",
+        "fast_ants/backends/cpu/fp64/metrics/cc_kernels.py": "a2a6f09dc6f4bf2213af2df115eb545f82b55317e4f73cd13f11ad8ac21f5dc1",
+        "fast_ants/backends/cpu/fp64/metrics/cc_pair.py": "111b4586b427d6b90e24834dc9e2a023140daceffce765327086106d5964b4dd",
+        "fast_ants/backends/cpu/fp64/metrics/linear_fused.py": "cc5c097bd3f048016a313a422ae26c28557d72dcf5ff49361f97dd25b1d9aaf6",
+        "fast_ants/backends/cpu/fp64/metrics/mattes.py": "cbc86021ee84789b21ffd640e9ca56d05a9d1c65faf2bd315ad8d7b3692232ec",
+        "fast_ants/backends/cpu/fp64/metrics/mattes_kernels.py": "70ae0d663c222e94538c36c0d5dc2e567c1d158d31127e60dcc9d9a4580ff3d3",
+        "fast_ants/backends/cpu/fp64/preprocessing.py": "22be9aae2178a48f2da3021d344a2efbf0cd9376b27d220f649c6bbcb0b2598f",
+        "fast_ants/backends/cpu/fp64/pull.py": "da1f401031f0eef472564639a818e085837e91cc9738a08ecc833672dd356c74",
+        "fast_ants/backends/cpu/fp64/registration.py": "c88d3903c5314d78983dd9f0c2064668dd6cae3e9630e30f3d67ae7c0fd42fbe",
+        "fast_ants/backends/cpu/fp64/sampling.py": "ce989a15089af9cbfef21dbdb0b945755733eab6f4ae2d6d1025d3c5056fdee6",
+        "fast_ants/backends/cpu/fp64/sampling_kernels.py": "6681fd242db09ffe40de91f8aeebfb2062d00be147b4dab60a1379f3bf4b2fad",
+        "fast_ants/backends/cpu/fp64/syn.py": "1aa1b174866402a5cbac4132535b4cb31f5a1fa4c19e45e62956d05bed6c0273",
+        "fast_ants/backends/metal/__init__.py": "f243a4145e574d7e7345527978f9c2c88698f1199955eca32524c11983bcc74a",
+        "fast_ants/backends/metal/common.metal": "744d2ddd70d8a83f8681b3e51e62c44ea783d6271921cf80b58f551c78a9710b",
+        "fast_ants/backends/metal/dense.py": "59ed6d31885453c684aa5e9ee452bc48893c2b6d3bc0d557321cfca1ac8d0fc3",
+        "fast_ants/backends/metal/fields/__init__.py": "c988c8fa6b0a028828054fc76224bd2b16b36a93d226be1141dd6773473290d7",
+        "fast_ants/backends/metal/fields/composition.py": "17e6e3a92afdd69556289384f3997b640cc2774a15341047c70f874d544cd988",
+        "fast_ants/backends/metal/fields/inverse.py": "e210bd5eee6b932597df6d7e5136c5b0e584a492e79aa4b5d91ba8601868d77a",
+        "fast_ants/backends/metal/fields/kernels.py": "f76c9ef9c7138746cf6296faffb9d5b390ad746e5b4c2720fa506c4f153b9341",
+        "fast_ants/backends/metal/fields/operators.py": "0d26230f24b28479eed2085a61e7d955ad1ffb4f3dabb9eddf0ed5c7e400c7d5",
+        "fast_ants/backends/metal/fields/overlap.py": "00590882d05bd8c133c91e59239cc7447a9e2f6e5ffd597f56563bf79fc23e58",
+        "fast_ants/backends/metal/filtering.py": "85e3989f545a304082c41cc9de53b27f2e1e09bfcd760cf0963d2c9af08d036e",
+        "fast_ants/backends/metal/gaussian_sections.py": "96b948daf2d39ebb32970b05eba8745e6522fa16dd3f70b3eeafd561b774790e",
+        "fast_ants/backends/metal/geometry.py": "e4f07c5b94100f5040370545eb0ddd1d2a3269f21d34d40184e2985028e8d8df",
+        "fast_ants/backends/metal/images.py": "7fe9a30e64e243900bc3674509050dd16ac33a1fbfd022598d5e35e4488fded1",
+        "fast_ants/backends/metal/linear.py": "3d942a24abdb6a15e3de2c819d55b95e2297b1f46950ab98d6c3e3da5bd81873",
+        "fast_ants/backends/metal/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/metal/metrics/cc/__init__.py": "b9f4d2d8832734bdcbe841999e8aedd1c12c07bb63a6ecf1ad84a72e10707831",
+        "fast_ants/backends/metal/metrics/cc/control.py": "c32325a7cb3fb4143f81d7108ac7c6eb03e291170c96ca0fd3fdb2752dc408bd",
+        "fast_ants/backends/metal/metrics/cc/dense.py": "589edb21382cab595e378297ae445dc656f645aeacb5edd6b5c686305a875c18",
+        "fast_ants/backends/metal/metrics/cc/gradient.py": "cf9db4069a0dafb440bc31d491274f44cd167b128070e3a2f95b6b2f39a1ecc4",
+        "fast_ants/backends/metal/metrics/cc/operators.py": "0e7702a44717e62aa5db03667bb4af8df81d093090fe85cd6a1bac8bd3dbf6e2",
+        "fast_ants/backends/metal/metrics/cc/tiled.py": "6456faabc8170cba00d04a87a8f35e41019047ce7beb102301248f966ec31242",
+        "fast_ants/backends/metal/metrics/cc/window.py": "e44c632c65b37e1df84972bcefd4a7e4d335cd57ce75775faf606126045fcccd",
+        "fast_ants/backends/metal/metrics/mattes/__init__.py": "e3d78b307de5a10d50111abc869f03a9aec7b068332af3b54165473611cd4e00",
+        "fast_ants/backends/metal/metrics/mattes/derivative.py": "cc19af64b62b8159552b2da8c680308f6a6ce3e7efa5e23cbf526776ca7fee68",
+        "fast_ants/backends/metal/metrics/mattes/finalize.py": "6b6d0abbd7dbc5697661b49daf5337f2b88256f31a575636bf4f9c01bb118645",
+        "fast_ants/backends/metal/metrics/mattes/finalize_fused.py": "feb447b394a72d2a58b081986d837c4b588c0b8bbee99f60f16219881f943025",
+        "fast_ants/backends/metal/metrics/mattes/histogram.py": "ed64f2b1f57ba13d94ccf48915d417376235a8e84703fa1a3a57432f073f3e3e",
+        "fast_ants/backends/metal/metrics/mattes/metric.py": "57b5036181c8789c315dc351a355582fcdb0cc681197269ae573cda05b08db50",
+        "fast_ants/backends/metal/metrics/mattes/sampling.py": "49a381aff7d4c32f9a72054f11a0e972ab6ad9f0e08d8ac7f912028ba1d30ae6",
+        "fast_ants/backends/metal/moments.py": "b80dc5e7f293dcbb24343f5a278f2d3c40a9a7879a810a46a136f8936660e226",
+        "fast_ants/backends/metal/ops.py": "c8d34d844e968928943d4b69f527fd62801a85652dee77264d9546cb5c0dc0e1",
+        "fast_ants/backends/metal/preparation.py": "915eba1f35c5ac157024a2eacc00ec66bd7bf73ee034c9a5043e057d57928711",
+        "fast_ants/backends/metal/reductions.py": "13c819d4107397d375058b7571800af60ef22c64b498cc20558ad3266713aaa6",
+        "fast_ants/backends/metal/registration.py": "799b28e70d2837c160e918806d3d988dc6c1358f79ccbff632a22ab4260c0c26",
+        "fast_ants/backends/metal/runtime.py": "4fe58191e0d399277cfe2750b782b817a68925cbaca33dcc463982992b5a0bc0",
+        "fast_ants/backends/metal/serial.py": "95ad01c5185b8406e925f928852b4cc1818aabc0be5fc63a109d9d2354d63ea0",
+        "fast_ants/backends/metal/syn.py": "1f7bcfa5082764877cf507834f3601c3e05a9e55b1a2594c18f75c88916447a4",
+        "fast_ants/backends/metal/types.py": "f501fbd7b24d66d4f50301b0c10bc93cc58956aae2455c32812b81460778e01a",
+        "fast_ants/cli.py": "892f8adddfa6fc45bbba453a73edec7a4f57e7ecbf0339b4251a17b11c00a102",
+        "fast_ants/core/__init__.py": "29edc42bddb8493b94fb4eea16c9b50255abd98cc5da90bce39af520c92bf9dc",
+        "fast_ants/core/arithmetic32.py": "48cd7b74330acbfcd0f3ceffb6a58e303a098f501f175c5ccd5961d7ff25e555",
+        "fast_ants/core/arithmetic64.py": "671d833bc4011c8c913f99112d39f764b53a1d8058d413052aef982b80ebed92",
+        "fast_ants/core/config.py": "ea712b5d24d831979e3a164723a7fa424c66d87d723c24158731b42d6c854c40",
+        "fast_ants/core/fields.py": "5675b95d9d51c8b4a6cf00994fb48cd34f8a297d3ea643528097839ddd81a53d",
+        "fast_ants/core/linalg.py": "644aee59a6e75f4a52dad046350027ac18a153acc8ea7860eb092e29e339db51",
+        "fast_ants/core/results.py": "722bcd2410b2b7ae6a3acc393d57742a78ee32a8e21ac2ee054f6e6692777444",
+        "fast_ants/core/state.py": "61ef3080f71c16c3895ebc6d66b684495c344b64639344c3be28b69a18bc54dd",
+        "fast_ants/core/transforms.py": "19a645eba7819ff2aa0cae6d48df3212655c1f3f75fd711ae9675cfa58181ede",
+        "fast_ants/core/types.py": "f81ac6782cf8ddbef0ed58b82ed47cfeb3bd52d80a204e4b1364d1e9a63b6f84",
+        "fast_ants/io/__init__.py": "c934962b4598342698feb58e7915f8b863eeea9e7ed44e2336ca2f41329fda0b",
+        "fast_ants/io/images.py": "ea591d7b57004d307c1c1b605d9a88e6c55275f663c3bcb7e71d061003b54645",
+        "fast_ants/io/nifti.py": "23bd652184b94e87c137716aeb0d336e83284968ab1040e3fafa3d9147529602",
+        "fast_ants/io/transforms.py": "fbadf4d9e998aab4e3af59f9ee9d85c6620d3c0a466043229a657c6f0a184cf5",
+        "fast_ants/pipeline/__init__.py": "1d53b82bd3384971bd92d0b830382b2e1d9c7abb4dc436cee9471ba41731fe2c",
+        "fast_ants/pipeline/convergence.py": "ff5e5b24dfd92d6a8ca189bceaecb024babdfa86066addd9f1f81bca40dcdb46",
+        "fast_ants/pipeline/float1_policy.py": "a235d3244ebcdb93e50c61580a35b4a47894122fdaa630cb63560b95a12f5faa",
+        "fast_ants/pipeline/gaussian.py": "95fa1ce8c4d4418467ec2cfbde9db35ad69f963d4118a8463d685903786fa7a5",
+        "fast_ants/pipeline/masks.py": "287772c2ad2340f067d8ad8bac98a94299bbfad2ed567cf5a89e4a67728f8744",
+        "fast_ants/pipeline/mattes32.py": "6a06df102bac6d729dcd153857e9b9b21191e8493ee23ea73bfadf6ff2cfe3c4",
+        "fast_ants/pipeline/mattes64.py": "45cd9c8f9942b8bcc12c05c1f1ac78fb26a582d6b9d20c4bd0dec7098f396d5e",
+        "fast_ants/pipeline/models32.py": "614e3d70b14b73d994a12d0d7c75191e668bad8fc01a3727af7610259d2035ef",
+        "fast_ants/pipeline/models64.py": "7dd2025e7009f8d80903a3a99536adc4fb73ff5123a260f50c87b1b0035072d5",
+        "fast_ants/pipeline/optimizer32.py": "e501a40afb3dc2a765ec769356f8f8df2dd1717737ffe762796d3a2da157c310",
+        "fast_ants/pipeline/optimizer64.py": "326ccdcb4541edb1abc0e99c731af16092a361287d1d9ee021fff8c132f739de",
+        "fast_ants/pipeline/preprocessing.py": "4364eb524bde7f34aff97649db09e9294e7fdf0a9964a865d1faa9be5c9499fd",
+        "fast_ants/pipeline/pyramid.py": "5549b0b1f6341d8241ad8b93da30d5ec0a902dddec916881a0c6c7d9979fb514",
+        "fast_ants/pipeline/sampling_plan.py": "4b0d70679b4bdb2c0b8db52e8773bf303997d69fc12881d7047ca63513f99e58",
+        "fast_ants/presets/__init__.py": "f6af1193f69b8f99373570f5f0a41d3b1de7cd95e2f3b65028ced6c4d30ec215",
+        "fast_ants/presets/brain-syn.json": "3ac1261661f46ee6c45e91beb7b3cbd39fc36e5ab0dd2d9339ae9bc0d1dab82e",
+        "fast_ants/progress.py": "1ea7937967f6016466f71cc2f1f9de88239f1d726d3fa4fc71b31bf57075d161",
+        "fast_ants/quality/__init__.py": "07ae700646db48a5a66b30e898adcb516e5ada6a45dcc99c9b31e948e6c7c60d",
+        "fast_ants/quality/metrics.py": "c98f0aea12f6b7f43fe13dd6e552e3c0f83580bcf6ee77a897a7458bd79d26d8",
+        "fast_ants/quality/output_kernels.py": "f9f8d1bbed94876a7de5e096e83c3190e7bd2fa777b23beff0a662c3aba479fb"
+      },
+      "output_sha256": {
+        "affine": "6d081d33102e549bc7c82eb71b43b385fd1e82c2b8689ddce947bf5a2ae836a9",
+        "forward_warp": "192e5de97c9586db15c14afc277752d99e2b6725bbecf9d84f24e381a656c0b6",
+        "inverse_warp": "649fcf9d81aa2af3c8b5137a66ccd73e83156b041610c847fff832b07abf53c0",
+        "warped": "9885b4360afa8260a588949fae146788195d4d4b5cfb178e23454304156cc8f9"
+      },
+      "power_before": {
+        "timestamp_utc": "2026-10-26T09:28:16.555819+00:00",
+        "battery": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "batt"
+          ],
+          "returncode": 0,
+          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
+          "stderr": ""
+        },
+        "thermal": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "therm"
+          ],
+          "returncode": 0,
+          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+          "stderr": ""
+        },
+        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
+      },
+      "power_after": {
+        "timestamp_utc": "2026-10-26T09:29:17.117960+00:00",
+        "battery": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "batt"
+          ],
+          "returncode": 0,
+          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
+          "stderr": ""
+        },
+        "thermal": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "therm"
+          ],
+          "returncode": 0,
+          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+          "stderr": ""
+        },
+        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
+      },
+      "local_report": "validation/reports/cached-single-20261026"
+    },
+    "metal-fp32": {
+      "whole_process_seconds": 15.340549707994796,
+      "formal_repeats": 1,
+      "numba_cache": {
+        "disk_cache_hits": 19,
+        "disk_cache_misses": 0,
+        "compiled_dispatchers": 15,
+        "scope": "Python-visible dispatcher counters after registration; GPU driver cache not exposed"
+      },
+      "stage_diagnostics": [
+        {
+          "kind": "Rigid",
+          "level": 0,
+          "iterations": 25,
+          "seconds": 0.34592725010588765,
+          "line_search_evaluations": 117
+        },
+        {
+          "kind": "Rigid",
+          "level": 1,
+          "iterations": 37,
+          "seconds": 0.4773759579984471,
+          "line_search_evaluations": 177
+        },
+        {
+          "kind": "Rigid",
+          "level": 2,
+          "iterations": 33,
+          "seconds": 0.673252291046083,
+          "line_search_evaluations": 159
+        },
+        {
+          "kind": "Rigid",
+          "level": 3,
+          "iterations": 30,
+          "seconds": 1.7117052921094,
+          "line_search_evaluations": 147
+        },
+        {
+          "kind": "Affine",
+          "level": 0,
+          "iterations": 24,
+          "seconds": 0.2226343749789521,
+          "line_search_evaluations": 114
+        },
+        {
+          "kind": "Affine",
+          "level": 1,
+          "iterations": 32,
+          "seconds": 0.36351362499408424,
+          "line_search_evaluations": 164
+        },
+        {
+          "kind": "Affine",
+          "level": 2,
+          "iterations": 33,
+          "seconds": 0.7456962500000373,
+          "line_search_evaluations": 162
+        },
+        {
+          "kind": "Affine",
+          "level": 3,
+          "iterations": 32,
+          "seconds": 2.1631431250134483,
+          "line_search_evaluations": 160
+        },
+        {
+          "kind": "SyN",
+          "level": 0,
+          "iterations": 28,
+          "seconds": 0.12655774992890656,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 1,
+          "iterations": 55,
+          "seconds": 0.3344587080646306,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 2,
+          "iterations": 50,
+          "seconds": 1.074561250046827,
+          "line_search_evaluations": 0
+        },
+        {
+          "kind": "SyN",
+          "level": 3,
+          "iterations": 20,
+          "seconds": 3.662043582997285,
+          "line_search_evaluations": 0
+        }
+      ],
+      "source_sha256": {
+        "fast_ants/__init__.py": "4191d0b052c2606b447146c19a3c0e41b91e8ba07fb734b90e12a81be44b06bb",
+        "fast_ants/__main__.py": "55384ff094855148b33e408a70554b7424dd7a4ee15c80df5c9fe2d4465d0a54",
+        "fast_ants/_compat.py": "8d7bead1ac3b636bac6ca95a729d0d88867810179f7ace130f943d3ae1bd7c2b",
+        "fast_ants/api.py": "a275bfe9f22f5a52869f5c885b5aed584c656fdc0ab2ef01fb3bdbb897f5bd52",
+        "fast_ants/backends/__init__.py": "dfa0189c49f38854daa996c5f0f42a52d9f7d6c6e39b0ffe6ee06489b70559e5",
+        "fast_ants/backends/cpu/__init__.py": "e38306d01fd21faffb10ae2fd2f777916740978c028c812d8a818265581a3f43",
+        "fast_ants/backends/cpu/common/__init__.py": "16843380c9a3a1b5afe2faf0da9f3649e826a98cdf12f2b7c0d19a9170e1df5b",
+        "fast_ants/backends/cpu/common/geometry.py": "b8bee9dd0940b45252088986d096526913d7b1e895269ef7df290ae4d1826c6c",
+        "fast_ants/backends/cpu/common/reductions.py": "d10d9af0a16a9e6cd2d430d62fbc4f37f34e0d012d8f650425d7088d335d843f",
+        "fast_ants/backends/cpu/fp32/__init__.py": "1967a04baba3372e023e5cbe11bc14982fcbb5deceab22df0ca5a7344e5a0cb4",
+        "fast_ants/backends/cpu/fp32/dense_kernels.py": "277854d14fd360a0979c3172363c76688b8c36f7fce94ebd74ef0512b3bbbe55",
+        "fast_ants/backends/cpu/fp32/fields.py": "eef1ad61a03d4d551a80b11e63893ab0e394b097de919b79657c2884e19dffcf",
+        "fast_ants/backends/cpu/fp32/filtering.py": "be470f0d006bfd28db7dc7e9cbc769fac9770d7ba9ddf66327d4fdf35fee3d62",
+        "fast_ants/backends/cpu/fp32/gaussian_sections.py": "4b3202ab13e8e639cc1b26adad8a3c502ece791fd09b2c708cb7784347c4b63c",
+        "fast_ants/backends/cpu/fp32/images.py": "1db2d6ec28b4ad2b4caf1b287da89147dfbd20acf42fafc136af6b43a6a39a26",
+        "fast_ants/backends/cpu/fp32/inverse.py": "84862ccda359238ad2be58bb27d8ec5069b035b1d7d3700fdee577c93700f079",
+        "fast_ants/backends/cpu/fp32/kernels.py": "8f5dd80df80d2323273ae10e9007f5585151685eb56a06f7c8ec1eaffa97daed",
+        "fast_ants/backends/cpu/fp32/linear.py": "b5de712a11b8aa6f687cbeccae63857e062ff0945e824341c8275282ea7a8a00",
+        "fast_ants/backends/cpu/fp32/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/cpu/fp32/metrics/cc.py": "ff61ab429e5eef00e875e43b9ebf577b8489ca07cf8996708cabdea47adc93e1",
+        "fast_ants/backends/cpu/fp32/metrics/cc_pair.py": "0d9eb823010fff4359bfa3fd0bf9ccecd29d03d970e5a05079ddf9096ae81da3",
+        "fast_ants/backends/cpu/fp32/metrics/cc_queue.py": "f8e44c133a73940fcc73d593234a0e18f874a627d0058c3d5a0766e0ea346a84",
+        "fast_ants/backends/cpu/fp32/metrics/derivative.py": "accf3284b43a13ff70cb726e037d446e5432d9b5966b628c5e0cc1fe1ccbbffc",
+        "fast_ants/backends/cpu/fp32/metrics/mattes.py": "e162f71fbda54995d47767a7bebfeaae8c15d71c2b5d0d834c7ad7fc8a61510e",
+        "fast_ants/backends/cpu/fp32/metrics/mattes_kernels.py": "d7c8ef6ec64c8f914c09ce91d6b0f9743b12b54b65973e36660b81a27e67b3fa",
+        "fast_ants/backends/cpu/fp32/metrics/value.py": "88d988b1fd2a19e134609c6b9494ad98f868f2f238cbcf70df5eced8694f2c8b",
+        "fast_ants/backends/cpu/fp32/norms.py": "132a3f4b300cfb85f38201bfe9a12096f6869db75d2e99f91ebc00a728338079",
+        "fast_ants/backends/cpu/fp32/precision.py": "7b696b3b4518412c5f0d4c2e9c9a47b802893c7cae4b1be5cd04c6aa29ce8761",
+        "fast_ants/backends/cpu/fp32/registration.py": "8c388b469d0006383e47e41fd836fd656ee86c8f863df775cd1399b943fcd5c4",
+        "fast_ants/backends/cpu/fp32/syn.py": "0658cd6e9e15a0c08fd5488c4569972bb3de1248169e384807fba1145ad66342",
+        "fast_ants/backends/cpu/fp64/__init__.py": "ab09ed900e030981ef8f9aeefae1985575b25283150c9723917dc7fd8bdcf8d4",
+        "fast_ants/backends/cpu/fp64/field_kernels.py": "d95603767d22eab18a6de29c592cbbe384d2094b2ccb5ea29c222d8f49dd7a35",
+        "fast_ants/backends/cpu/fp64/fields.py": "f54cbf8d1bb80188f1046365b5bda0ca194d69f31153079a04c6e82292b96e05",
+        "fast_ants/backends/cpu/fp64/filter_kernels.py": "249180d01c44f83eb6f70ba8affef2293cce3da18c6ba5e6f1d9b2175c8f9262",
+        "fast_ants/backends/cpu/fp64/filtering.py": "362c50b10beaf2db892b94d1bbec38f7e4a522edbfcc384420ab57031da4a436",
+        "fast_ants/backends/cpu/fp64/gradients.py": "751fb2876a19ea74bac6e31f56aa3baf9873dbd27c645c57864780287e28a907",
+        "fast_ants/backends/cpu/fp64/linear.py": "80369dfd4a8de02a4095f5b6a8403d7bdba43fca80140f3245de05f1a27f1e60",
+        "fast_ants/backends/cpu/fp64/local_fields.py": "131e50ab8da582784497f9b98faf4047133532248c398910dd1b13e156213580",
+        "fast_ants/backends/cpu/fp64/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/cpu/fp64/metrics/cc.py": "6c25eb94272414b210a5560ffb99440734057a25d2fb910d8e31246cd85292c0",
+        "fast_ants/backends/cpu/fp64/metrics/cc_kernels.py": "a2a6f09dc6f4bf2213af2df115eb545f82b55317e4f73cd13f11ad8ac21f5dc1",
+        "fast_ants/backends/cpu/fp64/metrics/cc_pair.py": "111b4586b427d6b90e24834dc9e2a023140daceffce765327086106d5964b4dd",
+        "fast_ants/backends/cpu/fp64/metrics/linear_fused.py": "cc5c097bd3f048016a313a422ae26c28557d72dcf5ff49361f97dd25b1d9aaf6",
+        "fast_ants/backends/cpu/fp64/metrics/mattes.py": "cbc86021ee84789b21ffd640e9ca56d05a9d1c65faf2bd315ad8d7b3692232ec",
+        "fast_ants/backends/cpu/fp64/metrics/mattes_kernels.py": "70ae0d663c222e94538c36c0d5dc2e567c1d158d31127e60dcc9d9a4580ff3d3",
+        "fast_ants/backends/cpu/fp64/preprocessing.py": "22be9aae2178a48f2da3021d344a2efbf0cd9376b27d220f649c6bbcb0b2598f",
+        "fast_ants/backends/cpu/fp64/pull.py": "da1f401031f0eef472564639a818e085837e91cc9738a08ecc833672dd356c74",
+        "fast_ants/backends/cpu/fp64/registration.py": "c88d3903c5314d78983dd9f0c2064668dd6cae3e9630e30f3d67ae7c0fd42fbe",
+        "fast_ants/backends/cpu/fp64/sampling.py": "ce989a15089af9cbfef21dbdb0b945755733eab6f4ae2d6d1025d3c5056fdee6",
+        "fast_ants/backends/cpu/fp64/sampling_kernels.py": "6681fd242db09ffe40de91f8aeebfb2062d00be147b4dab60a1379f3bf4b2fad",
+        "fast_ants/backends/cpu/fp64/syn.py": "1aa1b174866402a5cbac4132535b4cb31f5a1fa4c19e45e62956d05bed6c0273",
+        "fast_ants/backends/metal/__init__.py": "f243a4145e574d7e7345527978f9c2c88698f1199955eca32524c11983bcc74a",
+        "fast_ants/backends/metal/common.metal": "744d2ddd70d8a83f8681b3e51e62c44ea783d6271921cf80b58f551c78a9710b",
+        "fast_ants/backends/metal/dense.py": "59ed6d31885453c684aa5e9ee452bc48893c2b6d3bc0d557321cfca1ac8d0fc3",
+        "fast_ants/backends/metal/fields/__init__.py": "c988c8fa6b0a028828054fc76224bd2b16b36a93d226be1141dd6773473290d7",
+        "fast_ants/backends/metal/fields/composition.py": "17e6e3a92afdd69556289384f3997b640cc2774a15341047c70f874d544cd988",
+        "fast_ants/backends/metal/fields/inverse.py": "e210bd5eee6b932597df6d7e5136c5b0e584a492e79aa4b5d91ba8601868d77a",
+        "fast_ants/backends/metal/fields/kernels.py": "f76c9ef9c7138746cf6296faffb9d5b390ad746e5b4c2720fa506c4f153b9341",
+        "fast_ants/backends/metal/fields/operators.py": "0d26230f24b28479eed2085a61e7d955ad1ffb4f3dabb9eddf0ed5c7e400c7d5",
+        "fast_ants/backends/metal/fields/overlap.py": "00590882d05bd8c133c91e59239cc7447a9e2f6e5ffd597f56563bf79fc23e58",
+        "fast_ants/backends/metal/filtering.py": "85e3989f545a304082c41cc9de53b27f2e1e09bfcd760cf0963d2c9af08d036e",
+        "fast_ants/backends/metal/gaussian_sections.py": "96b948daf2d39ebb32970b05eba8745e6522fa16dd3f70b3eeafd561b774790e",
+        "fast_ants/backends/metal/geometry.py": "e4f07c5b94100f5040370545eb0ddd1d2a3269f21d34d40184e2985028e8d8df",
+        "fast_ants/backends/metal/images.py": "7fe9a30e64e243900bc3674509050dd16ac33a1fbfd022598d5e35e4488fded1",
+        "fast_ants/backends/metal/linear.py": "3d942a24abdb6a15e3de2c819d55b95e2297b1f46950ab98d6c3e3da5bd81873",
+        "fast_ants/backends/metal/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+        "fast_ants/backends/metal/metrics/cc/__init__.py": "b9f4d2d8832734bdcbe841999e8aedd1c12c07bb63a6ecf1ad84a72e10707831",
+        "fast_ants/backends/metal/metrics/cc/control.py": "c32325a7cb3fb4143f81d7108ac7c6eb03e291170c96ca0fd3fdb2752dc408bd",
+        "fast_ants/backends/metal/metrics/cc/dense.py": "589edb21382cab595e378297ae445dc656f645aeacb5edd6b5c686305a875c18",
+        "fast_ants/backends/metal/metrics/cc/gradient.py": "cf9db4069a0dafb440bc31d491274f44cd167b128070e3a2f95b6b2f39a1ecc4",
+        "fast_ants/backends/metal/metrics/cc/operators.py": "0e7702a44717e62aa5db03667bb4af8df81d093090fe85cd6a1bac8bd3dbf6e2",
+        "fast_ants/backends/metal/metrics/cc/tiled.py": "6456faabc8170cba00d04a87a8f35e41019047ce7beb102301248f966ec31242",
+        "fast_ants/backends/metal/metrics/cc/window.py": "e44c632c65b37e1df84972bcefd4a7e4d335cd57ce75775faf606126045fcccd",
+        "fast_ants/backends/metal/metrics/mattes/__init__.py": "e3d78b307de5a10d50111abc869f03a9aec7b068332af3b54165473611cd4e00",
+        "fast_ants/backends/metal/metrics/mattes/derivative.py": "cc19af64b62b8159552b2da8c680308f6a6ce3e7efa5e23cbf526776ca7fee68",
+        "fast_ants/backends/metal/metrics/mattes/finalize.py": "6b6d0abbd7dbc5697661b49daf5337f2b88256f31a575636bf4f9c01bb118645",
+        "fast_ants/backends/metal/metrics/mattes/finalize_fused.py": "feb447b394a72d2a58b081986d837c4b588c0b8bbee99f60f16219881f943025",
+        "fast_ants/backends/metal/metrics/mattes/histogram.py": "ed64f2b1f57ba13d94ccf48915d417376235a8e84703fa1a3a57432f073f3e3e",
+        "fast_ants/backends/metal/metrics/mattes/metric.py": "57b5036181c8789c315dc351a355582fcdb0cc681197269ae573cda05b08db50",
+        "fast_ants/backends/metal/metrics/mattes/sampling.py": "49a381aff7d4c32f9a72054f11a0e972ab6ad9f0e08d8ac7f912028ba1d30ae6",
+        "fast_ants/backends/metal/moments.py": "b80dc5e7f293dcbb24343f5a278f2d3c40a9a7879a810a46a136f8936660e226",
+        "fast_ants/backends/metal/ops.py": "c8d34d844e968928943d4b69f527fd62801a85652dee77264d9546cb5c0dc0e1",
+        "fast_ants/backends/metal/preparation.py": "915eba1f35c5ac157024a2eacc00ec66bd7bf73ee034c9a5043e057d57928711",
+        "fast_ants/backends/metal/reductions.py": "13c819d4107397d375058b7571800af60ef22c64b498cc20558ad3266713aaa6",
+        "fast_ants/backends/metal/registration.py": "799b28e70d2837c160e918806d3d988dc6c1358f79ccbff632a22ab4260c0c26",
+        "fast_ants/backends/metal/runtime.py": "4fe58191e0d399277cfe2750b782b817a68925cbaca33dcc463982992b5a0bc0",
+        "fast_ants/backends/metal/serial.py": "95ad01c5185b8406e925f928852b4cc1818aabc0be5fc63a109d9d2354d63ea0",
+        "fast_ants/backends/metal/syn.py": "1f7bcfa5082764877cf507834f3601c3e05a9e55b1a2594c18f75c88916447a4",
+        "fast_ants/backends/metal/types.py": "f501fbd7b24d66d4f50301b0c10bc93cc58956aae2455c32812b81460778e01a",
+        "fast_ants/cli.py": "892f8adddfa6fc45bbba453a73edec7a4f57e7ecbf0339b4251a17b11c00a102",
+        "fast_ants/core/__init__.py": "29edc42bddb8493b94fb4eea16c9b50255abd98cc5da90bce39af520c92bf9dc",
+        "fast_ants/core/arithmetic32.py": "48cd7b74330acbfcd0f3ceffb6a58e303a098f501f175c5ccd5961d7ff25e555",
+        "fast_ants/core/arithmetic64.py": "671d833bc4011c8c913f99112d39f764b53a1d8058d413052aef982b80ebed92",
+        "fast_ants/core/config.py": "ea712b5d24d831979e3a164723a7fa424c66d87d723c24158731b42d6c854c40",
+        "fast_ants/core/fields.py": "5675b95d9d51c8b4a6cf00994fb48cd34f8a297d3ea643528097839ddd81a53d",
+        "fast_ants/core/linalg.py": "644aee59a6e75f4a52dad046350027ac18a153acc8ea7860eb092e29e339db51",
+        "fast_ants/core/results.py": "722bcd2410b2b7ae6a3acc393d57742a78ee32a8e21ac2ee054f6e6692777444",
+        "fast_ants/core/state.py": "61ef3080f71c16c3895ebc6d66b684495c344b64639344c3be28b69a18bc54dd",
+        "fast_ants/core/transforms.py": "19a645eba7819ff2aa0cae6d48df3212655c1f3f75fd711ae9675cfa58181ede",
+        "fast_ants/core/types.py": "f81ac6782cf8ddbef0ed58b82ed47cfeb3bd52d80a204e4b1364d1e9a63b6f84",
+        "fast_ants/io/__init__.py": "c934962b4598342698feb58e7915f8b863eeea9e7ed44e2336ca2f41329fda0b",
+        "fast_ants/io/images.py": "ea591d7b57004d307c1c1b605d9a88e6c55275f663c3bcb7e71d061003b54645",
+        "fast_ants/io/nifti.py": "23bd652184b94e87c137716aeb0d336e83284968ab1040e3fafa3d9147529602",
+        "fast_ants/io/transforms.py": "fbadf4d9e998aab4e3af59f9ee9d85c6620d3c0a466043229a657c6f0a184cf5",
+        "fast_ants/pipeline/__init__.py": "1d53b82bd3384971bd92d0b830382b2e1d9c7abb4dc436cee9471ba41731fe2c",
+        "fast_ants/pipeline/convergence.py": "ff5e5b24dfd92d6a8ca189bceaecb024babdfa86066addd9f1f81bca40dcdb46",
+        "fast_ants/pipeline/float1_policy.py": "a235d3244ebcdb93e50c61580a35b4a47894122fdaa630cb63560b95a12f5faa",
+        "fast_ants/pipeline/gaussian.py": "95fa1ce8c4d4418467ec2cfbde9db35ad69f963d4118a8463d685903786fa7a5",
+        "fast_ants/pipeline/masks.py": "287772c2ad2340f067d8ad8bac98a94299bbfad2ed567cf5a89e4a67728f8744",
+        "fast_ants/pipeline/mattes32.py": "6a06df102bac6d729dcd153857e9b9b21191e8493ee23ea73bfadf6ff2cfe3c4",
+        "fast_ants/pipeline/mattes64.py": "45cd9c8f9942b8bcc12c05c1f1ac78fb26a582d6b9d20c4bd0dec7098f396d5e",
+        "fast_ants/pipeline/models32.py": "614e3d70b14b73d994a12d0d7c75191e668bad8fc01a3727af7610259d2035ef",
+        "fast_ants/pipeline/models64.py": "7dd2025e7009f8d80903a3a99536adc4fb73ff5123a260f50c87b1b0035072d5",
+        "fast_ants/pipeline/optimizer32.py": "e501a40afb3dc2a765ec769356f8f8df2dd1717737ffe762796d3a2da157c310",
+        "fast_ants/pipeline/optimizer64.py": "326ccdcb4541edb1abc0e99c731af16092a361287d1d9ee021fff8c132f739de",
+        "fast_ants/pipeline/preprocessing.py": "4364eb524bde7f34aff97649db09e9294e7fdf0a9964a865d1faa9be5c9499fd",
+        "fast_ants/pipeline/pyramid.py": "5549b0b1f6341d8241ad8b93da30d5ec0a902dddec916881a0c6c7d9979fb514",
+        "fast_ants/pipeline/sampling_plan.py": "4b0d70679b4bdb2c0b8db52e8773bf303997d69fc12881d7047ca63513f99e58",
+        "fast_ants/presets/__init__.py": "f6af1193f69b8f99373570f5f0a41d3b1de7cd95e2f3b65028ced6c4d30ec215",
+        "fast_ants/presets/brain-syn.json": "3ac1261661f46ee6c45e91beb7b3cbd39fc36e5ab0dd2d9339ae9bc0d1dab82e",
+        "fast_ants/progress.py": "1ea7937967f6016466f71cc2f1f9de88239f1d726d3fa4fc71b31bf57075d161",
+        "fast_ants/quality/__init__.py": "07ae700646db48a5a66b30e898adcb516e5ada6a45dcc99c9b31e948e6c7c60d",
+        "fast_ants/quality/metrics.py": "c98f0aea12f6b7f43fe13dd6e552e3c0f83580bcf6ee77a897a7458bd79d26d8",
+        "fast_ants/quality/output_kernels.py": "f9f8d1bbed94876a7de5e096e83c3190e7bd2fa777b23beff0a662c3aba479fb"
+      },
+      "output_sha256": {
+        "affine": "08e8806ae3701eecd2e4bc79c57339beaead99cc0740d4d1054e6020f0535272",
+        "forward_warp": "1af94f5e17664c1db69b9a6bfac716fe40733dc7aa378bb58456737b466aca39",
+        "inverse_warp": "6bf5fd52cebe546197094370ec1c6bb52814dff0e954eaf16aa3e21875957800",
+        "warped": "12ff35f1a19b57969c5ee9ffb77602b1fdbf82fdf13731567f2a9bb5c76a469c"
+      },
+      "power_before": {
+        "timestamp_utc": "2026-10-26T09:26:00.980275+00:00",
+        "battery": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "batt"
+          ],
+          "returncode": 0,
+          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
+          "stderr": ""
+        },
+        "thermal": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "therm"
+          ],
+          "returncode": 0,
+          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+          "stderr": ""
+        },
+        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
+      },
+      "power_after": {
+        "timestamp_utc": "2026-10-26T09:26:16.406797+00:00",
+        "battery": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "batt"
+          ],
+          "returncode": 0,
+          "stdout": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23461987)\t80%; AC attached; not charging present: true",
+          "stderr": ""
+        },
+        "thermal": {
+          "command": [
+            "/usr/bin/pmset",
+            "-g",
+            "therm"
+          ],
+          "returncode": 0,
+          "stdout": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+          "stderr": ""
+        },
+        "scope": "Read-only observations; no thermal/power/background control and no settings changed"
+      },
+      "local_report": "validation/reports/cached-single-20261026"
+    }
+  },
+  "cpu_fp32_comparison": {
+    "baseline_whole_process_seconds": 59.79105854104273,
+    "optimized_whole_process_seconds": 42.57037516706623,
+    "speedup": 1.4045227063749008,
+    "time_reduction_percent": 28.801435857094926,
+    "output_sha256_equal": {
+      "affine": true,
+      "forward_warp": true,
+      "inverse_warp": true,
+      "warped": true
+    },
+    "quality_scope": "Preservation of pre-optimization outputs, not an official ANTs equivalence assertion"
+  },
+  "validation": {
+    "targeted_unit_tests": 19,
+    "targeted_unit_tests_passed": true,
+    "operator_microbenchmark": {
+      "value": {
+        "before": [
+          0.0018967919750139117,
+          0.0018432500073686242,
+          0.0018292090389877558
+        ],
+        "after": [
+          0.0014219169970601797,
+          0.0014462090330198407,
+          0.0014269999228417873
+        ],
+        "raw_results_exact": true,
+        "speedup": 1.2916959404580057
+      },
+      "background_support": {
+        "preparation_seconds": 0.002486624987795949,
+        "zero_cell_fraction": 0.5405069986979166,
+        "bytes": 393216,
+        "preparation_excluded_from_repeated_operator_timings": true
+      },
+      "derivative_6": {
+        "before": [
+          0.005085292039439082,
+          0.005431207944639027,
+          0.005436417064629495
+        ],
+        "after": [
+          0.003802292048931122,
+          0.003602999961003661,
+          0.0035405829548835754
+        ],
+        "raw_results_exact": true,
+        "speedup": 1.5074127125791297
+      },
+      "derivative_12": {
+        "before": [
+          0.006150750094093382,
+          0.005997291998937726,
+          0.005637624999508262
+        ],
+        "after": [
+          0.003972374950535595,
+          0.004007917013950646,
+          0.004137583076953888
+        ],
+        "raw_results_exact": true,
+        "speedup": 1.4963613213703075
+      },
+      "cc_unmasked": {
+        "before": [
+          0.014352791011333466,
+          0.013898749952204525,
+          0.01382512494456023
+        ],
+        "after": [
+          0.007372499909251928,
+          0.005922666983678937,
+          0.0055321670370176435
+        ],
+        "raw_results_exact": true,
+        "speedup": 2.3467046164346637
+      },
+      "assembly": {
+        "neon_float32_vector_instructions": 22,
+        "examples": [
+          "fsub.4s\tv2, v1, v0",
+          "fmla.4s\tv3, v1, v0",
+          "fmul.4s\tv1, v2, v2",
+          "fmla.4s\tv4, v3, v1",
+          "fdiv.4s\tv3, v4, v1",
+          "fsub.4s\tv5, v4, v0",
+          "fmul.4s\tv6, v5, v5",
+          "fmul.4s\tv6, v5, v6",
+          "fdiv.4s\tv1, v6, v1",
+          "fcmgt.4s\tv7, v6, v0",
+          "fcmgt.4s\tv4, v4, v0",
+          "fsub.4s\tv1, v1, v16"
+        ]
+      },
+      "scope": "393216 samples/voxels, 10 threads, three short alternating operator timings; JIT excluded; raw results compared exactly"
+    },
+    "official_rerun": false
+  }
+}

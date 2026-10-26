@@ -55,11 +55,16 @@ def neighborhood_cc_pair32(fixed,moving,radius=2,*,valid=None):
     require32(fixed.data);require32(moving.data)
     if not fixed.grid.same_geometry(moving.grid):raise ValueError("CC images must occupy the same grid")
     if not isinstance(radius,int) or radius<0:raise ValueError("FP32 CC radius must be a nonnegative integer")
-    valid=np.ones(fixed.grid.shape_zyx,bool) if valid is None else np.asarray(valid)
-    if valid.shape!=fixed.grid.shape_zyx or valid.dtype!=np.bool_:raise ValueError("CC validity must be Boolean on the common grid")
     shift=fixed.grid.lps_to_index[:3,:3]@np.diag(fixed.grid.spacing_xyz*.5)
-    value,count,forward,reverse=cc_pair_gradient32(fixed.data,moving.data,
-        np.ascontiguousarray(valid),radius,array32(shift),array32(fixed.grid.spacing_xyz))
+    if valid is None and fixed.data.flags.c_contiguous and moving.data.flags.c_contiguous:
+        from fast_ants.backends.cpu.fp32.metrics.cc_simd import cc_unmasked_gradient32
+        value,count,forward,reverse=cc_unmasked_gradient32(fixed.data,moving.data,
+            radius,array32(shift),array32(fixed.grid.spacing_xyz))
+    else:
+        valid=np.ones(fixed.grid.shape_zyx,bool) if valid is None else np.asarray(valid)
+        if valid.shape!=fixed.grid.shape_zyx or valid.dtype!=np.bool_:raise ValueError("CC validity must be Boolean on the common grid")
+        value,count,forward,reverse=cc_pair_gradient32(fixed.data,moving.data,
+            np.ascontiguousarray(valid),radius,array32(shift),array32(fixed.grid.spacing_xyz))
     if not count:raise NoValidSamplesError("No valid FP32 CC centre")
     return (CCEvaluation(float(value),DisplacementField(forward,fixed.grid),int(count)),
             CCEvaluation(float(value),DisplacementField(reverse,fixed.grid),int(count)))

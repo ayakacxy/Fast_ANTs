@@ -5,7 +5,7 @@ from numba import get_num_threads,set_num_threads
 
 from fast_ants import Grid, Image
 from fast_ants.backends.cpu.fp32.metrics import mattes_kernels as k
-from fast_ants.backends.cpu.fp32.metrics.value import fixed_bins32, value_histogram32
+from fast_ants.backends.cpu.fp32.metrics.value import fixed_bins32, value_histogram32, ValueWorkspace32
 from fast_ants.pipeline.models32 import LinearModel32
 from fast_ants.pipeline.mattes32 import finalize_mattes_float1
 from fast_ants.core.results import NoValidSamplesError
@@ -13,6 +13,28 @@ from fast_ants.backends.cpu.fp32.metrics.mattes import MattesMetric32
 
 
 class FusedValueMI32Tests(unittest.TestCase):
+    def test_workspace_reuse_keeps_counts_and_public_metric_results_owned(self):
+        shape=(7,11,13)
+        z,y,x=np.indices(shape,dtype=np.float32)
+        data=np.asarray(.2*x+.1*y+.03*z,np.float32)
+        points=k.index_points32(shape)
+        bins=16
+        fixed=fixed_bins32(data.ravel(),bins,data.min(),data.max())
+        mapping=(np.eye(3,dtype=np.int32),np.zeros((3,3),np.float32),
+                 np.zeros(3,np.int32),np.zeros(3,np.float32),np.zeros(3,np.float32))
+        width=np.float32((data.max()-data.min())/np.float32(bins-4))
+        normalized=np.float32(data.min()/width-np.float32(2))
+        workspace=ValueWorkspace32(len(points),bins)
+        args=(data,points,fixed,mapping,bins,(data.min(),data.max()),width,normalized)
+        expected=value_histogram32(*args,points_are_integer=True)
+        actual=value_histogram32(*args,points_are_integer=True,workspace=workspace)
+        self.assertIs(actual[0],workspace.joint)
+        for a,b in zip(actual,expected):np.testing.assert_array_equal(a,b)
+        first=actual[0].copy()
+        workspace.partial.fill(np.nan);workspace.partial_correction.fill(np.nan)
+        repeated=value_histogram32(*args,points_are_integer=True,workspace=workspace)
+        np.testing.assert_array_equal(repeated[0],first)
+
     def test_raw_histograms_keep_sampling_float1_bins_and_valid_counts(self):
         rng=np.random.default_rng(318)
         shape=(17,29,37)
@@ -87,6 +109,13 @@ class FusedValueMI32Tests(unittest.TestCase):
                 np.testing.assert_allclose(actual.details['joint_pdf'],expected.details['joint_pdf'],rtol=1e-6,atol=1e-7)
             self.assertEqual(fused.control_evaluations,2)
             self.assertEqual(fused.control_derivative_evaluations,1)
+            value_result=fused.evaluate(model,parameters,False)
+            retained_value=value_result.details['joint_pdf'].copy()
+            value_workspace=fused._value_workspace
+            changed=parameters.copy();changed[-3]+=np.float32(.01)
+            fused.evaluate(model,changed,False)
+            self.assertIs(fused._value_workspace,value_workspace)
+            np.testing.assert_array_equal(value_result.details['joint_pdf'],retained_value)
             # Reusing raw derivative scratch must not overwrite an earlier
             # public result retained by an optimizer or caller.
             self.assertTrue(actual.details['fused_derivative'])
