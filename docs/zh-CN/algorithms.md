@@ -251,7 +251,7 @@ k_n(q)=e^{-q}I_n(q).
 \mathcal S_q(g)=w(q)(k_q*_xk_q*_yk_q*_zg)+(1-w(q))g,\qquad
 w(q)=
 \begin{cases}
-1-q/0.5,&0<q<0.5,\\
+1-q/0.5,&0\lt q\lt 0.5,\\
 1,&q\ge0.5.
 \end{cases}
 ```
