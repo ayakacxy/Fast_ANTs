@@ -70,7 +70,7 @@ CUDA 后端使用 CuPy 自定义 kernel 和 CUDA Graph，在 GPU 上保留图像
 
 Python 发行包名、导入名和命令行入口均为 `fast_ants`。
 
-要求 Python 3.11 或更新版本。在项目根目录构建并安装 v0.2.0 wheel：
+要求 Python 3.11 或更新版本。可从 [v0.2.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0)下载 wheel，或在项目根目录构建并安装：
 
 ```bash
 python -m pip wheel . --no-deps -w dist

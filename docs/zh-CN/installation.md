@@ -15,7 +15,7 @@ CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具
 
 ## 安装 wheel
 
-在 v0.2.0 源码树中创建虚拟环境、构建并安装 wheel：
+从 [v0.2.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0)下载 wheel，或在源码树中创建虚拟环境、构建并安装：
 
 ```bash
 python -m venv .venv

@@ -15,7 +15,7 @@ The Python distribution, import package and command-line entry point are all nam
 
 ## Install a wheel
 
-From the v0.2.0 source tree, create a virtual environment, build a wheel and install it:
+Download the wheel from the [v0.2.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0), or create a virtual environment and build and install it from the source tree:
 
 ```bash
 python -m venv .venv

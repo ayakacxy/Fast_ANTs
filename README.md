@@ -70,7 +70,7 @@ The [algorithm guide](docs/en/algorithms.md) gives the mathematical formulation 
 
 The Python distribution, import package and command-line entry point are all named `fast_ants`.
 
-Requires Python 3.11 or later. From the project root, build and install the v0.2.0 wheel:
+Requires Python 3.11 or later. Download the wheel from the [v0.2.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0), or build and install it from the project root:
 
 ```bash
 python -m pip wheel . --no-deps -w dist
