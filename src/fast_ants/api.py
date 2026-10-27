@@ -23,7 +23,8 @@ _EXPORTS = {'Grid': ('fast_ants.core.types', 'Grid'),
  'SyNStage': ('fast_ants.core.config', 'SyNStage'),
  'register': ('fast_ants.backends.cpu.fp64.registration', 'register'),
  'register32': ('fast_ants.backends.cpu.fp32.registration', 'register32'),
- 'register_metal': ('fast_ants.backends.metal.registration', 'register_metal')}
+ 'register_metal': ('fast_ants.backends.metal.registration', 'register_metal'),
+ 'register_cuda': ('fast_ants.backends.cuda.registration', 'register_cuda')}
 __all__ = ['Grid',
  'Image',
  'RegistrationResult',
@@ -46,11 +47,17 @@ __all__ = ['Grid',
  'SyNStage',
  'register',
  'register32',
- 'register_metal']
+ 'register_metal',
+ 'register_cuda']
 
 def register_metal(*args, **kwargs):
     """Load the optional GPU implementation only when registration is called."""
     from .backends.metal.registration import register_metal as implementation
+    return implementation(*args, **kwargs)
+
+def register_cuda(*args, **kwargs):
+    """Load the optional CUDA implementation only when registration is called."""
+    from .backends.cuda.registration import register_cuda as implementation
     return implementation(*args, **kwargs)
 
 def __getattr__(name):

@@ -4,7 +4,7 @@
 
 ## Test groups
 
-Tests cover image geometry and I/O, numerical operators, optimization, and complete registration. CPU FP64 is compared with ANTs `--float 0`; CPU FP32 and Metal are compared with `--float 1`.
+Tests cover image geometry and I/O, numerical operators, optimization, and complete registration. CPU FP64 is compared with ANTs `--float 0`; CPU FP32, Metal and CUDA are compared with `--float 1`.
 
 ```bash
 python -B scripts/maintenance/run_tests.py --suite core
@@ -16,6 +16,19 @@ Metal tests need an Apple GPU:
 
 ```bash
 python -B scripts/maintenance/run_tests.py --suite metal
+```
+
+Metal registration records Jacobian and inverse-consistency measurements in `quality.json`. The [Apple M5 benchmark data](../assets/benchmarks/v0.1.0-native.json) records the timing and output checksums for the measured run.
+
+| Apple M5 quality measure | Metal FP32 | ANTs FP32 |
+| --- | ---: | ---: |
+| Foreground NCC | — | — |
+| Mean landmark error / mm | — | — |
+
+CUDA tests need an NVIDIA GPU and CuPy:
+
+```bash
+python -B scripts/maintenance/run_tests.py --suite cuda
 ```
 
 For a small change, use `--pattern` to select the affected file. [The test directory](../../tests/README.md) lists the groups.
@@ -72,3 +85,21 @@ python -m validation.quality.run_float1_quality_matrix --help
 ```
 
 For comparisons with ANTs, use the same images, image geometry, preprocessing, stage parameters, interpolation, sampling, and precision. Save the configuration and software versions with each result. The [quality configuration](../../validation/configs/registration_quality_policy.json) lists the checks used by the evaluation scripts.
+
+## CUDA checks
+
+CUDA operator and complete-registration tests live in `tests/cuda`. Enable them with `FAST_ANTS_TEST_CUDA=1` on NVIDIA hardware. They cover image sampling, filtering, Mattes controls, fields, inverse stopping, retained state, saved transform reapplication and native FP64 final QA. Real MRI results are assessed after timing using a common CPU FP64 sampler, foreground similarity, exploratory landmarks, positive Jacobians in both directions and inverse consistency.
+
+## Native Linux MRI results
+
+The [32-thread Linux measurements](performance.md#linux-cuda-and-cpu-32-threads) retain ten formal saved outputs, two per engine. All were reapplied through the same CPU FP64 sampler after timing. The foreground mask contains 3,236,832 fixed-image voxels above 5% of the intensity range. Before registration, foreground NCC is 0.171354 and mean error across four coarse landmarks is 21.4895 mm.
+
+| Engine | Foreground NCC range | Mean landmark error range / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
+| --- | ---: | ---: | ---: | ---: |
+| CUDA FP32 | 0.662979–0.664397 | 1.4310–1.4337 | 0.161487 | 0.023656 |
+| CPU FP32 | 0.664355–0.664355 | 1.4309–1.4309 | 0.160964 | 0.023635 |
+| CPU FP64 | 0.664417–0.664417 | 1.4345–1.4345 | 0.161804 | 0.023478 |
+| ANTs FP32 | 0.662904–0.664416 | 1.4253–1.4333 | 0.161125 | 0.023659 |
+| ANTs FP64 | 0.663937–0.663937 | 1.4336–1.4336 | 0.163237 | 0.023333 |
+
+All saved warped images and fields are finite and retain the fixed grid geometry. Every forward and inverse Jacobian is finite and positive. The last column takes the maximum RMS over both composition directions and both repeats. The four landmarks are coarse, non-expert annotations used to assess alignment. Source, input and output hashes and per-run metrics are in the [Linux summary](../assets/benchmarks/linux-native-32t.json).

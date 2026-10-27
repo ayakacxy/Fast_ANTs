@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock,patch
 import warnings
 
 
@@ -26,6 +26,29 @@ class FakeClock:
 class FlushedStream(StringIO):
     def __init__(self):super().__init__();self.flushes=0
     def flush(self):self.flushes+=1;super().flush()
+
+
+class TerminalStream(FlushedStream):
+    def isatty(self):return True
+
+
+class ProgressTee:
+    def __init__(self):self.progress_terminal=TerminalStream();self.progress_log=FlushedStream()
+    def write(self,text):
+        self.progress_terminal.write(text);self.progress_log.write(text)
+        return len(text)
+    def flush(self):self.progress_terminal.flush();self.progress_log.flush()
+
+
+class FakeBar:
+    def __init__(self,**kwargs):
+        self.options=kwargs;self.n=0;self.updates=[];self.postfixes=[];self.closed=0
+        kwargs['file'].write('\rprogress')
+    def set_postfix(self,postfix,refresh):
+        self.postfixes.append(dict(postfix));self.refresh=refresh
+    def update(self,amount):self.n+=amount;self.updates.append(amount)
+    def close(self):self.closed+=1
+    def write(self,message,*,file):print(message,file=file,flush=True)
 
 
 def source_function(relative,name,namespace):
@@ -53,7 +76,8 @@ class RegistrationProgressTests(unittest.TestCase):
         for iteration in range(1,6):
             clock.now=iteration*.25
             entry={'iteration':iteration,'value':-.1*iteration,
-                   'convergence':float('inf') if iteration==1 else 1e-5/iteration,'valid_points':17}
+                   'convergence':float('inf') if iteration==1 else 1e-5/iteration,'valid_points':17,
+                   'learning_rate':.1,'gamma':0.,'line_search_evaluations':6}
             entries.append(entry.copy());stage(entry)
             self.assertEqual(entry,entries[-1])
         clock.now=2.
@@ -70,6 +94,7 @@ class RegistrationProgressTests(unittest.TestCase):
         self.assertEqual([float(row[4]) for row in rows],[.25,.25,.25])
         self.assertEqual(rows[0][2],'inf')
         self.assertEqual(rows[-1][5],'17')
+        self.assertEqual(rows[-1][6:],[f'{.1:.12e}',f'{0.:.12e}','6'])
         self.assertIn('END reason=maximum_iterations; iterations=5; elapsed=2.000000s',stream.getvalue())
         self.assertNotIn('must_not_duplicate',stream.getvalue())
         self.assertIn('[fast_ants][complete]',stream.getvalue())
@@ -95,7 +120,7 @@ class RegistrationProgressTests(unittest.TestCase):
         rows=[line for line in stream.getvalue().splitlines()
               if 'DIAGNOSTIC,' in line and 'DIAGNOSTIC,Iteration,' not in line]
         self.assertEqual(len(rows),3)
-        self.assertTrue(all(line.endswith(',21/20') for line in rows))
+        self.assertTrue(all(line.endswith(',21/20,n/a,n/a,n/a') for line in rows))
         progress.start('affine','budget=0',iterations=True).finish('maximum_iterations')
         self.assertIn('iterations=0',stream.getvalue())
         self.assertEqual(root.handlers,handlers);self.assertEqual(root.level,level)
@@ -105,6 +130,57 @@ class RegistrationProgressTests(unittest.TestCase):
         modules=[node.module if isinstance(node,ast.ImportFrom) else alias.name
                  for node in imports for alias in (node.names if isinstance(node,ast.Import) else [None])]
         self.assertEqual(set(modules),{'numbers','sys','time'})
+
+    def test_terminal_bar_updates_existing_records_and_keeps_file_diagnostics_clean(self):
+        clock=FakeClock();stream=ProgressTee();bars=[]
+        def make_bar(**options):
+            bar=FakeBar(**options);bars.append(bar)
+            return bar
+        factory=Mock(side_effect=make_bar)
+        with patch.dict('sys.modules',{'tqdm':SimpleNamespace(tqdm=factory)}):
+            progress=PROGRESS.create_progress(True,3,stream=stream,clock=clock,wall_clock=lambda:0.)
+            stage=progress.start('rigid','stage=1/2 level=1 budget=9',iterations=True,total=9)
+            for iteration in range(1,6):
+                clock.now=iteration*.25
+                entry={'iteration':iteration,'value':-.1*iteration,'convergence':1e-5,
+                       'valid_points':17,'learning_rate':.1*iteration,'gamma':.2,
+                       'line_search_evaluations':6}
+                original=entry.copy();stage(entry)
+                self.assertEqual(entry,original)
+            stage.message('checkpoint')
+            stage.finish('window_converged');stage.finish('must_not_duplicate')
+        factory.assert_called_once()
+        bar=bars[0]
+        self.assertIs(bar.options['file'],stream.progress_terminal)
+        self.assertEqual(bar.options['total'],9)
+        self.assertEqual(bar.options['desc'],'[fast_ants][rigid] level=1')
+        self.assertEqual(bar.n,5);self.assertEqual(bar.updates,[1]*5)
+        self.assertEqual(bar.closed,1)
+        self.assertEqual(bar.postfixes[-1],{'metric':f'{-.5:.3e}','conv':f'{1e-5:.3e}',
+            'valid':17,'lr':.5,'gamma':.2,'ls_eval':6,'stop':'window_converged'})
+        terminal=stream.progress_terminal.getvalue();log=stream.progress_log.getvalue()
+        self.assertNotIn('DIAGNOSTIC',terminal)
+        self.assertIn('checkpoint',terminal);self.assertIn('checkpoint',log)
+        self.assertIn('START stage=1/2 level=1 budget=9',log)
+        self.assertIn('END reason=window_converged; iterations=5',log)
+        self.assertNotIn('must_not_duplicate',log)
+        self.assertNotIn('\r',log);self.assertNotIn('\x1b',log)
+        rows=[line for line in log.splitlines()
+              if 'DIAGNOSTIC,' in line and 'DIAGNOSTIC,Iteration,' not in line]
+        self.assertEqual([int(line.split('DIAGNOSTIC,')[1].split(',')[0]) for line in rows],[1,3,5])
+        self.assertIsNone(progress.bar)
+
+    def test_nonterminal_and_quiet_modes_do_not_load_tqdm(self):
+        factory=Mock(side_effect=AssertionError('tqdm must not be loaded'))
+        with patch.dict('sys.modules',{'tqdm':SimpleNamespace(tqdm=factory)}):
+            stream=FlushedStream()
+            progress=PROGRESS.create_progress(True,stream=stream,wall_clock=lambda:0.)
+            stage=progress.start('syn',iterations=True,total=2)
+            stage({'iteration':1,'value':-.7,'fixed_valid_centres':21,'moving_valid_centres':20})
+            stage.finish('window_converged')
+            self.assertIn('DIAGNOSTIC,1,',stream.getvalue())
+            self.assertIsNone(PROGRESS.create_progress(False,stream=ProgressTee()))
+        factory.assert_not_called()
 
     def cg(self,observer,monitor):
         vector=FakeVector()

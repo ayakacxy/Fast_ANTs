@@ -2,6 +2,7 @@
 
 Usage: python examples/register.py fixed.nii.gz moving.nii.gz output-dir
 Append --backend metal --precision fp32 --verbose to select the Apple GPU.
+Append --backend cuda --precision fp32 --verbose to select an NVIDIA GPU.
 """
 
 import sys

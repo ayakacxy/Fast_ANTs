@@ -5,12 +5,14 @@
   "applies_to": [
     "cpu-fp64",
     "cpu-fp32",
-    "metal-fp32"
+    "metal-fp32",
+    "cuda-fp32"
   ],
   "official_behavior_reference": {
     "cpu-fp64": "ANTs --float 0",
     "cpu-fp32": "ANTs --float 1",
-    "metal-fp32": "ANTs --float 1"
+    "metal-fp32": "ANTs --float 1",
+    "cuda-fp32": "ANTs --float 1"
   },
   "reference_map_equality_required": false,
   "trajectory_or_iteration_equality_required": false,

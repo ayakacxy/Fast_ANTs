@@ -2,7 +2,7 @@
 
 [English](../en/algorithms.md) · [简体中文](algorithms.md) · [文档](index.md)
 
-Fast ANTs 先使用 Mattes 互信息进行刚体和仿射配准，再使用局部归一化互相关进行位移场形式的 greedy SyN 配准。本文说明这些阶段执行的数学运算，CPU 与 Metal 的计算优化见[实现优化](optimizations.md)。
+Fast ANTs 先使用 Mattes 互信息进行刚体和仿射配准，再使用局部归一化互相关进行位移场形式的 greedy SyN 配准。本文说明这些阶段执行的数学运算，CPU、Metal 和 CUDA 的计算优化见[实现优化](optimizations.md)。
 
 ## 图像采样与坐标
 
@@ -124,7 +124,7 @@ p_{ab}(p)\approx\frac1N\sum_{x\in\mathcal S}
 
 固定端零阶分箱和图像有效范围检查会在样本跨越分箱或图像边缘时引入不连续变化。参数导数描述的是当前样本选择下的平滑部分。
 
-对应实现：[CPU FP64 Mattes](../../src/fast_ants/backends/cpu/fp64/metrics/mattes.py)、[CPU FP32 Mattes](../../src/fast_ants/backends/cpu/fp32/metrics/mattes.py)和 [Metal Mattes](../../src/fast_ants/backends/metal/metrics/mattes/metric.py)。
+对应实现：[CPU FP64 Mattes](../../src/fast_ants/backends/cpu/fp64/metrics/mattes.py)、[CPU FP32 Mattes](../../src/fast_ants/backends/cpu/fp32/metrics/mattes.py)、[Metal Mattes](../../src/fast_ants/backends/metal/metrics/mattes/metric.py)和 [CUDA Mattes](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py)。
 
 ## 线性参数优化
 
@@ -208,7 +208,7 @@ V=V_a+V_b+\delta^2\frac{n_an_b}{n_a+n_b}.
 
 协方差合并将 $\delta^2$ 替换为两个变量均值差的乘积，从而避免低对比窗口中两个接近的原始矩相减。
 
-对应实现：[CPU FP64 CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc.py)、[CPU FP32 队列统计](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py)和 [Metal 窗口统计](../../src/fast_ants/backends/metal/metrics/cc/window.py)。
+对应实现：[CPU FP64 CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc.py)、[CPU FP32 队列统计](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py)、[Metal 窗口统计](../../src/fast_ants/backends/metal/metrics/cc/window.py)和 [CUDA CC](../../src/fast_ants/backends/cuda/metrics/cc/operators.py)。
 
 ## Greedy SyN
 
@@ -318,7 +318,7 @@ v_{n+1}(x)=v_n(x)-\epsilon_nf_n(x)r_n(x).
 
 最终使用 $T$ 在原始固定网格上采样原始移动图像。仿射变换与非线性场分开保存。
 
-对应实现：[CPU SyN](../../src/fast_ants/backends/cpu/fp64/syn.py)、[CPU 场运算](../../src/fast_ants/backends/cpu/fp64/fields.py)、[高斯核系数](../../src/fast_ants/pipeline/gaussian.py)和 [Metal SyN](../../src/fast_ants/backends/metal/syn.py)。
+对应实现：[CPU SyN](../../src/fast_ants/backends/cpu/fp64/syn.py)、[CPU 场运算](../../src/fast_ants/backends/cpu/fp64/fields.py)、[高斯核系数](../../src/fast_ants/pipeline/gaussian.py)、[Metal SyN](../../src/fast_ants/backends/metal/syn.py)和 [CUDA SyN](../../src/fast_ants/backends/cuda/syn.py)。
 
 ## 多分辨率处理
 
@@ -330,7 +330,7 @@ v_{n+1}(x)=v_n(x)-\epsilon_nf_n(x)r_n(x).
 
 ## 浮点计算
 
-CPU FP64 以双精度进行图像和场计算，部分 ANTs 参数转换和图像滤波中间结果保留 FP32 转换。CPU FP32 与 Metal 使用普通 FP32 体素计算；小型几何矩阵、高斯系数、收敛计算和输出质量评估按实现需要使用主机端精度。
+CPU FP64 以双精度进行图像和场计算，部分 ANTs 参数转换和图像滤波中间结果保留 FP32 转换。CPU FP32、Metal 和 CUDA 使用普通 FP32 体素计算；小型几何矩阵、高斯系数和收敛计算按实现需要使用主机端精度。Metal 输出 QA 使用 CPU 算术，CUDA 输出 QA 在设备端将场读数提升到原生 FP64。
 
 FP32 稳定性处理包括中心化 CC 统计、补偿或成对累加、小位移的局部坐标计算，以及递归高斯滤波的二阶节实现。二阶节使用相邻样本差分驱动，在保持常量响应的同时避免大递推项相减，不使用软件扩展浮点表示。
 

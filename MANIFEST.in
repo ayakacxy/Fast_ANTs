@@ -1,4 +1,4 @@
-include README.md README.zh-CN.md
+include README.md README.zh-CN.md AGENTS.md
 include LICENSE
 recursive-include .github *.md
 recursive-include licenses *
@@ -10,7 +10,7 @@ recursive-include docs/assets *.json *.svg
 recursive-include configs *.md
 recursive-include examples *.py
 recursive-include environments *.yml
-recursive-include src/fast_ants *.metal *.json
+recursive-include src/fast_ants *.metal *.cuh *.json
 prune reference
 prune templates
 prune validation

@@ -2,7 +2,7 @@
 
 [English](algorithms.md) · [简体中文](../zh-CN/algorithms.md) · [Documentation](index.md)
 
-Fast ANTs uses Mattes mutual information for rigid and affine registration, followed by displacement-field greedy SyN with local normalized cross-correlation. This page describes the mathematical operations performed by these stages. CPU and Metal execution details are covered in [implementation optimizations](optimizations.md).
+Fast ANTs uses Mattes mutual information for rigid and affine registration, followed by displacement-field greedy SyN with local normalized cross-correlation. This page describes the mathematical operations performed by these stages. CPU, Metal and CUDA execution details are covered in [implementation optimizations](optimizations.md).
 
 ## Image sampling and coordinates
 
@@ -124,7 +124,7 @@ After normalization, the loss derivative can be written as
 
 The zero-order fixed bin and image-support checks introduce discontinuities when a sample crosses a bin or image edge. Parameter derivatives describe the smooth part for the current sample selection.
 
-Implementation: [CPU FP64 Mattes](../../src/fast_ants/backends/cpu/fp64/metrics/mattes.py), [CPU FP32 Mattes](../../src/fast_ants/backends/cpu/fp32/metrics/mattes.py), and [Metal Mattes](../../src/fast_ants/backends/metal/metrics/mattes/metric.py).
+Implementation: [CPU FP64 Mattes](../../src/fast_ants/backends/cpu/fp64/metrics/mattes.py), [CPU FP32 Mattes](../../src/fast_ants/backends/cpu/fp32/metrics/mattes.py), [Metal Mattes](../../src/fast_ants/backends/metal/metrics/mattes/metric.py), and [CUDA Mattes](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py).
 
 ## Linear optimization
 
@@ -208,7 +208,7 @@ V=V_a+V_b+\delta^2\frac{n_an_b}{n_a+n_b}.
 
 The covariance merge uses the product of the two mean differences in place of $\delta^2$. This avoids subtracting nearly equal raw moments in low-contrast windows.
 
-Implementation: [CPU FP64 CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc.py), [CPU FP32 queue statistics](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py), and [Metal window statistics](../../src/fast_ants/backends/metal/metrics/cc/window.py).
+Implementation: [CPU FP64 CC](../../src/fast_ants/backends/cpu/fp64/metrics/cc.py), [CPU FP32 queue statistics](../../src/fast_ants/backends/cpu/fp32/metrics/cc_queue.py), [Metal window statistics](../../src/fast_ants/backends/metal/metrics/cc/window.py), and [CUDA CC](../../src/fast_ants/backends/cuda/metrics/cc/operators.py).
 
 ## Greedy SyN
 
@@ -318,7 +318,7 @@ The complete nonlinear and image-sampling maps are
 
 The output samples the original moving image with $T$ on the original fixed grid. The affine and nonlinear fields are stored separately.
 
-Implementation: [CPU SyN](../../src/fast_ants/backends/cpu/fp64/syn.py), [CPU field operations](../../src/fast_ants/backends/cpu/fp64/fields.py), [Gaussian coefficients](../../src/fast_ants/pipeline/gaussian.py), and [Metal SyN](../../src/fast_ants/backends/metal/syn.py).
+Implementation: [CPU SyN](../../src/fast_ants/backends/cpu/fp64/syn.py), [CPU field operations](../../src/fast_ants/backends/cpu/fp64/fields.py), [Gaussian coefficients](../../src/fast_ants/pipeline/gaussian.py), [Metal SyN](../../src/fast_ants/backends/metal/syn.py), and [CUDA SyN](../../src/fast_ants/backends/cuda/syn.py).
 
 ## Multiresolution processing
 
@@ -330,7 +330,7 @@ Implementation: [virtual grids](../../src/fast_ants/pipeline/pyramid.py), [CPU l
 
 ## Floating-point calculations
 
-CPU FP64 uses double precision for image and field calculations; selected ANTs parameter conversions and image-filter intermediates retain FP32 conversions. CPU FP32 and Metal use ordinary FP32 voxel calculations. Small geometry matrices, Gaussian coefficient construction, convergence calculations, and output quality assessment use host precision as required by the implementation.
+CPU FP64 uses double precision for image and field calculations; selected ANTs parameter conversions and image-filter intermediates retain FP32 conversions. CPU FP32, Metal and CUDA use ordinary FP32 voxel calculations. Small geometry matrices, Gaussian coefficient construction, and convergence calculations use host precision as required by the implementation. Metal output QA uses CPU arithmetic; CUDA output QA promotes field values to native FP64 on the device.
 
 FP32 stability uses centred CC statistics, compensated or pairwise accumulation, local coordinates for small displacements, and second-order sections for recursive Gaussian filtering. The sections operate on adjacent sample differences and preserve the constant response without subtracting large recurrence terms. No software-expanded floating-point representation is used.
 

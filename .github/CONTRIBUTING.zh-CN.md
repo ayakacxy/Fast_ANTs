@@ -2,7 +2,7 @@
 
 [English](CONTRIBUTING.md) · [简体中文](CONTRIBUTING.zh-CN.md) · [开发指南](../docs/zh-CN/development.md)
 
-欢迎改进配准算法、CPU 和 Metal 算子，参与计划中的 CUDA 后端开发，以及完善影像 I/O、测试和文档。较大改动建议先说明要解决的问题，以及涉及的后端或配准阶段。CUDA 的实现步骤见[开发计划](../docs/zh-CN/roadmap.md)。
+欢迎改进配准算法、CPU、Metal 和 CUDA 算子，以及完善影像 I/O、测试和文档。较大改动建议先说明要解决的问题，以及涉及的后端或配准阶段。后续工作和验证见[开发计划](../docs/zh-CN/roadmap.md)。
 
 ## 开发环境
 
@@ -10,6 +10,8 @@
 python -m pip install -e '.[test,build]'
 # For Metal development on Apple Silicon:
 python -m pip install -e '.[metal]'
+# For CUDA development on NVIDIA:
+python -m pip install -e '.[cuda]'
 ```
 
 模块划分见[代码结构](../docs/zh-CN/architecture.md)。共用的图像类型、配置和主机端优化器放在 `core` 或 `pipeline`，数值计算放在对应后端。
@@ -34,7 +36,7 @@ python -B scripts/maintenance/check_markdown_links.py
 npx --yes markdownlint-cli2@0.23.2
 ```
 
-使用 `--list` 查看选中的测试。Metal 测试需要 Apple GPU，并通过 `--suite metal` 选择，详见[测试说明](../tests/README.zh-CN.md)。数值计算改动还需按照[测试与质量评估](../docs/zh-CN/validation.md)检查配准结果。修改文档不需要运行配准。
+使用 `--list` 查看选中的测试。Metal 测试需要 Apple GPU，通过 `--suite metal` 选择；CUDA 测试需要 NVIDIA GPU，通过 `--suite cuda` 选择，详见[测试说明](../tests/README.zh-CN.md)。数值计算改动还需按照[测试与质量评估](../docs/zh-CN/validation.md)检查配准结果。修改文档不需要运行配准。
 
 Markdown 检查需要 Node.js，使用 `.markdownlint-cli2.jsonc` 中的规则。配置覆盖中英文文档，不限制行长，并允许 README 使用 `div` 和 `h1` 居中排版。
 

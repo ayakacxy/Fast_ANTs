@@ -62,6 +62,8 @@ With nonlinear map `phi` and affine transform `A`, the complete sampling map is 
 
 `console.log` and `run.json` are written by the CLI. Python API calls write image, transform, and JSON results when `output_directory` is supplied; otherwise results remain in memory.
 
+Compatible scalar and field NIfTI output uses lossless gzip level 0 by default. Set `FAST_ANTS_GZIP_LEVEL` to a value from 0 to 9 to select compression; decoded headers and arrays are unchanged. See [usage](usage.md) for the optional pigz writer and fallback behavior.
+
 Affine I/O supports the ANTs MAT-v4 and ITK text formats implemented by the affine reader. Displacement-field NIfTI storage uses `[x,y,z,1,3]`; the reader also accepts `[x,y,z,3]`. Vector components remain LPS millimetres even though the NIfTI affine uses RAS coordinates.
 
 ## Apply saved transforms

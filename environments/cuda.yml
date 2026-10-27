@@ -1,0 +1,12 @@
+name: ants
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - numpy
+  - nibabel
+  - numba=0.68.0
+  - pip
+  - pip:
+      - cupy-cuda12x>=14,<15

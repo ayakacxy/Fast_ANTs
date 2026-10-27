@@ -89,7 +89,7 @@ def register_metal(fixed,moving,*,linear_stages=None,syn_stage=None,initial_tran
         state=ops.identity(grid) if state is None else ops.adapt(state,grid)
         level_progress=(progress.start('syn',
             f'level={level+1}/{len(stage.iterations)} shrink={shrink} sigma={sigma} {stage.smoothing_units} '
-            f'samples={int(np.prod(grid.shape_zyx))} budget={iterations}',iterations=True,started=level_started)
+            f'samples={int(np.prod(grid.shape_zyx))} budget={iterations}',iterations=True,total=iterations,started=level_started)
             if progress is not None else None)
         state,records,reason,discarded=_syn_level(ops,fs,ms,state,stage,linear,fm,mm,iterations,level,callback,
                                                 _progress=level_progress)

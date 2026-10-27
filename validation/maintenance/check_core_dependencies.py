@@ -55,6 +55,9 @@ def main():
     preloaded=FORBIDDEN.intersection(sys.modules)
     if preloaded:raise RuntimeError('Dependency test was not started in a fresh interpreter')
     sys.meta_path.insert(0,BlockImports())
+    # Exercise the independent numerical core with standard-library gzip;
+    # the optional output compressor is outside this no-process check.
+    os.environ['FAST_ANTS_GZIP_BACKEND']='gzip'
     subprocess.run=blocked_process;subprocess.Popen=blocked_process
     os.system=blocked_process
     # Numerical core groups only: orchestration contracts intentionally launch
@@ -79,7 +82,8 @@ def main():
             'test_groups':['core','cpu_fp64','cpu_fp32'],
             'forbidden_import_roots':sorted(FORBIDDEN),'forbidden_modules_loaded':[m for m in sys.modules if m.split('.')[0] in FORBIDDEN],
             'optional_import_attempts_blocked':sorted(set(attempts)),
-            'reference_process_launch':'blocked','numba_cache':'new temporary empty cache directory per invocation',
+            'reference_process_launch':'blocked','output_compression':'standard-library gzip; optional external compressor disabled',
+            'numba_cache':'new temporary empty cache directory per invocation',
             'public_fp32_registration':{'finite':bool(np.isfinite(registered.warped.data).all()),
                                         'output_dtype':str(registered.warped.data.dtype)}}
     if report['forbidden_modules_loaded']:report['status']='failed'

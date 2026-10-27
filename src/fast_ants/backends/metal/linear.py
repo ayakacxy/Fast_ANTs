@@ -42,7 +42,7 @@ def _fit_linear(ops,fixed,moving,stages,initialization_feature,seed,fixed_mask,m
                 f'stage={stage_index+1}/{len(stages)} level={level+1}/{len(stage.iterations)} '
                 f'shrink={shrink} sigma={sigma} {stage.smoothing_units} '
                 f'sampling={stage.sampling_strategy} samples={metric.indices.shape[0]} budget={iterations}',
-                iterations=True,started=started) if _progress is not None else None)
+                iterations=True,total=iterations,started=started) if _progress is not None else None)
             observer={'progress':level_progress} if level_progress is not None else {}
             optimized=conjugate_gradient(metric,model,parameters,grid,iterations,stage.gradient_step,
                                          stage.convergence_threshold,stage.convergence_window,**observer)

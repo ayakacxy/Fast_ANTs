@@ -1,0 +1,1493 @@
+{
+  "schema_version": 1,
+  "upstream_base_commit": "590b4d7b1cd90ece9ed1335b33ec725f51111850",
+  "implementation": "v0.2.0 CPU and CUDA registration implementation",
+  "hardware": {
+    "cpu": "Intel(R) Xeon(R) Gold 6230 CPU @ 2.10GHz",
+    "logical_cpus": 80,
+    "sockets": 2,
+    "physical_cores": 40,
+    "vector_features": [
+      "avx",
+      "avx2",
+      "fma",
+      "avx512f",
+      "avx512dq",
+      "avx512bw",
+      "avx512vl"
+    ],
+    "gpu": "NVIDIA GeForce RTX 2080 Ti, 570.133.07, 11264 MiB",
+    "os": "Linux-5.0.0-23-generic-x86_64-with-glibc2.31",
+    "python": "3.11.17",
+    "packages": {
+      "numpy": "2.4.6",
+      "numba": "0.68.0",
+      "llvmlite": "0.50.0",
+      "nibabel": "5.4.2",
+      "cupy-cuda12x": "14.2.0",
+      "tqdm": "4.70.1"
+    }
+  },
+  "case": {
+    "id": "ixi002_to_ixi012",
+    "kind": "real_mri",
+    "split": "development",
+    "fixed_landmarks_lps_mm": [
+      [
+        0.02271858839270635,
+        16.12157792426288,
+        22.449253811828044
+      ],
+      [
+        -1.5442031233332898,
+        -27.141309006409145,
+        42.88468673135769
+      ],
+      [
+        -32.9167495753816,
+        -66.97310407270604,
+        13.700676968971194
+      ],
+      [
+        32.96560327421295,
+        -68.35456041601003,
+        17.21735915089407
+      ]
+    ],
+    "moving_landmarks_lps_mm": [
+      [
+        1.6060900153749458,
+        -3.8171682175773185,
+        21.36784417777116
+      ],
+      [
+        3.7828494868116422,
+        -45.720755948948266,
+        44.05069643875905
+      ],
+      [
+        -26.62050900365128,
+        -91.41941158332534,
+        14.811720003051335
+      ],
+      [
+        38.541831915268546,
+        -87.96355258964286,
+        11.061915714480747
+      ]
+    ],
+    "note": "Four non-expert head landmarks; exploratory numerical check, not a clinical quality target",
+    "fixed": "IXI002-Guys-0828-T1.nii.gz",
+    "moving": "IXI012-HH-1211-T1.nii.gz",
+    "shape_xyz": [
+      256,
+      256,
+      150
+    ]
+  },
+  "input_sha256": {
+    "IXI002-Guys-0828-T1.nii.gz": "71c5d110a352f943c96e08f75f5087066b608da6f8d203eb15d8d596d1f80f47",
+    "IXI012-HH-1211-T1.nii.gz": "073461dcd7bdec3324c5624bade7f31e75d580c67d22cb24f2de4f1389800c0e"
+  },
+  "source_sha256": {
+    "fast_ants/__init__.py": "2a381f23966b94e0b8b101294ed56a2819ff0dd9a8f06b7e045a589a61d74cb2",
+    "fast_ants/__main__.py": "55384ff094855148b33e408a70554b7424dd7a4ee15c80df5c9fe2d4465d0a54",
+    "fast_ants/_compat.py": "8d7bead1ac3b636bac6ca95a729d0d88867810179f7ace130f943d3ae1bd7c2b",
+    "fast_ants/api.py": "c753a4c7ae50ae838982b0d473121aa21a480b8bcb87788279ca198338441810",
+    "fast_ants/backends/__init__.py": "dfa0189c49f38854daa996c5f0f42a52d9f7d6c6e39b0ffe6ee06489b70559e5",
+    "fast_ants/backends/cpu/__init__.py": "e38306d01fd21faffb10ae2fd2f777916740978c028c812d8a818265581a3f43",
+    "fast_ants/backends/cpu/common/__init__.py": "16843380c9a3a1b5afe2faf0da9f3649e826a98cdf12f2b7c0d19a9170e1df5b",
+    "fast_ants/backends/cpu/common/geometry.py": "b8bee9dd0940b45252088986d096526913d7b1e895269ef7df290ae4d1826c6c",
+    "fast_ants/backends/cpu/common/reductions.py": "d10d9af0a16a9e6cd2d430d62fbc4f37f34e0d012d8f650425d7088d335d843f",
+    "fast_ants/backends/cpu/fp32/__init__.py": "1967a04baba3372e023e5cbe11bc14982fcbb5deceab22df0ca5a7344e5a0cb4",
+    "fast_ants/backends/cpu/fp32/dense_kernels.py": "277854d14fd360a0979c3172363c76688b8c36f7fce94ebd74ef0512b3bbbe55",
+    "fast_ants/backends/cpu/fp32/fields.py": "eef1ad61a03d4d551a80b11e63893ab0e394b097de919b79657c2884e19dffcf",
+    "fast_ants/backends/cpu/fp32/filtering.py": "be470f0d006bfd28db7dc7e9cbc769fac9770d7ba9ddf66327d4fdf35fee3d62",
+    "fast_ants/backends/cpu/fp32/gaussian_sections.py": "4b3202ab13e8e639cc1b26adad8a3c502ece791fd09b2c708cb7784347c4b63c",
+    "fast_ants/backends/cpu/fp32/images.py": "1db2d6ec28b4ad2b4caf1b287da89147dfbd20acf42fafc136af6b43a6a39a26",
+    "fast_ants/backends/cpu/fp32/inverse.py": "84862ccda359238ad2be58bb27d8ec5069b035b1d7d3700fdee577c93700f079",
+    "fast_ants/backends/cpu/fp32/kernels.py": "8f5dd80df80d2323273ae10e9007f5585151685eb56a06f7c8ec1eaffa97daed",
+    "fast_ants/backends/cpu/fp32/linear.py": "b5de712a11b8aa6f687cbeccae63857e062ff0945e824341c8275282ea7a8a00",
+    "fast_ants/backends/cpu/fp32/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+    "fast_ants/backends/cpu/fp32/metrics/background.py": "40da5b2c4723b2a69c5643ddcf1954737e8cf6ac6fab609eb0e429890e3e0dc2",
+    "fast_ants/backends/cpu/fp32/metrics/cc.py": "85f68a46ee45bbb68fbd178e465a1449db12c22d8a8be2cdda7791d6fe31315d",
+    "fast_ants/backends/cpu/fp32/metrics/cc_pair.py": "0d9eb823010fff4359bfa3fd0bf9ccecd29d03d970e5a05079ddf9096ae81da3",
+    "fast_ants/backends/cpu/fp32/metrics/cc_queue.py": "f8e44c133a73940fcc73d593234a0e18f874a627d0058c3d5a0766e0ea346a84",
+    "fast_ants/backends/cpu/fp32/metrics/cc_simd.py": "d963270ebc956292d970f0c68bd6f0968c4ed0db833c47817ed9617de9ebdb06",
+    "fast_ants/backends/cpu/fp32/metrics/coordinates.py": "5fd9938df4225af6031f977121bb04e3dfc3f69357d15aaf6e4a6c5d3b51bcb0",
+    "fast_ants/backends/cpu/fp32/metrics/derivative.py": "200e0d011018c2091993cc13487ff98e6fefeb039cfc4d7dd382212dc77c6df6",
+    "fast_ants/backends/cpu/fp32/metrics/mattes.py": "b828ad8514146329c22ebe7e99c06c4b025332c8537f9f8340421ddffa94a029",
+    "fast_ants/backends/cpu/fp32/metrics/mattes_kernels.py": "16717277a84757eeafc7eca882b09a6998d2ac5a252a0c588ab83c15f7aae096",
+    "fast_ants/backends/cpu/fp32/metrics/parzen.py": "275395ace64833db6a9b582f4787e79dfaf6080378b23e17ced4e07ed52ef8d4",
+    "fast_ants/backends/cpu/fp32/metrics/value.py": "923898036b7bf1fb1881b8bec083ac713fa62a785bedf921c9440efb1231b59b",
+    "fast_ants/backends/cpu/fp32/norms.py": "132a3f4b300cfb85f38201bfe9a12096f6869db75d2e99f91ebc00a728338079",
+    "fast_ants/backends/cpu/fp32/precision.py": "7b696b3b4518412c5f0d4c2e9c9a47b802893c7cae4b1be5cd04c6aa29ce8761",
+    "fast_ants/backends/cpu/fp32/registration.py": "8c388b469d0006383e47e41fd836fd656ee86c8f863df775cd1399b943fcd5c4",
+    "fast_ants/backends/cpu/fp32/syn.py": "e37218c581fe22b44f601e7ebda38c07d4d64c615d9b322c93b8a2c4f67a043a",
+    "fast_ants/backends/cpu/fp64/__init__.py": "ab09ed900e030981ef8f9aeefae1985575b25283150c9723917dc7fd8bdcf8d4",
+    "fast_ants/backends/cpu/fp64/field_kernels.py": "d95603767d22eab18a6de29c592cbbe384d2094b2ccb5ea29c222d8f49dd7a35",
+    "fast_ants/backends/cpu/fp64/fields.py": "f54cbf8d1bb80188f1046365b5bda0ca194d69f31153079a04c6e82292b96e05",
+    "fast_ants/backends/cpu/fp64/filter_kernels.py": "249180d01c44f83eb6f70ba8affef2293cce3da18c6ba5e6f1d9b2175c8f9262",
+    "fast_ants/backends/cpu/fp64/filtering.py": "362c50b10beaf2db892b94d1bbec38f7e4a522edbfcc384420ab57031da4a436",
+    "fast_ants/backends/cpu/fp64/gradients.py": "751fb2876a19ea74bac6e31f56aa3baf9873dbd27c645c57864780287e28a907",
+    "fast_ants/backends/cpu/fp64/linear.py": "80369dfd4a8de02a4095f5b6a8403d7bdba43fca80140f3245de05f1a27f1e60",
+    "fast_ants/backends/cpu/fp64/local_fields.py": "131e50ab8da582784497f9b98faf4047133532248c398910dd1b13e156213580",
+    "fast_ants/backends/cpu/fp64/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+    "fast_ants/backends/cpu/fp64/metrics/cc.py": "6c25eb94272414b210a5560ffb99440734057a25d2fb910d8e31246cd85292c0",
+    "fast_ants/backends/cpu/fp64/metrics/cc_kernels.py": "a2a6f09dc6f4bf2213af2df115eb545f82b55317e4f73cd13f11ad8ac21f5dc1",
+    "fast_ants/backends/cpu/fp64/metrics/cc_pair.py": "111b4586b427d6b90e24834dc9e2a023140daceffce765327086106d5964b4dd",
+    "fast_ants/backends/cpu/fp64/metrics/linear_fused.py": "cc5c097bd3f048016a313a422ae26c28557d72dcf5ff49361f97dd25b1d9aaf6",
+    "fast_ants/backends/cpu/fp64/metrics/mattes.py": "cbc86021ee84789b21ffd640e9ca56d05a9d1c65faf2bd315ad8d7b3692232ec",
+    "fast_ants/backends/cpu/fp64/metrics/mattes_kernels.py": "70ae0d663c222e94538c36c0d5dc2e567c1d158d31127e60dcc9d9a4580ff3d3",
+    "fast_ants/backends/cpu/fp64/preprocessing.py": "22be9aae2178a48f2da3021d344a2efbf0cd9376b27d220f649c6bbcb0b2598f",
+    "fast_ants/backends/cpu/fp64/pull.py": "da1f401031f0eef472564639a818e085837e91cc9738a08ecc833672dd356c74",
+    "fast_ants/backends/cpu/fp64/registration.py": "c88d3903c5314d78983dd9f0c2064668dd6cae3e9630e30f3d67ae7c0fd42fbe",
+    "fast_ants/backends/cpu/fp64/sampling.py": "ce989a15089af9cbfef21dbdb0b945755733eab6f4ae2d6d1025d3c5056fdee6",
+    "fast_ants/backends/cpu/fp64/sampling_kernels.py": "6681fd242db09ffe40de91f8aeebfb2062d00be147b4dab60a1379f3bf4b2fad",
+    "fast_ants/backends/cpu/fp64/syn.py": "1aa1b174866402a5cbac4132535b4cb31f5a1fa4c19e45e62956d05bed6c0273",
+    "fast_ants/backends/cuda/__init__.py": "f8b5879d75d21c315aeb12d80c6d4507bee03858c35763a80c3ef971558c0bec",
+    "fast_ants/backends/cuda/common.cuh": "289388eb30d134f66485222cff608ecf8d3de48ed84a44df2918042d37962871",
+    "fast_ants/backends/cuda/fields/__init__.py": "713f4d2d931eadc27aba9caa481a324a2d5e912e3504bd389780dffc4cb2c3c4",
+    "fast_ants/backends/cuda/fields/inverse.py": "da5bb1a7c6ea2146f659bbb26e270134e24934e95591814a3e5cd550490c25f2",
+    "fast_ants/backends/cuda/fields/kernels.py": "e9a4e07bdbb3ddc0878312b0857db490164b9a8f072a443622ce09d555246eb5",
+    "fast_ants/backends/cuda/fields/operators.py": "1001eba7a654413a27b7dba6663ef54623e56ffe68e35d6336c7957cafd2793c",
+    "fast_ants/backends/cuda/filtering.py": "c3f920a156f4c3ea35d227692d39bf2f95670afe199601698bf55769a3e97dcc",
+    "fast_ants/backends/cuda/gaussian_sections.py": "e23f2b88da7d1a4281274e28278ebe041aaf0ca4730ff620096e4d9fd610d8c6",
+    "fast_ants/backends/cuda/geometry.py": "1e5d779867462a86ec668de33a22c9d131c5662bc4d15a169c24a8021c1c6688",
+    "fast_ants/backends/cuda/images.py": "a3e8e8e04161dc20d6c3860c43c0d276a8e2766e1a03c11d96aa9f070b23d8f2",
+    "fast_ants/backends/cuda/linear.py": "23f215a890425b56f27cf5cbc04dcec28e40cf68d86ec2b9f6860027d64fc0d1",
+    "fast_ants/backends/cuda/metrics/cc/__init__.py": "d94e70d5f34baf3b19e3923adf014b04fb27565a01a254777f5a3b5d095c7341",
+    "fast_ants/backends/cuda/metrics/cc/control.py": "92f375f6c6955d02e035af0f96972fe5a232c1f7fc942d195fa405db879a285c",
+    "fast_ants/backends/cuda/metrics/cc/dense.py": "3e41196d0abe9367bc41115587614c02d430390c21a9ad8e515d99dec0a167e1",
+    "fast_ants/backends/cuda/metrics/cc/operators.py": "f638ca92a845568f54db0914568eba2478e6fd64ca57dd93225eeeb6f96c69da",
+    "fast_ants/backends/cuda/metrics/cc/tiled.py": "6d8ec13a988a5a70dcabd77c4f94ef561d6ff2c8a6091c408f6743a2ef42469e",
+    "fast_ants/backends/cuda/metrics/mattes/__init__.py": "b39239a34e9b5fd6f1f175bdeed90e588188d66839817a57a8656cef4b27b806",
+    "fast_ants/backends/cuda/metrics/mattes/finalize.py": "3011483cadde85f348a43f365dc6ec460879b62d3549ac538eebf4dbeb75f401",
+    "fast_ants/backends/cuda/metrics/mattes/histogram.py": "671d9acfb462fcbfff5056f5ca8222542da07dbba365539eac2e5b355994f67c",
+    "fast_ants/backends/cuda/metrics/mattes/metric.py": "9d980e39ea8df13219f31f14cdecb43fdd4113e22ef08b0d5cbdfa400c28fef7",
+    "fast_ants/backends/cuda/metrics/mattes/sampling.py": "f7f3155b8ff8af4f001e5db24127954064da248e094464aa565a0f3a4f775da1",
+    "fast_ants/backends/cuda/moments.py": "446f30bddcddc3240526af1fd812cedae9d0682979867900bdc1c4b24fccc367",
+    "fast_ants/backends/cuda/ops.py": "40e5c3327f605531bbdeee4b4f5aeb0a0513d47b748c95f8546dbd4e0182fe53",
+    "fast_ants/backends/cuda/output_quality.py": "c568a6eaa2f2163ad5648b185389d08768943183881359078bcc77832091e67a",
+    "fast_ants/backends/cuda/preparation.py": "61c5b1e53157489bf7a71a4b75833364bb707dddff666bf9779c059a445ac42b",
+    "fast_ants/backends/cuda/reductions.py": "97448573133280eac4bd02df50989699f9736bb289110785a7da38f39f51fa61",
+    "fast_ants/backends/cuda/registration.py": "56caecc4c7bc9ce6968c6ddd12da3eaa835904728ba3d04e225b46551166dcb0",
+    "fast_ants/backends/cuda/runtime.py": "780b41ba1fb1ca312834e9b36f9ad9e8da7c116589193c61ad0490a821886759",
+    "fast_ants/backends/cuda/syn.py": "61ead304b1cdd37024c796b0248a7a5d94a781614a0dfdef0cdbf8aa60bdb684",
+    "fast_ants/backends/cuda/types.py": "0f66217640209fe824200e10eb94c3e07d211a5636924bab3be8bc454d1ea8d8",
+    "fast_ants/backends/metal/__init__.py": "f243a4145e574d7e7345527978f9c2c88698f1199955eca32524c11983bcc74a",
+    "fast_ants/backends/metal/common.metal": "744d2ddd70d8a83f8681b3e51e62c44ea783d6271921cf80b58f551c78a9710b",
+    "fast_ants/backends/metal/dense.py": "59ed6d31885453c684aa5e9ee452bc48893c2b6d3bc0d557321cfca1ac8d0fc3",
+    "fast_ants/backends/metal/fields/__init__.py": "c988c8fa6b0a028828054fc76224bd2b16b36a93d226be1141dd6773473290d7",
+    "fast_ants/backends/metal/fields/composition.py": "17e6e3a92afdd69556289384f3997b640cc2774a15341047c70f874d544cd988",
+    "fast_ants/backends/metal/fields/inverse.py": "e210bd5eee6b932597df6d7e5136c5b0e584a492e79aa4b5d91ba8601868d77a",
+    "fast_ants/backends/metal/fields/kernels.py": "f76c9ef9c7138746cf6296faffb9d5b390ad746e5b4c2720fa506c4f153b9341",
+    "fast_ants/backends/metal/fields/operators.py": "0d26230f24b28479eed2085a61e7d955ad1ffb4f3dabb9eddf0ed5c7e400c7d5",
+    "fast_ants/backends/metal/fields/overlap.py": "00590882d05bd8c133c91e59239cc7447a9e2f6e5ffd597f56563bf79fc23e58",
+    "fast_ants/backends/metal/filtering.py": "85e3989f545a304082c41cc9de53b27f2e1e09bfcd760cf0963d2c9af08d036e",
+    "fast_ants/backends/metal/gaussian_sections.py": "96b948daf2d39ebb32970b05eba8745e6522fa16dd3f70b3eeafd561b774790e",
+    "fast_ants/backends/metal/geometry.py": "e4f07c5b94100f5040370545eb0ddd1d2a3269f21d34d40184e2985028e8d8df",
+    "fast_ants/backends/metal/images.py": "7fe9a30e64e243900bc3674509050dd16ac33a1fbfd022598d5e35e4488fded1",
+    "fast_ants/backends/metal/linear.py": "1a09ddb24f84508f890daa66e93facc6b5434195911a26a746dc6d07ae8b60bc",
+    "fast_ants/backends/metal/metrics/__init__.py": "36ed64bfe66c201f319497efa755c897102ad8b1271e4458a1e75ca53830ee4a",
+    "fast_ants/backends/metal/metrics/cc/__init__.py": "b9f4d2d8832734bdcbe841999e8aedd1c12c07bb63a6ecf1ad84a72e10707831",
+    "fast_ants/backends/metal/metrics/cc/control.py": "c32325a7cb3fb4143f81d7108ac7c6eb03e291170c96ca0fd3fdb2752dc408bd",
+    "fast_ants/backends/metal/metrics/cc/dense.py": "589edb21382cab595e378297ae445dc656f645aeacb5edd6b5c686305a875c18",
+    "fast_ants/backends/metal/metrics/cc/gradient.py": "cf9db4069a0dafb440bc31d491274f44cd167b128070e3a2f95b6b2f39a1ecc4",
+    "fast_ants/backends/metal/metrics/cc/operators.py": "0e7702a44717e62aa5db03667bb4af8df81d093090fe85cd6a1bac8bd3dbf6e2",
+    "fast_ants/backends/metal/metrics/cc/tiled.py": "6456faabc8170cba00d04a87a8f35e41019047ce7beb102301248f966ec31242",
+    "fast_ants/backends/metal/metrics/cc/window.py": "e44c632c65b37e1df84972bcefd4a7e4d335cd57ce75775faf606126045fcccd",
+    "fast_ants/backends/metal/metrics/mattes/__init__.py": "e3d78b307de5a10d50111abc869f03a9aec7b068332af3b54165473611cd4e00",
+    "fast_ants/backends/metal/metrics/mattes/derivative.py": "cc19af64b62b8159552b2da8c680308f6a6ce3e7efa5e23cbf526776ca7fee68",
+    "fast_ants/backends/metal/metrics/mattes/finalize.py": "6b6d0abbd7dbc5697661b49daf5337f2b88256f31a575636bf4f9c01bb118645",
+    "fast_ants/backends/metal/metrics/mattes/finalize_fused.py": "feb447b394a72d2a58b081986d837c4b588c0b8bbee99f60f16219881f943025",
+    "fast_ants/backends/metal/metrics/mattes/histogram.py": "ed64f2b1f57ba13d94ccf48915d417376235a8e84703fa1a3a57432f073f3e3e",
+    "fast_ants/backends/metal/metrics/mattes/metric.py": "57b5036181c8789c315dc351a355582fcdb0cc681197269ae573cda05b08db50",
+    "fast_ants/backends/metal/metrics/mattes/sampling.py": "49a381aff7d4c32f9a72054f11a0e972ab6ad9f0e08d8ac7f912028ba1d30ae6",
+    "fast_ants/backends/metal/moments.py": "b80dc5e7f293dcbb24343f5a278f2d3c40a9a7879a810a46a136f8936660e226",
+    "fast_ants/backends/metal/ops.py": "c8d34d844e968928943d4b69f527fd62801a85652dee77264d9546cb5c0dc0e1",
+    "fast_ants/backends/metal/preparation.py": "915eba1f35c5ac157024a2eacc00ec66bd7bf73ee034c9a5043e057d57928711",
+    "fast_ants/backends/metal/reductions.py": "13c819d4107397d375058b7571800af60ef22c64b498cc20558ad3266713aaa6",
+    "fast_ants/backends/metal/registration.py": "f13a03dfbb69b6cbcd5da343472167e1690f685307875fb5173681a71e313982",
+    "fast_ants/backends/metal/runtime.py": "4fe58191e0d399277cfe2750b782b817a68925cbaca33dcc463982992b5a0bc0",
+    "fast_ants/backends/metal/serial.py": "95ad01c5185b8406e925f928852b4cc1818aabc0be5fc63a109d9d2354d63ea0",
+    "fast_ants/backends/metal/syn.py": "1f7bcfa5082764877cf507834f3601c3e05a9e55b1a2594c18f75c88916447a4",
+    "fast_ants/backends/metal/types.py": "f501fbd7b24d66d4f50301b0c10bc93cc58956aae2455c32812b81460778e01a",
+    "fast_ants/cli.py": "ab85ffa69607910e128271af46f0ce41319205d98d14eb2a1d7815f77e5ff015",
+    "fast_ants/core/__init__.py": "29edc42bddb8493b94fb4eea16c9b50255abd98cc5da90bce39af520c92bf9dc",
+    "fast_ants/core/arithmetic32.py": "48cd7b74330acbfcd0f3ceffb6a58e303a098f501f175c5ccd5961d7ff25e555",
+    "fast_ants/core/arithmetic64.py": "671d833bc4011c8c913f99112d39f764b53a1d8058d413052aef982b80ebed92",
+    "fast_ants/core/config.py": "ea712b5d24d831979e3a164723a7fa424c66d87d723c24158731b42d6c854c40",
+    "fast_ants/core/fields.py": "5675b95d9d51c8b4a6cf00994fb48cd34f8a297d3ea643528097839ddd81a53d",
+    "fast_ants/core/linalg.py": "644aee59a6e75f4a52dad046350027ac18a153acc8ea7860eb092e29e339db51",
+    "fast_ants/core/results.py": "722bcd2410b2b7ae6a3acc393d57742a78ee32a8e21ac2ee054f6e6692777444",
+    "fast_ants/core/state.py": "61ef3080f71c16c3895ebc6d66b684495c344b64639344c3be28b69a18bc54dd",
+    "fast_ants/core/transforms.py": "19a645eba7819ff2aa0cae6d48df3212655c1f3f75fd711ae9675cfa58181ede",
+    "fast_ants/core/types.py": "f81ac6782cf8ddbef0ed58b82ed47cfeb3bd52d80a204e4b1364d1e9a63b6f84",
+    "fast_ants/io/__init__.py": "c934962b4598342698feb58e7915f8b863eeea9e7ed44e2336ca2f41329fda0b",
+    "fast_ants/io/images.py": "ea591d7b57004d307c1c1b605d9a88e6c55275f663c3bcb7e71d061003b54645",
+    "fast_ants/io/nifti.py": "08bbd5a6ccf9712dbc8e11d2ebec776ef03f28ece6f98c08f8620c28f848fd5a",
+    "fast_ants/io/transforms.py": "fbadf4d9e998aab4e3af59f9ee9d85c6620d3c0a466043229a657c6f0a184cf5",
+    "fast_ants/pipeline/__init__.py": "1d53b82bd3384971bd92d0b830382b2e1d9c7abb4dc436cee9471ba41731fe2c",
+    "fast_ants/pipeline/convergence.py": "ff5e5b24dfd92d6a8ca189bceaecb024babdfa86066addd9f1f81bca40dcdb46",
+    "fast_ants/pipeline/float1_policy.py": "a235d3244ebcdb93e50c61580a35b4a47894122fdaa630cb63560b95a12f5faa",
+    "fast_ants/pipeline/gaussian.py": "95fa1ce8c4d4418467ec2cfbde9db35ad69f963d4118a8463d685903786fa7a5",
+    "fast_ants/pipeline/masks.py": "287772c2ad2340f067d8ad8bac98a94299bbfad2ed567cf5a89e4a67728f8744",
+    "fast_ants/pipeline/mattes32.py": "6a06df102bac6d729dcd153857e9b9b21191e8493ee23ea73bfadf6ff2cfe3c4",
+    "fast_ants/pipeline/mattes64.py": "45cd9c8f9942b8bcc12c05c1f1ac78fb26a582d6b9d20c4bd0dec7098f396d5e",
+    "fast_ants/pipeline/models32.py": "614e3d70b14b73d994a12d0d7c75191e668bad8fc01a3727af7610259d2035ef",
+    "fast_ants/pipeline/models64.py": "7dd2025e7009f8d80903a3a99536adc4fb73ff5123a260f50c87b1b0035072d5",
+    "fast_ants/pipeline/optimizer32.py": "e501a40afb3dc2a765ec769356f8f8df2dd1717737ffe762796d3a2da157c310",
+    "fast_ants/pipeline/optimizer64.py": "326ccdcb4541edb1abc0e99c731af16092a361287d1d9ee021fff8c132f739de",
+    "fast_ants/pipeline/preprocessing.py": "4364eb524bde7f34aff97649db09e9294e7fdf0a9964a865d1faa9be5c9499fd",
+    "fast_ants/pipeline/pyramid.py": "5549b0b1f6341d8241ad8b93da30d5ec0a902dddec916881a0c6c7d9979fb514",
+    "fast_ants/pipeline/sampling_plan.py": "4b0d70679b4bdb2c0b8db52e8773bf303997d69fc12881d7047ca63513f99e58",
+    "fast_ants/presets/__init__.py": "f6af1193f69b8f99373570f5f0a41d3b1de7cd95e2f3b65028ced6c4d30ec215",
+    "fast_ants/presets/brain-syn.json": "3ac1261661f46ee6c45e91beb7b3cbd39fc36e5ab0dd2d9339ae9bc0d1dab82e",
+    "fast_ants/progress.py": "bcf6f82bfb1b7d7902502b19d50fde4f1ca53df6ba9d97c1a09cf642c25fccbb",
+    "fast_ants/quality/__init__.py": "07ae700646db48a5a66b30e898adcb516e5ada6a45dcc99c9b31e948e6c7c60d",
+    "fast_ants/quality/metrics.py": "c98f0aea12f6b7f43fe13dd6e552e3c0f83580bcf6ee77a897a7458bd79d26d8",
+    "fast_ants/quality/output_kernels.py": "f9f8d1bbed94876a7de5e096e83c3190e7bd2fa777b23beff0a662c3aba479fb"
+  },
+  "recipe": {
+    "schema_version": 1,
+    "purpose": "Full-resolution brain MRI performance: controlled dense variant of pinned antsRegistrationSyN.sh -t s; not the unmodified stock preset",
+    "threads": 32,
+    "random_seed": 20261022,
+    "dimensionality": 3,
+    "interpolation": "Linear",
+    "initialization_feature": 1,
+    "histogram_matching": false,
+    "winsorization": null,
+    "masks": null,
+    "sampling": {
+      "strategy": "None",
+      "fraction": 1.0,
+      "gradient_filter": false
+    },
+    "convergence": {
+      "threshold": 1e-06,
+      "window": 10
+    },
+    "stages": [
+      {
+        "transform": "Rigid[0.1]",
+        "metric": "MI",
+        "bins_or_radius": 32,
+        "iterations": [
+          1000,
+          500,
+          250,
+          100
+        ],
+        "shrink_factors": [
+          8,
+          4,
+          2,
+          1
+        ],
+        "smoothing_sigmas": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "smoothing_units": "vox"
+      },
+      {
+        "transform": "Affine[0.1]",
+        "metric": "MI",
+        "bins_or_radius": 32,
+        "iterations": [
+          1000,
+          500,
+          250,
+          100
+        ],
+        "shrink_factors": [
+          8,
+          4,
+          2,
+          1
+        ],
+        "smoothing_sigmas": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "smoothing_units": "vox"
+      },
+      {
+        "transform": "SyN[0.2,3,0]",
+        "metric": "CC",
+        "bins_or_radius": 2,
+        "iterations": [
+          100,
+          70,
+          50,
+          20
+        ],
+        "shrink_factors": [
+          8,
+          4,
+          2,
+          1
+        ],
+        "smoothing_sigmas": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "smoothing_units": "vox"
+      }
+    ],
+    "default_cases": [
+      "ixi002_to_ixi012"
+    ],
+    "repeat_fp64_case": "ixi002_to_ixi012",
+    "timeout_per_command_seconds": 7200,
+    "source_recipe": {
+      "url": "https://github.com/ANTsX/ANTs/blob/38144917d78c20144f4a70e4a6e03c059aaefef8/Scripts/antsRegistrationSyN.sh",
+      "local_script_sha256": "1b183b5365bc89821b5ec794090151cab4c8a305e262223041083a8aaf288819",
+      "intentional_deviations": [
+        "linear dense sampling instead of Regular 0.25",
+        "winsorization disabled instead of [0.005,0.995]",
+        "one final warped image for both engines; no inverse-warped intensity image"
+      ],
+      "scope": "current independently implemented CPU FP64 options only; stock preset retained separately"
+    },
+    "shrink_factor_policy": "ants_physical_spacing"
+  },
+  "recipe_sha256": "1ed56c33e1dcc7ed3215cb588a75b9b58d6bd7d14c3bc73a405e80610d6de58e",
+  "ants_version": "ANTs Version: 2.6.5.dev1-g89fa5be\nCompiled: Apr 27 2026 14:11:35",
+  "ants_binary_sha256": "92324b160447e6dc18093622810b60610ea60851e68697ffea33e98f8f2f4800",
+  "measurement": {
+    "registration_threads": 32,
+    "blas_threads": 1,
+    "repeats_per_engine": 2,
+    "summary_statistic": "median of two formal fresh processes",
+    "timing_scope": "Fresh target startup/imports, reads, registration, synchronization/downloads, built-in QA and completed output writes; external timer startup excluded",
+    "cache_policy": "One excluded full compilation warmup per Python backend; input bytes read before every run; official C++ has no JIT warmup; all formal runs use populated disk/JIT and input caches",
+    "output_policy": "Fast ANTs gzip0 with built-in QA; official ANTs retains its native writer defaults and performs no additional Python QA; no time is subtracted",
+    "engine_order": [
+      {
+        "engine": "cuda-fp32",
+        "label": "warmup"
+      },
+      {
+        "engine": "cpu-fp32",
+        "label": "warmup"
+      },
+      {
+        "engine": "cpu-fp64",
+        "label": "warmup"
+      },
+      {
+        "engine": "cuda-fp32",
+        "label": "repeat-1"
+      },
+      {
+        "engine": "cpu-fp32",
+        "label": "repeat-1"
+      },
+      {
+        "engine": "cpu-fp64",
+        "label": "repeat-1"
+      },
+      {
+        "engine": "ants-float1",
+        "label": "repeat-1"
+      },
+      {
+        "engine": "ants-float0",
+        "label": "repeat-1"
+      },
+      {
+        "engine": "ants-float0",
+        "label": "repeat-2"
+      },
+      {
+        "engine": "ants-float1",
+        "label": "repeat-2"
+      },
+      {
+        "engine": "cpu-fp64",
+        "label": "repeat-2"
+      },
+      {
+        "engine": "cpu-fp32",
+        "label": "repeat-2"
+      },
+      {
+        "engine": "cuda-fp32",
+        "label": "repeat-2"
+      }
+    ],
+    "registration_script_sha256": "1c78ec6b6b94e14d11e2bdffd17c190a085a00cfc0651f0c29679ae2e19b3a2e",
+    "saved_output_qa_script_sha256": "6e7e950d6cd3154a4a3ec3aebe5265d35e956cdb8edc21dc09c2ed5854006a93",
+    "raw_timing_report_sha256": "e0f3885c48fc5aaee2b7c52ef94b7dd5fdd9435c28178dedeb7e9702695d3e23",
+    "raw_quality_report_sha256": "2a27468deaf37b1c9829386e02f4412cf7070296d0d1594e7f8b6e1e58e51dbb",
+    "integrity": {
+      "source_unchanged": true,
+      "inputs_unchanged": true,
+      "tools_unchanged": true,
+      "recipe_unchanged": true,
+      "ants_binary_unchanged": true
+    }
+  },
+  "summary": {
+    "cuda-fp32": {
+      "seconds": [
+        8.432318698964082,
+        8.038266754942015
+      ],
+      "median_seconds": 8.235292726953048,
+      "precision_matched_ants_over_backend": 40.59565957356156
+    },
+    "cpu-fp32": {
+      "seconds": [
+        51.13992969796527,
+        52.432321256026626
+      ],
+      "median_seconds": 51.78612547699595,
+      "precision_matched_ants_over_backend": 6.45572799572583
+    },
+    "cpu-fp64": {
+      "seconds": [
+        84.17604050796945,
+        86.98746812005993
+      ],
+      "median_seconds": 85.58175431401469,
+      "precision_matched_ants_over_backend": 4.6310762495216125
+    },
+    "ants-float1": {
+      "seconds": [
+        333.7343617849983,
+        334.8999182790285
+      ],
+      "median_seconds": 334.3171400320134
+    },
+    "ants-float0": {
+      "seconds": [
+        395.5195992720546,
+        397.1516603199998
+      ],
+      "median_seconds": 396.3356297960272
+    }
+  },
+  "quality": {
+    "status": "saved_output_quality_verified",
+    "timing_report_sha256": "e0f3885c48fc5aaee2b7c52ef94b7dd5fdd9435c28178dedeb7e9702695d3e23",
+    "scope": "Same CPU FP64 sampler; fixed foreground above5% range; four coarse exploratory landmarks; saved forward/inverse fields assessed outside timing",
+    "identity": {
+      "foreground_ncc": 0.17135375768910102,
+      "foreground_points": 3236832,
+      "landmark_mean_mm": 21.489476561183917,
+      "landmark_maximum_mm": 25.26853800409598,
+      "finite": true
+    },
+    "runs": [
+      {
+        "engine": "cuda-fp32",
+        "label": "repeat-1",
+        "foreground_ncc": 0.6643971351351612,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4336698291900505,
+        "landmark_maximum_mm": 3.392874161872951,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.16148698836544229,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.17175537793527537,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.40948444772933,
+              "rms_l2_mm": 0.023655622544849687,
+              "p99_l2_mm": 0.08572514123814705
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.48936720303044834,
+              "rms_l2_mm": 0.021968665326941243,
+              "p99_l2_mm": 0.08174250320312608
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "cpu-fp32",
+        "label": "repeat-1",
+        "foreground_ncc": 0.664355182230435,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4309387373605211,
+        "landmark_maximum_mm": 3.3913482386942277,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.16096389741370576,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.17231156994388738,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4099157904415376,
+              "rms_l2_mm": 0.02363460993812585,
+              "p99_l2_mm": 0.0857011750498397
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.48866003402943425,
+              "rms_l2_mm": 0.02193228475502893,
+              "p99_l2_mm": 0.08157980939452271
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "cpu-fp64",
+        "label": "repeat-1",
+        "foreground_ncc": 0.6644173042329239,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4344569057061123,
+        "landmark_maximum_mm": 3.3590008253859893,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.17042561201661324,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.16180418796237447,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4409589682276011,
+              "rms_l2_mm": 0.023478145257557908,
+              "p99_l2_mm": 0.08499376956291904
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.48868179264863887,
+              "rms_l2_mm": 0.021594449837342586,
+              "p99_l2_mm": 0.08002876542587117
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "ants-float1",
+        "label": "repeat-1",
+        "foreground_ncc": 0.6629039341224866,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4252645142570195,
+        "landmark_maximum_mm": 3.3914427397714517,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.1634093665890368,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.1806953734628267,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.404300725025601,
+              "rms_l2_mm": 0.02311467927571548,
+              "p99_l2_mm": 0.08371506352458737
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.47238058036247854,
+              "rms_l2_mm": 0.02110031284208284,
+              "p99_l2_mm": 0.07839264970744877
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "ants-float0",
+        "label": "repeat-1",
+        "foreground_ncc": 0.6639372515455005,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4335770152683398,
+        "landmark_maximum_mm": 3.358403341797298,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.17208608650809193,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.1632366304204398,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4414199724911044,
+              "rms_l2_mm": 0.02333312273491086,
+              "p99_l2_mm": 0.08443995315406383
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.47212136626311,
+              "rms_l2_mm": 0.02133595262553496,
+              "p99_l2_mm": 0.07912587936366217
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "ants-float0",
+        "label": "repeat-2",
+        "foreground_ncc": 0.6639372515454833,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4335770152683691,
+        "landmark_maximum_mm": 3.358403341797316,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.1720860865081054,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.16323663042046438,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.44141997249077286,
+              "rms_l2_mm": 0.023333122734909357,
+              "p99_l2_mm": 0.08443995315320521
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4721213662634439,
+              "rms_l2_mm": 0.021335952625531576,
+              "p99_l2_mm": 0.07912587936331876
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "ants-float1",
+        "label": "repeat-2",
+        "foreground_ncc": 0.6644157115936851,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4332871340836209,
+        "landmark_maximum_mm": 3.391679002635749,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.16112452087310855,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.17143361752291353,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.41119961884786754,
+              "rms_l2_mm": 0.023658510517741614,
+              "p99_l2_mm": 0.08576363040724891
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4905444404457699,
+              "rms_l2_mm": 0.021954252857794714,
+              "p99_l2_mm": 0.08168361190361992
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "cpu-fp64",
+        "label": "repeat-2",
+        "foreground_ncc": 0.6644173042329239,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4344569057061123,
+        "landmark_maximum_mm": 3.3590008253859893,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.17042561201661324,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.16180418796237447,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4409589682276011,
+              "rms_l2_mm": 0.023478145257557908,
+              "p99_l2_mm": 0.08499376956291904
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.48868179264863887,
+              "rms_l2_mm": 0.021594449837342586,
+              "p99_l2_mm": 0.08002876542587117
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "cpu-fp32",
+        "label": "repeat-2",
+        "foreground_ncc": 0.664355182230435,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4309387373605211,
+        "landmark_maximum_mm": 3.3913482386942277,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.16096389741370576,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.17231156994388738,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4099157904415376,
+              "rms_l2_mm": 0.02363460993812585,
+              "p99_l2_mm": 0.0857011750498397
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.48866003402943425,
+              "rms_l2_mm": 0.02193228475502893,
+              "p99_l2_mm": 0.08157980939452271
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      },
+      {
+        "engine": "cuda-fp32",
+        "label": "repeat-2",
+        "foreground_ncc": 0.6629790528150178,
+        "foreground_points": 3236832,
+        "landmark_mean_mm": 1.4310392974165451,
+        "landmark_maximum_mm": 3.392239971489504,
+        "finite": true,
+        "regularity": {
+          "jacobian_minimum": 0.1649759310201773,
+          "nonpositive_jacobian_points": 0,
+          "inverse_jacobian_minimum": 0.17817163478651124,
+          "nonpositive_inverse_jacobian_points": 0,
+          "forward_field_finite": true,
+          "inverse_field_finite": true,
+          "forward_jacobian_finite": true,
+          "inverse_jacobian_finite": true,
+          "inverse_consistency": {
+            "forward_after_inverse": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.39913290621328146,
+              "rms_l2_mm": 0.023100640835920415,
+              "p99_l2_mm": 0.08368481044667152
+            },
+            "inverse_after_forward": {
+              "common_valid_points": 9830400,
+              "total_points": 9830400,
+              "max_l2_mm": 0.4830579171994055,
+              "rms_l2_mm": 0.021166278725267784,
+              "p99_l2_mm": 0.07870167912519643
+            }
+          }
+        },
+        "saved_warped_finite": true,
+        "geometry_matches_fixed": true
+      }
+    ]
+  },
+  "runs": [
+    {
+      "engine": "cuda-fp32",
+      "label": "repeat-1",
+      "whole_process_seconds": 8.432318698964082,
+      "host_before": {
+        "load_average": [
+          62.02,
+          56.04,
+          53.64
+        ],
+        "cpu_busy_percent": 1.1060834590246316,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          60.63,
+          55.94,
+          53.64
+        ],
+        "cpu_busy_percent": 0.8028098344204704,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 8, 62, 45"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "69c23a97b8de8849c280a7af0d77a6063ee35e196fccef1a37ac132e6e534c56"
+        },
+        "forward_warp": {
+          "bytes": 117978675,
+          "sha256": "6dff594fde811849be8d0ef8dafa4edcb1506008047ba73ade4add80429cf6ff"
+        },
+        "inverse_warp": {
+          "bytes": 117978675,
+          "sha256": "a3dfd3e5643ff56dca54465c8279a45185502bc4fdfffefe6024b9c042eec6b2"
+        },
+        "warped": {
+          "bytes": 39326475,
+          "sha256": "945c51665914fcb6be728969df9effbb64e402e6ac5007c988b3fa70d2491096"
+        },
+        "run.json": {
+          "bytes": 5634,
+          "sha256": "e6dfa273ee170bc79347be1b0741a2158fccb1ec1b0968a262c64a35461615f7"
+        },
+        "history.json": {
+          "bytes": 1180816,
+          "sha256": "4b4e4ca71ce94f87bb08f57e41958d12718e7a5ee5f9127a7b789f41a78bac67"
+        },
+        "configuration.json": {
+          "bytes": 7807,
+          "sha256": "3c0c3cb3226cfbf7c7affe66f096460c5487719484dee3d828f36074f28a846c"
+        },
+        "quality.json": {
+          "bytes": 1161,
+          "sha256": "906bb715a20062bd0c062e416235929b4824399ef1faefda26f58ae81b25a843"
+        }
+      }
+    },
+    {
+      "engine": "cpu-fp32",
+      "label": "repeat-1",
+      "whole_process_seconds": 51.13992969796527,
+      "host_before": {
+        "load_average": [
+          60.63,
+          55.94,
+          53.64
+        ],
+        "cpu_busy_percent": 2.5239777889954573,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 44"
+      },
+      "host_after": {
+        "load_average": [
+          67.56,
+          58.83,
+          54.76
+        ],
+        "cpu_busy_percent": 0.8551307847082468,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 38"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "20c42bdb74c7948a49de58b0de820d7e2dc5116ad259d3936ed288f3666abe59"
+        },
+        "forward_warp": {
+          "bytes": 117978675,
+          "sha256": "44da23890aa0a485902b19c1d36545167649a83f58bf7baddba1ce638349e281"
+        },
+        "inverse_warp": {
+          "bytes": 117978675,
+          "sha256": "b376980d498575d1fa7ad7f6cde270634ea656b2fcf37d05fbd574671e25c434"
+        },
+        "warped": {
+          "bytes": 39326475,
+          "sha256": "235e11236fa0ea0696e8216943f0aaed0558930b34ce655ec172cb534c027d98"
+        },
+        "run.json": {
+          "bytes": 5239,
+          "sha256": "5430860ac2f80406ee493c0e88116bfe5e076ed0f66e4308b14aa29dc2d8a4fd"
+        },
+        "history.json": {
+          "bytes": 1172436,
+          "sha256": "11b0574b1a02aa8b3bb776fcf3e15c945ac30a0f9be98e218c63a33e1c31fdc7"
+        },
+        "configuration.json": {
+          "bytes": 3844,
+          "sha256": "701de26dd72d710e4718f0fb8eb603f8c0da827cea69794bd52d541e14e8afc1"
+        },
+        "quality.json": {
+          "bytes": 768,
+          "sha256": "af7351e2b6543f1a4142babef3161372e3585e396e3bb46e16383a7fd7f4209f"
+        }
+      }
+    },
+    {
+      "engine": "cpu-fp64",
+      "label": "repeat-1",
+      "whole_process_seconds": 84.17604050796945,
+      "host_before": {
+        "load_average": [
+          67.56,
+          58.83,
+          54.76
+        ],
+        "cpu_busy_percent": 1.7034068136272507,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 38"
+      },
+      "host_after": {
+        "load_average": [
+          72.74,
+          62.74,
+          56.5
+        ],
+        "cpu_busy_percent": 0.9058882737795648,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "c8ffcf3eac2bf073654ca85edb227e7bb3da29a3852f3547c3747a2387743bd2"
+        },
+        "forward_warp": {
+          "bytes": 235956975,
+          "sha256": "8c9b6d8bd0f7cf3a0825735b9a00fefe90ac598aaba67a2ce09610608087e1bd"
+        },
+        "inverse_warp": {
+          "bytes": 235956975,
+          "sha256": "ed15d1b4485b07e7d99fccc54bdc4cae8d4f80e14a468107f749bf3f9b59fe33"
+        },
+        "warped": {
+          "bytes": 78652575,
+          "sha256": "8dffeb61ef7b718a68b30513d2ec6e128691268b0b12f535d4f976159c4c395a"
+        },
+        "run.json": {
+          "bytes": 5300,
+          "sha256": "37dbeb63a7c0a4e99a32eea927001451ad26bb5ff162623b24855003c9159573"
+        },
+        "history.json": {
+          "bytes": 898143,
+          "sha256": "ce8737f838c8d8099818789e819220c0da0336cff10c53e9c5ef118ecbe1ff2a"
+        },
+        "configuration.json": {
+          "bytes": 3129,
+          "sha256": "3867f3b8708dc5edd18b1cc73ca0e68a8f954f9aa4252d72304acbb9e5da8717"
+        },
+        "quality.json": {
+          "bytes": 827,
+          "sha256": "1498a136b107fc39c2697479eeacae768364b067d11cadb77edd607f6917d0d2"
+        }
+      }
+    },
+    {
+      "engine": "ants-float1",
+      "label": "repeat-1",
+      "whole_process_seconds": 333.7343617849983,
+      "host_before": {
+        "load_average": [
+          72.74,
+          62.74,
+          56.5
+        ],
+        "cpu_busy_percent": 1.1563599798893875,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          65.53,
+          65.56,
+          59.7
+        ],
+        "cpu_busy_percent": 0.40180813661476744,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 132,
+          "sha256": "8c53056b8177ccc4d039487c29ada99bfdc9efc04be8ce5012ef4fe685e42fd6"
+        },
+        "forward_warp": {
+          "bytes": 107083613,
+          "sha256": "d92b91c7b81f54d089848949a4f3a696bd1e3330bed26b75dbaa3ab2e4bc2154"
+        },
+        "inverse_warp": {
+          "bytes": 107091536,
+          "sha256": "69dca209d55d074c9704f2cf0ab39e4c4cacde5f035db28ba095d816a23c9f1e"
+        },
+        "warped": {
+          "bytes": 28030617,
+          "sha256": "0fe772bac63b208550e55a0b00ecae5f21a9001e7d90c13295676c34b18341d1"
+        }
+      }
+    },
+    {
+      "engine": "ants-float0",
+      "label": "repeat-1",
+      "whole_process_seconds": 395.5195992720546,
+      "host_before": {
+        "load_average": [
+          65.53,
+          65.56,
+          59.7
+        ],
+        "cpu_busy_percent": 0.45271629778671496,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          64.16,
+          67.48,
+          63.01
+        ],
+        "cpu_busy_percent": 0.35175879396984744,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "a5519ebf41a908222d363d1c65fbe6ad56665dad8be8236d94c062ee772bea8a"
+        },
+        "forward_warp": {
+          "bytes": 210770390,
+          "sha256": "b2ed268e36075e6db6422607777442f439bf78d4f805a3f8ff07e94e8fedf442"
+        },
+        "inverse_warp": {
+          "bytes": 210953360,
+          "sha256": "fbafde45722a02b126d64dd87dc6de73031e8c38fe2fcb2fdac4bacde6830929"
+        },
+        "warped": {
+          "bytes": 57871930,
+          "sha256": "91512e1dace3b11c52696840b318881f0699cdd87c70a0beeb5b6bb2a648d46e"
+        }
+      }
+    },
+    {
+      "engine": "ants-float0",
+      "label": "repeat-2",
+      "whole_process_seconds": 397.1516603199998,
+      "host_before": {
+        "load_average": [
+          63.11,
+          67.21,
+          62.94
+        ],
+        "cpu_busy_percent": 1.1563599798893875,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          65.43,
+          69.24,
+          65.67
+        ],
+        "cpu_busy_percent": 0.3018108651911433,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "5663fce635987e7d3373c1a1482933ee0cd7078c65cebf34d60373502d1b9171"
+        },
+        "forward_warp": {
+          "bytes": 210771031,
+          "sha256": "679319e5ec1506055e6509b0ea2c54bf801565d7a3f085b7d27cdca6b535763b"
+        },
+        "inverse_warp": {
+          "bytes": 210952067,
+          "sha256": "03e26a79bdd87250b3f9b4a454d173049bd06c201663063a0085f77707d2b7cc"
+        },
+        "warped": {
+          "bytes": 57871084,
+          "sha256": "2f847f5ef9ae201df0ae26b761d058d699491c5fd94254c70f3d3284b1204493"
+        }
+      }
+    },
+    {
+      "engine": "ants-float1",
+      "label": "repeat-2",
+      "whole_process_seconds": 334.8999182790285,
+      "host_before": {
+        "load_average": [
+          64.35,
+          68.95,
+          65.6
+        ],
+        "cpu_busy_percent": 0.9063444108761365,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          65.98,
+          68.74,
+          66.64
+        ],
+        "cpu_busy_percent": 0.85427135678392,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 132,
+          "sha256": "5ee8e33884e960ff8a21fabfe1c5470542bb717fb7dca9a713790f9448fe951a"
+        },
+        "forward_warp": {
+          "bytes": 107081046,
+          "sha256": "18b80dace48c5590d7f6901f79f5da04b6721836d259c08be4572c889c4e7494"
+        },
+        "inverse_warp": {
+          "bytes": 107085854,
+          "sha256": "169fc0116fd8c6df0f460e7e4a40c2fdf6bec82acb04b55ef5d3ca41a475d774"
+        },
+        "warped": {
+          "bytes": 28018649,
+          "sha256": "dd93e7e897498acf1eab6f6c3ceb223a71bbeaa57d0e6d03fd1d1581fef3baed"
+        }
+      }
+    },
+    {
+      "engine": "cpu-fp64",
+      "label": "repeat-2",
+      "whole_process_seconds": 86.98746812005993,
+      "host_before": {
+        "load_average": [
+          65.98,
+          68.74,
+          66.64
+        ],
+        "cpu_busy_percent": 0.45317220543806824,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          69.55,
+          69.47,
+          67.09
+        ],
+        "cpu_busy_percent": 0.6532663316582865,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "c8ffcf3eac2bf073654ca85edb227e7bb3da29a3852f3547c3747a2387743bd2"
+        },
+        "forward_warp": {
+          "bytes": 235956975,
+          "sha256": "8c9b6d8bd0f7cf3a0825735b9a00fefe90ac598aaba67a2ce09610608087e1bd"
+        },
+        "inverse_warp": {
+          "bytes": 235956975,
+          "sha256": "ed15d1b4485b07e7d99fccc54bdc4cae8d4f80e14a468107f749bf3f9b59fe33"
+        },
+        "warped": {
+          "bytes": 78652575,
+          "sha256": "8dffeb61ef7b718a68b30513d2ec6e128691268b0b12f535d4f976159c4c395a"
+        },
+        "run.json": {
+          "bytes": 5298,
+          "sha256": "6a0c9d74069b24ad7e7e769449a059ad7089c2cf83034916b70d500550f82b52"
+        },
+        "history.json": {
+          "bytes": 898144,
+          "sha256": "f5ba0b30416ec58c01dd707685c80911578fb04cb950d671d74d40deda682865"
+        },
+        "configuration.json": {
+          "bytes": 3129,
+          "sha256": "3867f3b8708dc5edd18b1cc73ca0e68a8f954f9aa4252d72304acbb9e5da8717"
+        },
+        "quality.json": {
+          "bytes": 825,
+          "sha256": "46154f5c05670bd84e985ebd4ab6bfee73d45bb60ddd2c4d43a7dfc91a4efe64"
+        }
+      }
+    },
+    {
+      "engine": "cpu-fp32",
+      "label": "repeat-2",
+      "whole_process_seconds": 52.432321256026626,
+      "host_before": {
+        "load_average": [
+          67.99,
+          69.14,
+          67.0
+        ],
+        "cpu_busy_percent": 1.0536879076768702,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          68.76,
+          69.0,
+          67.05
+        ],
+        "cpu_busy_percent": 0.4008016032064132,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "20c42bdb74c7948a49de58b0de820d7e2dc5116ad259d3936ed288f3666abe59"
+        },
+        "forward_warp": {
+          "bytes": 117978675,
+          "sha256": "44da23890aa0a485902b19c1d36545167649a83f58bf7baddba1ce638349e281"
+        },
+        "inverse_warp": {
+          "bytes": 117978675,
+          "sha256": "b376980d498575d1fa7ad7f6cde270634ea656b2fcf37d05fbd574671e25c434"
+        },
+        "warped": {
+          "bytes": 39326475,
+          "sha256": "235e11236fa0ea0696e8216943f0aaed0558930b34ce655ec172cb534c027d98"
+        },
+        "run.json": {
+          "bytes": 5238,
+          "sha256": "0f6093416c3312e88af0e48cd540474dca27034cc3c8ccdb0874f1807960172e"
+        },
+        "history.json": {
+          "bytes": 1172435,
+          "sha256": "52fca5d9963ad8f7b9fd0d756ce627a133fcef8cb98aeb7be325cbc161ee017b"
+        },
+        "configuration.json": {
+          "bytes": 3844,
+          "sha256": "701de26dd72d710e4718f0fb8eb603f8c0da827cea69794bd52d541e14e8afc1"
+        },
+        "quality.json": {
+          "bytes": 768,
+          "sha256": "9cbe30f25319f05d942ad33c9a02da742de814b3634cdeebbd0aa3a93664f13f"
+        }
+      }
+    },
+    {
+      "engine": "cuda-fp32",
+      "label": "repeat-2",
+      "whole_process_seconds": 8.038266754942015,
+      "host_before": {
+        "load_average": [
+          68.76,
+          69.0,
+          67.05
+        ],
+        "cpu_busy_percent": 0.6532663316582865,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 0, 62, 37"
+      },
+      "host_after": {
+        "load_average": [
+          65.88,
+          68.37,
+          66.87
+        ],
+        "cpu_busy_percent": 0.35158211953791874,
+        "gpu_csv": "NVIDIA GeForce RTX 2080 Ti, 24, 62, 46"
+      },
+      "artifacts": {
+        "affine": {
+          "bytes": 193,
+          "sha256": "be582533c3eb5ef9d4058e8ced39fc9136322fe6aca627cf71d20fb28d69e5e0"
+        },
+        "forward_warp": {
+          "bytes": 117978675,
+          "sha256": "5eccc40f1e3385de4f21d59f5ff9148c038962d3f3bb00a5cab05b03b1422ac9"
+        },
+        "inverse_warp": {
+          "bytes": 117978675,
+          "sha256": "2978c131bc451703c9322c573c414d700f6e0cfd8ef2ace929bb933b62c87b6b"
+        },
+        "warped": {
+          "bytes": 39326475,
+          "sha256": "692864ebab7de4c567488d9fff7fdda7d887d3f3bbbb54804b87f53dbb9de378"
+        },
+        "run.json": {
+          "bytes": 5633,
+          "sha256": "a11b4e9881e13f379ed4dea078c2f095cefff0f88e3bdb21b0bc8929afe19a85"
+        },
+        "history.json": {
+          "bytes": 1176295,
+          "sha256": "ef1521e9af9be9ad40e103ebdfb5e5ff91acf72cf905d5f6cc4755f2cae7c386"
+        },
+        "configuration.json": {
+          "bytes": 7807,
+          "sha256": "3efab26d6b2a665e249ae2b384502ebaac5be8b556589c2f5929386f0bff3d08"
+        },
+        "quality.json": {
+          "bytes": 1160,
+          "sha256": "9388954ef8ca1c66ebb0ca4f23cc3ac4c8a485fc36136a804f3ed6774277c24b"
+        }
+      }
+    }
+  ],
+  "x86_simd": {
+    "value._chunk": {
+      "cache": "value._chunk-66.py311.1.nbc",
+      "arithmetic_instructions": {
+        "xmm": 213,
+        "ymm": 7,
+        "zmm": 0
+      },
+      "examples": {
+        "xmm": [
+          "540:\tvsubps (%rdx){1to4},%xmm3,%xmm1",
+          "546:\tvcvttps2qq %xmm1,%ymm1",
+          "54c:\tvcvtqq2ps %ymm1,%xmm2",
+          "552:\tvsubps 0x4(%rdx){1to4},%xmm4,%xmm3",
+          "559:\tvcvttps2qq %xmm3,%ymm3"
+        ],
+        "ymm": [
+          "51b:\tvpermps -0x20(%r11),%ymm4,%ymm4",
+          "546:\tvcvttps2qq %xmm1,%ymm1",
+          "54c:\tvcvtqq2ps %ymm1,%xmm2",
+          "559:\tvcvttps2qq %xmm3,%ymm3",
+          "55f:\tvcvtqq2ps %ymm3,%xmm4"
+        ],
+        "zmm": []
+      }
+    },
+    "derivative._chunk": {
+      "cache": "derivative._chunk-131.py311.1.nbc",
+      "arithmetic_instructions": {
+        "xmm": 418,
+        "ymm": 7,
+        "zmm": 0
+      },
+      "examples": {
+        "xmm": [
+          "a86:\tvsubps (%rcx){1to4},%xmm3,%xmm1",
+          "a8c:\tvcvttps2qq %xmm1,%ymm1",
+          "a92:\tvcvtqq2ps %ymm1,%xmm2",
+          "a98:\tvsubps 0x4(%rcx){1to4},%xmm4,%xmm3",
+          "a9f:\tvcvttps2qq %xmm3,%ymm3"
+        ],
+        "ymm": [
+          "a61:\tvpermps (%rdx,%rcx,4),%ymm4,%ymm4",
+          "a8c:\tvcvttps2qq %xmm1,%ymm1",
+          "a92:\tvcvtqq2ps %ymm1,%xmm2",
+          "a9f:\tvcvttps2qq %xmm3,%ymm3",
+          "aa5:\tvcvtqq2ps %ymm3,%xmm4"
+        ],
+        "zmm": []
+      }
+    },
+    "cc_simd._row": {
+      "cache": "cc_simd._row-93.py311.1.nbc",
+      "arithmetic_instructions": {
+        "xmm": 339,
+        "ymm": 5,
+        "zmm": 6
+      },
+      "examples": {
+        "xmm": [
+          "251:\tvcvtsi2ss %rcx,%xmm15,%xmm1",
+          "296:\tvdivss %xmm1,%xmm0,%xmm0",
+          "3c6:\tvsubps %xmm1,%xmm7,%xmm7",
+          "3ca:\tvsubps %xmm6,%xmm7,%xmm6",
+          "3ce:\tvaddps %xmm6,%xmm5,%xmm7"
+        ],
+        "ymm": [
+          "ad2:\tvcvtqq2ps %zmm6,%ymm6",
+          "ad8:\tvdivps %ymm6,%ymm3,%ymm8",
+          "adc:\tvcvtqq2ps %zmm7,%ymm7",
+          "ae2:\tvmulps %ymm7,%ymm3,%ymm7",
+          "aed:\tvdivps %ymm6,%ymm7,%ymm6"
+        ],
+        "zmm": [
+          "ac0:\tvpmullq %zmm1,%zmm2,%zmm6",
+          "ac6:\tvpaddq %zmm4,%zmm2,%zmm7",
+          "acc:\tvpmullq %zmm1,%zmm7,%zmm7",
+          "ad2:\tvcvtqq2ps %zmm6,%ymm6",
+          "adc:\tvcvtqq2ps %zmm7,%ymm7"
+        ]
+      }
+    },
+    "cc_simd._work": {
+      "cache": "cc_simd._work-142.py311.1.nbc",
+      "arithmetic_instructions": {
+        "xmm": 684,
+        "ymm": 5,
+        "zmm": 6
+      },
+      "examples": {
+        "xmm": [
+          "ab5:\tvsubss %xmm2,%xmm3,%xmm2",
+          "ab9:\tvaddss %xmm2,%xmm1,%xmm3",
+          "abd:\tvsubss %xmm1,%xmm3,%xmm1",
+          "ac1:\tvsubss %xmm2,%xmm1,%xmm1",
+          "acb:\tvsubss %xmm1,%xmm2,%xmm1"
+        ],
+        "ymm": [
+          "5e82:\tvcvtqq2ps %zmm6,%ymm6",
+          "5e88:\tvdivps %ymm6,%ymm3,%ymm8",
+          "5e8c:\tvcvtqq2ps %zmm7,%ymm7",
+          "5e92:\tvmulps %ymm7,%ymm3,%ymm7",
+          "5e9d:\tvdivps %ymm6,%ymm7,%ymm6"
+        ],
+        "zmm": [
+          "5e70:\tvpmullq %zmm1,%zmm2,%zmm6",
+          "5e76:\tvpaddq %zmm4,%zmm2,%zmm7",
+          "5e7c:\tvpmullq %zmm1,%zmm7,%zmm7",
+          "5e82:\tvcvtqq2ps %zmm6,%ymm6",
+          "5e8c:\tvcvtqq2ps %zmm7,%ymm7"
+        ]
+      }
+    }
+  },
+  "release_version": "0.2.0",
+  "measurement_package_version": "0.1.0",
+  "version_metadata_provenance": {
+    "measured_cli_sha256": "ab85ffa69607910e128271af46f0ce41319205d98d14eb2a1d7815f77e5ff015",
+    "v0.2.0_cli_sha256": "d29916d77032f69330eeff593d24fc7b886bddb399790813f929ef9389e07229",
+    "source_change": "CLI version fallback only; all other measured runtime source files are unchanged"
+  }
+}

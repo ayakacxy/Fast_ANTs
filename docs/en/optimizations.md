@@ -28,6 +28,8 @@ The useful parallel unit depends on the operator: image sampling splits samples,
 
 Selected CPU FP32 metric operations use four-lane LLVM vectors. On Apple Silicon, these compile to 128-bit NEON instructions such as `fmla.4s`, `fsub.4s` and `fdiv.4s`. Threads process independent blocks, while vector lanes process independent values inside each block.
 
+On x86, LLVM selects instructions supported by the host CPU. The Xeon Gold 6230 cache contains AVX2 instructions and some automatically vectorized AVX-512 operations. The explicit four-lane FP32 arithmetic remains predominantly 128 bits; this implementation does not provide a dedicated eight-lane AVX2 path. Instruction availability alone does not establish a speedup.
+
 | Operation | Four vector lanes |
 | --- | --- |
 | Dense integer sample mapping | Four adjacent samples, with separate integer cells and FP32 offsets |
@@ -276,6 +278,28 @@ The Metal output path uses CPU blocks for inverse-consistency and Jacobian summa
 The input pair is read with at most 2 threads. For compatible contiguous NIfTI payloads, a `memoryview` is written in 1 MiB chunks instead of constructing another image-sized byte string; required dtype or layout conversions may still allocate. Independent image and field outputs use up to 3 writer threads, and all writers are joined before registration returns.
 
 Source: [output quality kernels](../../src/fast_ants/quality/output_kernels.py), [image I/O](../../src/fast_ants/io/images.py), [NIfTI writer](../../src/fast_ants/io/nifti.py), [Metal output orchestration](../../src/fast_ants/backends/metal/registration.py).
+
+## 10. CUDA registration
+
+### Device data and Mattes MI
+
+The CUDA backend keeps fitting images and the four SyN state fields in FP32 device arrays. Small geometry matrices, filter coefficients, optimizer updates and convergence decisions remain on the host. Device geometry inputs are cached within a registration context; arrays returned by public operations retain independent ownership.
+
+Mattes evaluation groups fixed samples by histogram bin. Value-only trials skip gradient and parameter-derivative work. The registration path captures warmed sampling, histogram and finalization kernels in a CUDA Graph, with bounded pinned host buffers for optimizer controls and the result packet. Replay submits the captured operations together and synchronizes before the host consumes the metric and derivative. FP32 atomic histogram accumulation can change reduction order; final registration quality is assessed on saved outputs rather than by bitwise equality.
+
+### CC, filtering and inverse fields
+
+Local CC computes forward and reverse updates together, reusing neighbourhood work while retaining separate fields. Score reads can be deferred until the host needs a convergence value. Field Gaussian filtering reads native component and voxel storage with adjacent threads writing adjacent voxels; the final pass can combine smoothing with boundary and field mixing.
+
+Inverse-field solves queue work for the two directions before a shared control read. Each direction keeps its own residual history and stopping decision, and no subsequent iteration is submitted before those decisions. This reduces synchronization without changing the update-then-stop order.
+
+### Output quality and writing
+
+CUDA output QA reads FP32 fields and promotes values to native FP64 for physical coordinates, interpolation and Jacobian arithmetic. Exact percentile statistics and finite checks run on the device; bounded summaries and the final output arrays are downloaded. Fitting itself remains FP32.
+
+The shared NIfTI writer defaults to gzip level 0. `FAST_ANTS_GZIP_LEVEL=1` enables compression without changing decoded headers or arrays. When available, pigz uses two workers per file; all output streams are joined before the process returns.
+
+Source: [CUDA runtime](../../src/fast_ants/backends/cuda/runtime.py), [Mattes scheduling](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py), [CC operators](../../src/fast_ants/backends/cuda/metrics/cc/operators.py), [field filtering](../../src/fast_ants/backends/cuda/filtering.py), [inverse scheduling](../../src/fast_ants/backends/cuda/fields/inverse.py), [output QA](../../src/fast_ants/backends/cuda/output_quality.py), and [NIfTI writer](../../src/fast_ants/io/nifti.py).
 
 ## Numerical stability and profiling
 

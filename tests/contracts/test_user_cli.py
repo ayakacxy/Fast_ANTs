@@ -32,13 +32,17 @@ class UserCLITests(unittest.TestCase):
         cpu = cli.parse_args(self.arguments())
         self.assertEqual((cpu.backend, cpu.precision, cpu.threads), ("cpu", "fp64", None))
         self.assertEqual((cpu.geometry_policy, cpu.scaling_policy), ("itk_scanner", "itk"))
-        self.assertEqual((cpu.verbose, cpu.log_every), (False, 1))
+        self.assertEqual((cpu.verbose, cpu.log_every), (True, 1))
+        self.assertFalse(cli.parse_args(self.arguments("--quiet")).verbose)
         metal = cli.parse_args(self.arguments("--backend", "metal", "-v", "--log-every", "4"))
         self.assertEqual((metal.precision, metal.verbose, metal.log_every), ("fp32", True, 4))
+        cuda = cli.parse_args(self.arguments("--backend", "cuda"))
+        self.assertEqual(cuda.precision, "fp32")
         self.assertFalse(self.output.exists())
 
     def test_invalid_combinations_and_positive_controls(self):
-        for options in (("--backend", "metal", "--precision", "fp64"), ("--threads", "0"),
+        for options in (("--backend", "metal", "--precision", "fp64"),
+                        ("--backend", "cuda", "--precision", "fp64"), ("--threads", "0"),
                         ("--log-every", "0"), ("--log-every", "1.5"),
                         ("--config", str(self.fixed), "--preset", "brain-syn")):
             with self.subTest(options=options), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
@@ -107,7 +111,7 @@ class UserCLITests(unittest.TestCase):
 
     def test_execution_dispatch_metadata_and_live_log_without_fit(self):
         for backend, precision, expected in (("cpu", "fp64", "register"), ("cpu", "fp32", "register32"),
-                                              ("metal", "fp32", "register_metal")):
+                                              ("metal", "fp32", "register_metal"), ("cuda", "fp32", "register_cuda")):
             with self.subTest(backend=backend, precision=precision):
                 output = self.root / (backend + precision)
                 args = cli.parse_args(self.arguments("--output", str(output), "--backend", backend,
@@ -121,13 +125,13 @@ class UserCLITests(unittest.TestCase):
                     return fit
                 api = SimpleNamespace(load_images=lambda *a, **kw: [SimpleNamespace(grid=SimpleNamespace(spacing_xyz=(1., 1., 1.)))] * 2,
                     LinearStage=lambda **kw: SimpleNamespace(**kw), SyNStage=lambda **kw: SimpleNamespace(**kw),
-                    **{name: implementation(name) for name in ("register", "register32", "register_metal")})
+                    **{name: implementation(name) for name in ("register", "register32", "register_metal", "register_cuda")})
                 terminal = io.StringIO()
                 with patch.object(cli, "_runtime", return_value=(api, SimpleNamespace(get_num_threads=lambda: 2))), redirect_stdout(terminal):
                     self.assertEqual(cli.run_registration(args), 0)
                 self.assertEqual(calls[0][0], expected)
                 self.assertEqual(calls[0][1]["seed"], 20261022)
-                self.assertEqual(calls[0][1].get("verbose"), True if backend == "metal" else None)
+                self.assertEqual(calls[0][1].get("verbose"), True if backend != "cpu" else None)
                 record = json.loads((output / "run.json").read_text())
                 self.assertEqual(record["threads"], 2)
                 self.assertEqual(record["recipe"]["stages"][2]["transform"], "SyN[0.2,3,0]")

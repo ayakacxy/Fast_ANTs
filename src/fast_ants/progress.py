@@ -1,4 +1,4 @@
-"""Scoped, dependency-free terminal progress for one registration run.
+"""Scoped terminal progress for one registration run.
 
 The presentation follows FlashCHARM's stage prefix and ANTs' diagnostic
 columns. Records identify fast_ants explicitly. No global logger, warning
@@ -31,36 +31,63 @@ class RegistrationProgress:
         self.clock=time.perf_counter if clock is None else clock
         self.wall_clock=time.time if wall_clock is None else wall_clock
         self.started=self.clock()
+        self.terminal=getattr(self.stream,'progress_terminal',self.stream)
+        self.log=getattr(self.stream,'progress_log',None)
+        self.interactive=bool(getattr(self.terminal,'isatty',lambda:False)())
+        self.bar=None
 
-    def message(self,stage,message):
+    def message(self,stage,message,*,diagnostic=False):
         stamp=time.strftime('%H:%M:%S',time.localtime(self.wall_clock()))
         text=str(message).replace('\n','\\n').replace('\r','\\r')
-        print(f'[fast_ants][{stage}] {stamp} | INFO | {text}',file=self.stream,flush=True)
+        line=f'[fast_ants][{stage}] {stamp} | INFO | {text}'
+        if self.interactive and diagnostic:
+            if self.log is not None:print(line,file=self.log,flush=True)
+        elif self.bar is not None:
+            self.bar.write(line,file=self.terminal)
+            if self.log is not None:print(line,file=self.log,flush=True)
+        else:print(line,file=self.stream,flush=True)
 
-    def start(self,stage,message='',*,iterations=False,started=None):
-        return _ProgressStage(self,stage,message,iterations,started)
+    def start(self,stage,message='',*,iterations=False,started=None,total=None):
+        return _ProgressStage(self,stage,message,iterations,started,total)
 
     def complete(self,message='Registration complete'):
         self.message('complete',f'{message}; elapsed={self.clock()-self.started:.6f}s')
 
 
 class _ProgressStage:
-    def __init__(self,owner,stage,message,iterations,started):
+    def __init__(self,owner,stage,message,iterations,started,total):
         self.owner,self.stage=owner,stage
         self.started=owner.clock() if started is None else float(started)
         self.previous_iteration=self.started
         self.sequence=0;self.printed_sequence=0;self.latest=None;self.finished=False
+        self.bar=None;self.postfix={}
         owner.message(stage,'START'+(' '+message if message else ''))
         if iterations:
             owner.message(stage,'DIAGNOSTIC,Iteration,metricValue,convergenceValue,'
-                          'ITERATION_TIME_INDEX,SINCE_LAST,validPoints')
+                          'ITERATION_TIME_INDEX,SINCE_LAST,validPoints,learningRate,gamma,'
+                          'lineSearchEvaluations',diagnostic=True)
+            if owner.interactive:
+                from tqdm import tqdm
+                level=next((word for word in message.split() if word.startswith('level=')),'')
+                description=f'[fast_ants][{stage}]'+(' '+level if level else '')
+                self.bar=tqdm(total=total,desc=description,unit='iter',
+                              file=owner.terminal,dynamic_ncols=True,mininterval=.1,leave=True)
+                owner.bar=self.bar
 
     def message(self,message):
         self.owner.message(self.stage,message)
 
     @staticmethod
-    def _number(value):
-        return 'n/a' if value is None else f'{float(value):.12e}'
+    def _number(value,precision=12):
+        return 'n/a' if value is None else f'{float(value):.{precision}e}'
+
+    @staticmethod
+    def _valid(entry):
+        valid=entry.get('valid_points')
+        if valid is None:
+            fixed,moving=entry.get('fixed_valid_centres'),entry.get('moving_valid_centres')
+            valid=f'{fixed}/{moving}' if fixed is not None and moving is not None else 'n/a'
+        return valid
 
     def __call__(self,entry):
         """Observe an existing history record without mutating or reevaluating it."""
@@ -68,18 +95,26 @@ class _ProgressStage:
         interval=now-self.previous_iteration;self.previous_iteration=now
         self.latest=(self.sequence,entry,now-self.started,interval)
         iteration=int(entry['iteration'])
+        if self.bar is not None:
+            self.postfix={
+                'metric':self._number(entry.get('value'),3),
+                'conv':self._number(entry.get('convergence'),3),'valid':self._valid(entry)}
+            for key,label in (('learning_rate','lr'),('gamma','gamma'),
+                              ('line_search_evaluations','ls_eval')):
+                if key in entry:self.postfix[label]=entry[key]
+            self.bar.set_postfix(self.postfix,refresh=False)
+            self.bar.update(iteration-self.bar.n)
         if iteration==1 or iteration%self.owner.log_every==0:self._emit(self.latest)
 
     def _emit(self,sample):
         sequence,entry,elapsed,interval=sample
         if sequence==self.printed_sequence:return
-        valid=entry.get('valid_points')
-        if valid is None:
-            fixed,moving=entry.get('fixed_valid_centres'),entry.get('moving_valid_centres')
-            valid=f'{fixed}/{moving}' if fixed is not None and moving is not None else 'n/a'
         self.owner.message(self.stage,
             f'DIAGNOSTIC,{int(entry["iteration"])},{self._number(entry.get("value"))},'
-            f'{self._number(entry.get("convergence"))},{elapsed:.6f},{interval:.6f},{valid}')
+            f'{self._number(entry.get("convergence"))},{elapsed:.6f},{interval:.6f},'
+            f'{self._valid(entry)},{self._number(entry.get("learning_rate"))},'
+            f'{self._number(entry.get("gamma"))},{entry.get("line_search_evaluations","n/a")}',
+            diagnostic=True)
         self.printed_sequence=sequence
 
     def finish(self,reason):
@@ -87,6 +122,11 @@ class _ProgressStage:
         if self.finished:return
         if self.latest is not None:self._emit(self.latest)
         iterations=0 if self.latest is None else int(self.latest[1]['iteration'])
+        if self.bar is not None:
+            self.postfix['stop']=reason
+            self.bar.set_postfix(self.postfix,refresh=False)
+            self.bar.close()
+            if self.owner.bar is self.bar:self.owner.bar=None
         self.owner.message(self.stage,
             f'END reason={reason}; iterations={iterations}; elapsed={self.owner.clock()-self.started:.6f}s')
         self.finished=True

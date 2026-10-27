@@ -34,7 +34,7 @@ def version():
     try:
         return metadata.version("fast_ants")
     except metadata.PackageNotFoundError:
-        return "0.1.0"
+        return "0.2.0"
 
 
 def parser():
@@ -45,8 +45,8 @@ def parser():
     register.add_argument("fixed", type=Path, help="Fixed scalar 3-D NIfTI")
     register.add_argument("moving", type=Path, help="Moving scalar 3-D NIfTI")
     register.add_argument("--output", "-o", type=Path, required=True, help="New output directory; existing paths are refused")
-    register.add_argument("--backend", choices=("cpu", "metal"), default="cpu")
-    register.add_argument("--precision", choices=("fp64", "fp32"), help="Default: fp64 for CPU, fp32 for Metal")
+    register.add_argument("--backend", choices=("cpu", "metal", "cuda"), default="cpu")
+    register.add_argument("--precision", choices=("fp64", "fp32"), help="Default: fp64 for CPU, fp32 for GPU")
     recipe = register.add_mutually_exclusive_group()
     recipe.add_argument("--preset", choices=PRESETS, help="Bundled recipe (default: brain-syn)")
     recipe.add_argument("--config", type=Path, help="Complete recipe JSON replacing the preset; no implicit merge")
@@ -55,17 +55,21 @@ def parser():
                           help="Input geometry policy (default: itk_scanner; requires scanner sform)")
     register.add_argument("--scaling-policy", choices=("itk", "nifti"), default="itk",
                           help="Input voxel scaling policy (default: itk)")
-    register.add_argument("--verbose", "-v", action="store_true", help="Print English phase logs; Metal also prints iteration diagnostics")
-    register.add_argument("--log-every", type=positive_integer, default=1, help="Metal iteration log interval (default: 1; first/final retained)")
+    logging = register.add_mutually_exclusive_group()
+    logging.add_argument("--verbose", "-v", action="store_true", dest="verbose", default=True,
+                         help="Show phase logs and GPU iteration progress (default)")
+    logging.add_argument("--quiet", "-q", action="store_false", dest="verbose",
+                         help="Disable progress and verbose diagnostics")
+    register.add_argument("--log-every", type=positive_integer, default=1, help="GPU iteration log interval (default: 1; first/final retained)")
     return result
 
 
 def parse_args(argv=None):
     command = parser()
     args = command.parse_args(argv)
-    args.precision = args.precision or ("fp32" if args.backend == "metal" else "fp64")
-    if args.backend == "metal" and args.precision != "fp32":
-        command.error("Metal supports fp32 only; no CPU fallback is performed")
+    args.precision = args.precision or ("fp64" if args.backend == "cpu" else "fp32")
+    if args.backend != "cpu" and args.precision != "fp32":
+        command.error(args.backend.capitalize()+" supports fp32 only; no CPU fallback is performed")
     if args.output.exists():
         command.error("Output already exists: " + str(args.output))
     for side in ("fixed", "moving"):
@@ -223,6 +227,14 @@ class _Tee:
     def __init__(self, terminal, log):
         self.terminal, self.log = terminal, log
 
+    @property
+    def progress_terminal(self):
+        return self.terminal
+
+    @property
+    def progress_log(self):
+        return self.log
+
     def write(self, value):
         self.terminal.write(value)
         self.log.write(value)
@@ -234,7 +246,7 @@ class _Tee:
         self.log.flush()
 
     def isatty(self):
-        return False
+        return self.terminal.isatty()
 
 
 def run_registration(args):
@@ -266,8 +278,8 @@ def _execute(args, recipe, provenance, threads):
     linear, syn = build_stages(api, recipe, fixed.grid)
     options = dict(linear_stages=linear, syn_stage=syn, initialization_feature=recipe["initialization_feature"],
                    seed=recipe["random_seed"], output_directory=args.output)
-    if args.backend == "metal":
-        implementation = api.register_metal
+    if args.backend in ("metal", "cuda"):
+        implementation = api.register_metal if args.backend == "metal" else api.register_cuda
         options.update(verbose=args.verbose, log_every=args.log_every)
     else:
         implementation = api.register if args.precision == "fp64" else api.register32
@@ -276,15 +288,17 @@ def _execute(args, recipe, provenance, threads):
     if stage is not None:
         stage.finish("completed")
     elapsed = time.perf_counter() - started
+    from .io.nifti import gzip_backend_info
     record = {"schema_version": 1, "status": "registration_completed_quality_metrics_recorded",
         "package_version": version(), "backend": args.backend, "precision": args.precision,
+        "gzip_output": gzip_backend_info(),
         "threads": numba.get_num_threads(), "random_seed": recipe["random_seed"],
         "recipe_provenance": provenance, "recipe": recipe,
         "geometry_policy": args.geometry_policy, "scaling_policy": args.scaling_policy,
         "inputs": {side: {"path": str(getattr(args, side).resolve()), "sha256": _digest(getattr(args, side))}
                    for side in ("fixed", "moving")},
         "verbose": args.verbose, "log_every": args.log_every,
-        "logging_scope": "stage and iteration diagnostics" if args.backend == "metal" else "CLI phases; no CPU iteration diagnostics",
+        "logging_scope": "stage and iteration diagnostics" if args.backend in ("metal", "cuda") else "CLI phases; no CPU iteration diagnostics",
         "load_register_qa_write_seconds_diagnostic_not_benchmark": elapsed,
         "timing_scope": "Runtime import, input reads, registration, built-in QA and core writes; excludes CLI parsing and final input hashing/run metadata",
         "quality_status": "built-in_metrics_only_not_external_acceptance",

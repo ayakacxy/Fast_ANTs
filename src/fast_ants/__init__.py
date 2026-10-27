@@ -1,4 +1,4 @@
-"""Independent registration with explicit LPS-mm coordinates and optional Metal."""
+"""Independent registration with LPS-mm coordinates and optional GPU backends."""
 from ._compat import install as _install_compat
 _install_compat()
 from .api import __all__

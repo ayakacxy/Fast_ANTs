@@ -7,7 +7,8 @@
 | `core/` | Coordinates, transforms, image I/O, shared types, and quality calculations |
 | `cpu_fp64/` | FP64 metrics, optimization, fields, and registration |
 | `cpu_fp32/` | FP32 operators, numerical stability, workspaces, and host controls |
-| `metal/` | GPU operators and registration components |
+| `metal/` | Metal GPU operators and registration components |
+| `cuda/` | CUDA operators, registration, retained state, and final QA |
 | `contracts/` | CLI arguments, benchmark metadata, logging, and mocked orchestration |
 | `fixtures/` | Small shared reference inputs and metadata |
 
@@ -25,6 +26,12 @@ Metal tests require a supported Apple GPU and explicit selection:
 
 ```sh
 python -B scripts/maintenance/run_tests.py --suite metal
+```
+
+CUDA tests require CuPy and an accessible NVIDIA GPU:
+
+```sh
+python -B scripts/maintenance/run_tests.py --suite cuda
 ```
 
 `--suite all` includes both CPU and GPU tests. Registration quality metrics and ANTs comparisons are described in [testing and evaluation](../docs/en/validation.md).

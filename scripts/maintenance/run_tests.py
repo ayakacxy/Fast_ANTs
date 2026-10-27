@@ -1,4 +1,4 @@
-"""Run explicitly selected test groups; CPU is the default, Metal is opt-in."""
+"""Run explicitly selected test groups; CPU is the default, GPUs are opt-in."""
 
 import argparse
 import os
@@ -11,8 +11,9 @@ sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / "src"))
 GROUPS = {"core": ("core",), "contracts": ("contracts",),
           "cpu-fp64": ("cpu_fp64",), "cpu-fp32": ("cpu_fp32",),
-          "metal": ("metal",), "cpu": ("core", "contracts", "cpu_fp64", "cpu_fp32"),
-          "all": ("core", "contracts", "cpu_fp64", "cpu_fp32", "metal")}
+          "metal": ("metal",), "cuda": ("cuda",),
+          "cpu": ("core", "contracts", "cpu_fp64", "cpu_fp32"),
+          "all": ("core", "contracts", "cpu_fp64", "cpu_fp32", "metal", "cuda")}
 
 
 def selected_suite(group, pattern="test_*.py"):
@@ -51,6 +52,10 @@ def main(argv=None):
         os.environ["FAST_ANTS_TEST_METAL"] = "1"
     else:
         os.environ.pop("FAST_ANTS_TEST_METAL", None)
+    if args.suite in ("cuda", "all"):
+        os.environ["FAST_ANTS_TEST_CUDA"] = "1"
+    else:
+        os.environ.pop("FAST_ANTS_TEST_CUDA", None)
     suite = selected_suite(args.suite, args.pattern)
     if args.list:
         for name in test_ids(suite):

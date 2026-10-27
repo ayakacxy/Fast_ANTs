@@ -4,7 +4,7 @@
 
 ## 测试分组
 
-测试覆盖影像几何与 I/O、数值算子、优化器和完整配准流程。CPU FP64 与 ANTs `--float 0` 对照，CPU FP32 和 Metal 与 `--float 1` 对照。
+测试覆盖影像几何与 I/O、数值算子、优化器和完整配准流程。CPU FP64 与 ANTs `--float 0` 对照，CPU FP32、Metal 和 CUDA 与 `--float 1` 对照。
 
 ```bash
 python -B scripts/maintenance/run_tests.py --suite core
@@ -16,6 +16,19 @@ Metal 测试需要 Apple GPU：
 
 ```bash
 python -B scripts/maintenance/run_tests.py --suite metal
+```
+
+Metal 配准在 `quality.json` 中记录 Jacobian 和逆一致性指标。[Apple M5 测试数据](../assets/benchmarks/v0.1.0-native.json)保存了该次运行的耗时和输出校验值。
+
+| Apple M5 质量指标 | Metal FP32 | ANTs FP32 |
+| --- | ---: | ---: |
+| 前景 NCC | — | — |
+| 平均地标误差 / mm | — | — |
+
+CUDA 测试需要 NVIDIA GPU 和 CuPy：
+
+```bash
+python -B scripts/maintenance/run_tests.py --suite cuda
 ```
 
 小范围改动可通过 `--pattern` 选择相关文件。分组说明见[测试目录](../../tests/README.zh-CN.md)。
@@ -72,3 +85,21 @@ python -m validation.quality.run_float1_quality_matrix --help
 ```
 
 与 ANTs 对比时，保持图像、几何信息、预处理、阶段参数、插值、采样方法和精度一致，并随结果保存配置及软件版本。[质量评估配置](../../validation/configs/registration_quality_policy.json)列出了评估脚本所用检查项。
+
+## CUDA 检查
+
+`tests/cuda` 包含 CUDA 算子与完整配准测试，在 NVIDIA 硬件上设置 `FAST_ANTS_TEST_CUDA=1` 启用。检查范围包括图像采样、滤波、Mattes 控制、场运算、逆场停止、状态保留、保存变换重应用和原生 FP64 最终 QA。真实 MRI 的保存结果在计时结束后使用共同的 CPU FP64 采样器评估，检查前景相似度、探索性标记点、正逆 Jacobian 及逆一致性。
+
+## Linux 原始 MRI 结果
+
+[32 线程 Linux 测量](performance.md#linux-cuda-与-cpu32-线程)保留十份正式写出结果，每个引擎两份，均在计时结束后由同一 CPU FP64 采样器重新应用。前景掩膜取固定图像强度范围 5% 以上的 3,236,832 个体素。配准前前景 NCC 为 0.171354，四个粗略地标的平均误差为 21.4895 mm。
+
+| 引擎 | 前景 NCC 范围 | 平均地标误差范围 / mm | 正逆 Jacobian 最小值 | 逆一致性 RMS 最大值 / mm |
+| --- | ---: | ---: | ---: | ---: |
+| CUDA FP32 | 0.662979–0.664397 | 1.4310–1.4337 | 0.161487 | 0.023656 |
+| CPU FP32 | 0.664355–0.664355 | 1.4309–1.4309 | 0.160964 | 0.023635 |
+| CPU FP64 | 0.664417–0.664417 | 1.4345–1.4345 | 0.161804 | 0.023478 |
+| ANTs FP32 | 0.662904–0.664416 | 1.4253–1.4333 | 0.161125 | 0.023659 |
+| ANTs FP64 | 0.663937–0.663937 | 1.4336–1.4336 | 0.163237 | 0.023333 |
+
+全部重采样图像和位移场均为有限值，几何与固定网格一致。每个正向、逆向 Jacobian 均为有限正值。末列取两个复合方向、两次运行中的最大 RMS。四个地标为非专家的粗略标注，用于检查图像对齐情况。源码、输入和输出的校验值及每次测量指标见 [Linux 摘要](../assets/benchmarks/linux-native-32t.json)。

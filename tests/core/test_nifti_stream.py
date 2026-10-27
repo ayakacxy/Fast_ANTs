@@ -1,7 +1,9 @@
 """Streaming output has the same decoded NIfTI header/payload as NiBabel."""
 
 import gzip
+import os
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -11,7 +13,7 @@ import numpy as np
 
 from fast_ants.core.types import Grid, Image
 from fast_ants.io.images import load_image, load_images, save_image
-from fast_ants.io.nifti import _save_nifti_storage
+from fast_ants.io.nifti import _save_nifti_storage,gzip_backend_info
 from fast_ants.core.fields import DisplacementField
 from fast_ants.io.transforms import save_field
 
@@ -31,6 +33,67 @@ class NiftiStreamTests(unittest.TestCase):
             [np.sin(angle),np.cos(angle),0],[0,0,-1]])@np.diag([.7,1.3,2.1])
         matrix[:3,3]=[17.,-33.,9.]
         return Grid((3,4,5),matrix)
+
+    def test_explicit_gzip_pigz_and_automatic_fallback(self):
+        grid=self.grid()
+        scalar=Image(np.arange(60,dtype=np.float32).reshape(grid.shape_zyx)*.125,grid)
+        vector=DisplacementField(np.arange(180,dtype=np.float32).reshape(3,*grid.shape_zyx)*.013,grid)
+        backends=('gzip','pigz') if shutil.which('pigz') else ('gzip',)
+        with tempfile.TemporaryDirectory() as temporary:
+            with patch.dict(os.environ):
+                os.environ.pop('FAST_ANTS_GZIP_LEVEL',None)
+                self.assertEqual(gzip_backend_info()['compression_level'],0)
+            for item,save in ((scalar,save_image),(vector,save_field)):
+                oracle=None
+                for backend in backends:
+                    output=Path(temporary)/(backend+'.nii.gz')
+                    with self.subTest(backend=backend,kind=type(item).__name__), patch.dict(
+                            os.environ,{'FAST_ANTS_GZIP_BACKEND':backend}), patch(
+                            'fast_ants.io.nifti._CHUNK_BYTES',17):
+                        save(item,output)
+                        self.assertEqual(gzip_backend_info()['backend'],backend)
+                        actual=decoded(output)
+                        if oracle is None:oracle=actual
+                        self.assertEqual(actual,oracle)
+                with patch.dict(os.environ,{'FAST_ANTS_GZIP_BACKEND':'auto'}), patch(
+                        'fast_ants.io.nifti.shutil.which',return_value=None):
+                    output=Path(temporary)/'fallback.nii.gz'
+                    save(item,output)
+                    self.assertEqual(gzip_backend_info()['backend'],'gzip')
+                    self.assertEqual(decoded(output),oracle)
+
+    def test_explicit_gzip_level_preserves_decoded_products(self):
+        grid=self.grid()
+        scalar=Image(np.arange(60,dtype=np.float32).reshape(grid.shape_zyx)*.125,grid)
+        vector=DisplacementField(np.arange(180,dtype=np.float32).reshape(3,*grid.shape_zyx)*.013,grid)
+        backends=('gzip','pigz') if shutil.which('pigz') else ('gzip',)
+        with tempfile.TemporaryDirectory() as temporary:
+            for item,save in ((scalar,save_image),(vector,save_field)):
+                oracle=None
+                for backend in backends:
+                    for level in (0,1,9):
+                        output=Path(temporary)/(backend+'-'+str(level)+'.nii.gz')
+                        with self.subTest(backend=backend,level=level,kind=type(item).__name__), patch.dict(
+                                os.environ,{'FAST_ANTS_GZIP_BACKEND':backend,'FAST_ANTS_GZIP_LEVEL':str(level)}), patch(
+                                'fast_ants.io.nifti._CHUNK_BYTES',17):
+                            save(item,output)
+                            self.assertEqual(gzip_backend_info()['compression_level'],level)
+                            actual=decoded(output)
+                            if oracle is None:oracle=actual
+                            self.assertEqual(actual,oracle)
+                with patch.dict(os.environ,{'FAST_ANTS_GZIP_BACKEND':'auto','FAST_ANTS_GZIP_LEVEL':'0'}), patch(
+                        'fast_ants.io.nifti.shutil.which',return_value=None):
+                    output=Path(temporary)/'fallback-level0.nii.gz'
+                    save(item,output)
+                    self.assertEqual(gzip_backend_info()['backend'],'gzip')
+                    self.assertEqual(gzip_backend_info()['compression_level'],0)
+                    self.assertEqual(decoded(output),oracle)
+                for level in ('-1','10','1.5','invalid'):
+                    with self.subTest(level=level), patch.dict(os.environ,{'FAST_ANTS_GZIP_LEVEL':level}):
+                        with self.assertRaisesRegex(ValueError,'FAST_ANTS_GZIP_LEVEL'):
+                            gzip_backend_info()
+                        with self.assertRaisesRegex(ValueError,'FAST_ANTS_GZIP_LEVEL'):
+                            save(item,Path(temporary)/'invalid.nii.gz')
 
     def test_scalar_float_and_integer_decoded_bytes_match_original_writer(self):
         grid=self.grid()

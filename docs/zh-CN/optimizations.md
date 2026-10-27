@@ -28,6 +28,8 @@ Numba 将体素和样本循环编译为本地代码，独立行、切片、样�
 
 CPU FP32 的部分度量计算使用四路 LLVM 向量，在 Apple Silicon 上编译为 `fmla.4s`、`fsub.4s`、`fdiv.4s` 等 128 位 NEON 指令。线程负责独立分块，向量通道处理块内相互独立的数据。
 
+在 x86 上，LLVM 根据主机 CPU 选择指令。Xeon Gold 6230 的编译缓存中可见 AVX2 指令，部分自动向量化运算还使用了 AVX-512。显式四路 FP32 运算仍以 128 位为主，当前实现没有独立的八路 AVX2 路径。仅凭指令集可用不能认定存在加速收益。
+
 | 运算 | 四个向量通道 |
 | --- | --- |
 | 稠密整数采样映射 | 四个相邻样本，各自保留整数单元与 FP32 偏移 |
@@ -276,6 +278,28 @@ Metal 输出路径按 CPU 分块计算逆一致性和 Jacobian 摘要，直接�
 输入图像对使用最多 2 个线程读取。对布局兼容的连续 NIfTI 数据，`memoryview` 按 1 MiB 分块写入，避免再构造完整图像大小的字节串；需要转换 dtype 或存储布局时仍可能分配。独立图像和场使用最多 3 个写出线程，配准返回前等待全部线程完成。
 
 源码：[输出质量 kernel](../../src/fast_ants/quality/output_kernels.py)、[图像 I/O](../../src/fast_ants/io/images.py)、[NIfTI 写出](../../src/fast_ants/io/nifti.py)、[Metal 输出流程](../../src/fast_ants/backends/metal/registration.py)。
+
+## 10. CUDA 配准
+
+### 设备数据与 Mattes 互信息
+
+CUDA 后端在拟合期间将图像和四个 SyN 状态场保留为设备端 FP32 数组。小型几何矩阵、滤波系数、优化器更新和收敛判断留在主机端。设备几何输入在一次配准的上下文中缓存；公共算子返回的数组保有独立所有权。
+
+Mattes 计算按固定图像的直方图分箱对样本分组。只需要度量值的试探会跳过梯度和参数导数计算。程序将预热后的采样、直方图和终结处理 kernel 放入 CUDA Graph，并使用锁页内存传递少量控制参数和计算结果。每次重放会集中提交这些操作，在 CPU 读取度量和导数前等待 GPU 完成。FP32 直方图累加顺序可能产生差异，因此通过写出结果评估最终配准质量，不要求逐位相同。
+
+### CC、滤波与逆场
+
+局部 CC 一起计算正向和逆向更新，复用邻域计算并保留各自的场；分数读取可延迟到主机需要收敛值时。场高斯滤波直接读取分量与体素的原生存储，相邻线程写入相邻体素，最后一遍可将平滑与边界处理、场混合合并。
+
+逆场求解先提交两个方向的计算，再共享一次控制量读取。每个方向各自维护残差历史和停止判断，作出判断后才提交下一次迭代，从而减少同步并保持先更新、后停止的顺序。
+
+### 输出质量与写出
+
+CUDA 质量检查读取 FP32 场，将数值转为 FP64 后计算物理坐标、插值和 Jacobian。精确分位数和有限值检查在 GPU 上执行，只把统计结果和最终输出数组传回 CPU。配准拟合仍使用 FP32。
+
+共享 NIfTI 写出器默认使用 gzip level 0。`FAST_ANTS_GZIP_LEVEL=1` 启用压缩，解压后的头和数组不变。可用时 pigz 每个文件使用两个工作线程，进程返回前等待所有输出流完成。
+
+源码：[CUDA 运行时](../../src/fast_ants/backends/cuda/runtime.py)、[Mattes 调度](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py)、[CC 算子](../../src/fast_ants/backends/cuda/metrics/cc/operators.py)、[场滤波](../../src/fast_ants/backends/cuda/filtering.py)、[逆场调度](../../src/fast_ants/backends/cuda/fields/inverse.py)、[输出 QA](../../src/fast_ants/backends/cuda/output_quality.py)和 [NIfTI 写出](../../src/fast_ants/io/nifti.py)。
 
 ## 数值稳定性与性能分析
 

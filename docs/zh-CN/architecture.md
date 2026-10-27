@@ -2,7 +2,7 @@
 
 [English](../en/architecture.md) · [简体中文](architecture.md) · [文档](index.md)
 
-软件包将共享的图像几何、优化控制与 CPU、Metal 算子分开，各后端内部按配准阶段组织。
+软件包将共享的图像几何、优化控制与 CPU、Metal、CUDA 算子分开，各后端内部按配准阶段组织。
 
 ## 源码结构
 
@@ -17,6 +17,7 @@ src/fast_ants/
 │   │   ├── common/
 │   │   ├── fp64/
 │   │   └── fp32/
+│   ├── cuda/             # CuPy runtime, CUDA kernels, registration stages
 │   └── metal/
 │       ├── runtime.py, types.py, ops.py
 │       ├── registration.py, linear.py, syn.py
@@ -37,6 +38,7 @@ src/fast_ants/
 | `backends/cpu/fp32` | 单精度配准阶段与 Numba 算子 |
 | `backends/cpu/common` | 共享的 CPU 几何与归约函数 |
 | `backends/metal` | 单精度设备 kernel 与 GPU 调度 |
+| `backends/cuda` | CuPy 设备数组、CUDA kernel、配准与最终 QA |
 | `quality` | 图像／场质量指标与最终输出检查 |
 | `progress` | 英文阶段与迭代日志 |
 | `presets` | 随软件包分发的配准配置 |
@@ -51,15 +53,15 @@ src/fast_ants/
 4. 复合最终正逆映射，重采样移动图像。
 5. 计算输出质量指标，写出变换、图像与日志。
 
-入口分别为 [CPU FP64 配准](../../src/fast_ants/backends/cpu/fp64/registration.py)、[CPU FP32 配准](../../src/fast_ants/backends/cpu/fp32/registration.py)和 [Metal 配准](../../src/fast_ants/backends/metal/registration.py)，其数据流对应[算法说明](algorithms.md)。
+入口分别为 [CPU FP64 配准](../../src/fast_ants/backends/cpu/fp64/registration.py)、[CPU FP32 配准](../../src/fast_ants/backends/cpu/fp32/registration.py)、[Metal 配准](../../src/fast_ants/backends/metal/registration.py)和 [CUDA 配准](../../src/fast_ants/backends/cuda/registration.py)，其数据流对应[算法说明](algorithms.md)。
 
 ## 共享几何与优化器
 
 `core/types.py` 保存图像与网格信息，`core/fields.py` 和 `core/state.py` 定义位移场与 SyN 状态。小型矩阵运算和标量算术位于 `core/linalg.py`、`core/arithmetic32.py` / `arithmetic64.py`。
 
-CPU FP32 与 Metal 共用 `pipeline` 中的 FP32 线性模型和优化器。变换状态、参数更新、直方图终结处理与收敛计算使用各自的精度设置，图像规模的运算由选定后端执行。
+CPU FP32、Metal 与 CUDA 共用 `pipeline` 中的 FP32 线性模型和优化器。变换状态、参数更新、直方图终结处理与收敛计算使用各自的精度设置，图像规模的运算由选定后端执行。
 
-CPU 导入不会初始化 Metal。公共 GPU 入口在调用时加载实现，因此未安装 MLX 也可使用 CPU 后端。
+CPU 导入不会初始化 Metal 或 CUDA。各公共 GPU 入口在调用时加载实现，因此未安装 MLX 或 CuPy 也可使用 CPU 后端。
 
 ## CPU 算子
 
@@ -79,16 +81,14 @@ Mattes MI 分为采样、直方图构造、导数和终结处理。CC 包括短�
 
 具体实现见[实现优化](optimizations.md)。
 
-## 计划中的 CUDA 后端
+## CUDA 算子与配准
 
-NVIDIA CUDA 后端属于计划功能，软件包尚未提供。设计上复用 `core` 中的图像几何、变换、阶段配置和结果类型，以及 `pipeline` 中的线性模型、优化器控制和金字塔。
+[`CUDAContext`](../../src/fast_ants/backends/cuda/runtime.py) 通过可选 CuPy 管理设备数组、自定义 kernel 编译与调度、同步及显式主机／设备传输。[设备类型](../../src/fast_ants/backends/cuda/types.py)将连续 FP32 图像和位移场与共享 `Grid` 几何关联。[`CUDAImageOps`](../../src/fast_ants/backends/cuda/images.py)提供图像上传／下载、零场、强度归一化、三线性／最近邻 pull 采样和锚定采样的物理梯度。
 
-设备数组、kernel 启动、stream、event 和内存传输由 `backends/cuda` 下的独立运行时管理。算子计划使用 FP32 图像与场、可复用设备工作区和异步传输，在需要度量值或停止决策时同步。CUDA 依赖仅在选择该后端时加载。
+配准期间，GPU 上的图像和位移场使用 FP32。小型几何矩阵和原点差先在 CPU 上以 FP64 计算，再用于生成局部坐标。最终质量检查使用独立的 FP64 临时数组。`common.cuh` 中的 kernel 沿用 FP32 实现的采样范围和边界规则。CUDA 模块独立于 Metal，CPU 入口不会导入它们。
 
-算子范围和测试要求见[开发计划](roadmap.md)。
+[`CUDAOps`](../../src/fast_ants/backends/cuda/ops.py)组合图像、场、CC 和 SyN 算子。高斯滤波、Mattes 采样／直方图／导数／终结处理、局部 CC、场复合和求逆均在 GPU 上执行。[`register_cuda`](../../src/fast_ants/backends/cuda/registration.py)将这些算子接入共享阶段配置、线性模型、优化器控制和多分辨率计划，密集图像及四场 SyN 状态保留在设备端。
 
-## 开发资源
+小型几何矩阵、滤波系数、优化器和收敛判断在 CPU 上计算。最终位移场的质量检查在 GPU 上使用 FP64，计算精确分位数并检查有限值；程序将统计结果、最终场和重采样图像传回 CPU 后写出。CUDA 的 Mattes 直方图分块累加，再依次合并各块。浮点累加顺序可能影响末位数值和后续迭代，因此应在相同输入下比较最终对齐效果、形变和逆一致性，不要求结果逐位相同。
 
-`configs` 和 `examples` 提供配置与使用示例，`tests` 包含单元和集成测试，`validation` 包含数值比较与计时工具。这些内容与安装后的运行代码分开。软件包不包含本地参考源码、MRI、模板及生成结果。
-
-测试与打包方法见[开发说明](development.md)。
+测试方法与后续验证、优化工作见[开发指南](development.md)和[开发计划](roadmap.md)。
