@@ -48,6 +48,17 @@ python -B validation/legacy.py verify_float1_alignment --help
 
 与 ANTs 对比时，CPU FP64 选择 `--float 0`，CPU FP32 和 Metal 选择 `--float 1`，并保持图像、阶段参数、插值、采样方法和输入几何一致。[质量评估设置](configs/registration_quality_policy.json)说明了相关选项。
 
+评估 `measure_current_native` 保留的 Apple M5 结果时，先与公开性能数据核验，再通过同一 CPU FP64 采样器重新应用五个引擎的变换：
+
+```bash
+python -B -m validation.quality.assess_native_benchmark \
+  --report validation/reports/current-native/report.json \
+  --benchmark docs/assets/benchmarks/v0.1.0-native.json \
+  --output validation/reports/native-quality --threads 10
+```
+
+使用实际的原始报告路径和新的输出目录。工具读取已保存的输入、变换与图像，核验校验值及运行记录，计算 NCC、归一化均方误差、地标误差、正逆 Jacobian 和两个方向的逆一致性，不重复配准。公开性能数据的 `saved_output_quality` 字段保存 Apple M5 评估结果。
+
 ## 计时
 
 记录影像尺寸、配准参数、后端、精度、线程数、软件版本、预热次数和重复运行次数。GPU 任务完成后需要同步，并等待所有结果文件写入完成。分别说明计时是否包含进程启动、编译、影像 I/O 和最终质量统计。

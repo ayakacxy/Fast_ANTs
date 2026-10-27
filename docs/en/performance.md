@@ -28,11 +28,11 @@ Hardware is two Xeon Gold 6230 CPUs, 40 physical cores / 80 logical CPUs, and an
 
 Fast ANTs v0.1.0 registers IXI012-HH-1211 to IXI002-Guys-0828 with the `brain-syn` preset. Both images are 256×256×150 voxels.
 
-| Backend | Complete process / s |
-| --- | ---: |
-| Metal FP32 | 15.34 |
-| CPU FP32 | 42.57 |
-| CPU FP64 | 60.44 |
+| Backend | Complete process / s | Foreground NCC | Mean landmark error / mm |
+| --- | ---: | ---: | ---: |
+| Metal FP32 | 15.34 | 0.662625 | 1.4299 |
+| CPU FP32 | 42.57 | 0.664474 | 1.4382 |
+| CPU FP64 | 60.44 | 0.664417 | 1.4345 |
 
 Each backend was measured once in a fresh process using existing compilation caches. Timing includes startup, imports, image reading, registration, GPU synchronization and downloads where applicable, output quality checks and completed file writes.
 
@@ -40,14 +40,16 @@ Numba recorded 40 disk-cache hits and one miss for CPU FP32; the compilation is 
 
 [Benchmark data](../assets/benchmarks/v0.1.0-native.json) contains full timings, input checksums, parameters, package versions, source hashes and output checksums. See [optimizations](optimizations.md) for implementation details and [quality assessment](validation.md) for evaluating registration results.
 
+The quality columns use saved outputs with the same SHA-256 checksums as the timed outputs. Every transform is reapplied through the same CPU FP64 sampler outside timing. Foreground NCC uses 3,236,832 voxels; mean landmark error uses four coarse corresponding points. Metal has positive forward/inverse Jacobians and inverse-consistency RMS values of 0.02297 and 0.02099 mm. See [Apple M5 quality results](validation.md#apple-m5-native-mri-results) for definitions and both composition orders.
+
 ### ANTs reference timings
 
 ANTs 2.6.5 has the following single-run timings for the same inputs, parameters and thread count:
 
-| Precision | ANTs option | Complete process / s |
-| --- | --- | ---: |
-| FP64 | `--float 0` | 505.85 |
-| FP32 | `--float 1` | 507.48 |
+| Precision | ANTs option | Complete process / s | Foreground NCC | Mean landmark error / mm |
+| --- | --- | ---: | ---: | ---: |
+| FP64 | `--float 0` | 505.85 | 0.664417 | 1.4345 |
+| FP32 | `--float 1` | 507.48 | 0.664369 | 1.4315 |
 
 These reference runs have no separate full warmup. Fast ANTs includes its built-in output quality checks; ANTs does not run that additional step. Timing comparisons should also account for cache state, temperature and background load.
 

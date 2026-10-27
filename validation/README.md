@@ -48,6 +48,17 @@ Compare images on the same physical grid and evaluate forward/inverse fields sep
 
 For ANTs comparisons, select `--float 0` for CPU FP64 and `--float 1` for CPU FP32 or Metal, with matching images, stage parameters, interpolation, sampling, and input geometry. [Quality settings](configs/registration_quality_policy.json) describe the evaluation options.
 
+To assess retained Apple M5 outputs from `measure_current_native`, verify them against the published benchmark and reapply all five engines with the same CPU FP64 sampler:
+
+```bash
+python -B -m validation.quality.assess_native_benchmark \
+  --report validation/reports/current-native/report.json \
+  --benchmark docs/assets/benchmarks/v0.1.0-native.json \
+  --output validation/reports/native-quality --threads 10
+```
+
+Use the original report path and a new output directory. This reads saved inputs, transforms and images, checks their hashes and fitting receipts, and reports NCC, normalized MSE, landmark errors, Jacobians and both inverse-consistency directions. No registration is repeated. The published benchmark's `saved_output_quality` field contains the Apple M5 results.
+
 ## Timing
 
 Record image dimensions, registration parameters, backend, precision, thread count, software versions, warmups, and repeated runs. Synchronize GPU work before recording completion and wait for all output files to be written. Report separately whether timing includes process startup, compilation, image I/O, and final quality calculations.

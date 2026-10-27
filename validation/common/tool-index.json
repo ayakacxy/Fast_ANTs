@@ -1,5 +1,6 @@
 {
   "assess_fp32_benchmark": "validation.quality.assess_fp32_benchmark",
+  "assess_native_benchmark": "validation.quality.assess_native_benchmark",
   "assess_saved_registration": "validation.quality.assess_saved_registration",
   "audit_ordinary32": "validation.maintenance.audit_ordinary32",
   "benchmark_cc_queue32": "validation.benchmarks.benchmark_cc_queue32",

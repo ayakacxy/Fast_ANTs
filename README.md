@@ -22,11 +22,11 @@
 
 | Platform / threads | Backend | Time / s | Speedup | Foreground NCC | Mean corresponding-point error / mm |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Apple M5 / 10 | Metal FP32 | **15.34** | **33.1×** | — | — |
-| Apple M5 / 10 | CPU FP32 | 42.57 | 11.9× | — | — |
-| Apple M5 / 10 | CPU FP64 | 60.44 | 8.37× | — | — |
-| Apple M5 / 10 | Official ANTs FP32 | 507.48 | — | — | — |
-| Apple M5 / 10 | Official ANTs FP64 | 505.85 | — | — | — |
+| Apple M5 / 10 | Metal FP32 | **15.34** | **33.1×** | 0.6626 | 1.430 |
+| Apple M5 / 10 | CPU FP32 | 42.57 | 11.9× | 0.6645 | 1.438 |
+| Apple M5 / 10 | CPU FP64 | 60.44 | 8.37× | 0.6644 | 1.434 |
+| Apple M5 / 10 | Official ANTs FP32 | 507.48 | — | 0.6644 | 1.432 |
+| Apple M5 / 10 | Official ANTs FP64 | 505.85 | — | 0.6644 | 1.434 |
 | RTX 2080 Ti + dual Xeon / 32 | CUDA FP32 | **8.24** | **40.6×** | 0.6630–0.6644 | 1.431–1.434 |
 | RTX 2080 Ti + dual Xeon / 32 | CPU FP32 | 51.79 | 6.46× | 0.6644 | 1.431 |
 | RTX 2080 Ti + dual Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
@@ -34,6 +34,8 @@
 | RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
 
 Same 256×256×150 MRI pair; Apple M5 v0.1.0 results are single runs, Linux v0.2.0 results are medians of two cached runs. Times include startup, reading, registration and complete writing; Fast ANTs also includes quality checks. Speedups compare matching precision with official ANTs. Point errors are the mean distance between four roughly marked corresponding points after registration.
+
+Apple M5 quality measurements reapply the saved v0.1.0 transforms through the same CPU FP64 sampler. The foreground contains 3,236,832 voxels; landmark errors use four coarse non-expert annotations. Metal has positive Jacobians in both saved fields and a maximum inverse-consistency RMS of 0.02297 mm across the two composition orders.
 
 [Benchmark details](docs/en/performance.md) · [Quality assessment](docs/en/validation.md)
 

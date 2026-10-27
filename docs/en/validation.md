@@ -18,13 +18,6 @@ Metal tests need an Apple GPU:
 python -B scripts/maintenance/run_tests.py --suite metal
 ```
 
-Metal registration records Jacobian and inverse-consistency measurements in `quality.json`. The [Apple M5 benchmark data](../assets/benchmarks/v0.1.0-native.json) records the timing and output checksums for the measured run.
-
-| Apple M5 quality measure | Metal FP32 | ANTs FP32 |
-| --- | ---: | ---: |
-| Foreground NCC | — | — |
-| Mean landmark error / mm | — | — |
-
 CUDA tests need an NVIDIA GPU and CuPy:
 
 ```bash
@@ -89,6 +82,29 @@ For comparisons with ANTs, use the same images, image geometry, preprocessing, s
 ## CUDA checks
 
 CUDA operator and complete-registration tests live in `tests/cuda`. Enable them with `FAST_ANTS_TEST_CUDA=1` on NVIDIA hardware. They cover image sampling, filtering, Mattes controls, fields, inverse stopping, retained state, saved transform reapplication and native FP64 final QA. Real MRI results are assessed after timing using a common CPU FP64 sampler, foreground similarity, exploratory landmarks, positive Jacobians in both directions and inverse consistency.
+
+## Apple M5 native MRI results
+
+The [Apple M5 measurements](performance.md#apple-m5-release-measurements) use the native 256×256×150 IXI pair and 10 threads. Saved outputs are verified against the published timing checksums and fitting receipts, then reapplied through one CPU FP64 sampler. The foreground mask contains 3,236,832 fixed-image voxels above 5% of the intensity range. Before registration, foreground NCC is 0.171354 and mean error across four coarse landmarks is 21.4895 mm.
+
+| Engine | Foreground NCC | Mean landmark error / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
+| --- | ---: | ---: | ---: | ---: |
+| Metal FP32 | 0.662625 | 1.4299 | 0.165859 | 0.022969 |
+| CPU FP32 | 0.664474 | 1.4382 | 0.160806 | 0.023699 |
+| CPU FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
+| ANTs FP32 | 0.664369 | 1.4315 | 0.160959 | 0.023638 |
+| ANTs FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
+
+Metal landmark RMS and maximum errors are 1.8645 and 3.3925 mm; ANTs FP32 values are 1.8650 and 3.3914 mm. Normalized foreground MSE is 0.013558 for Metal and 0.013509 for ANTs FP32. The four landmarks are coarse non-expert annotations; these values describe this image pair's alignment.
+
+Both saved fields and all resampled images are finite and match the fixed grid. Forward and inverse Jacobians are finite and positive for all five engines, with zero nonpositive voxels. The last column takes the larger RMS of the two nonlinear composition orders. For Metal, the forward and inverse Jacobian minima are 0.165859 and 0.179500. Inverse consistency uses all 9,830,400 grid points in each direction:
+
+| Composition order | Metal RMS / mm | ANTs FP32 RMS / mm | Metal P99 / mm | ANTs FP32 P99 / mm | Metal maximum / mm | ANTs FP32 maximum / mm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Forward after inverse | 0.022969 | 0.023638 | 0.083221 | 0.085717 | 0.392295 | 0.409191 |
+| Inverse after forward | 0.020985 | 0.021935 | 0.077979 | 0.081582 | 0.478370 | 0.489421 |
+
+Inverse-consistency residuals measure how well a map and its inverse compose to identity; landmark errors measure alignment to marked points. The [Apple M5 data](../assets/benchmarks/v0.1.0-native.json) records both, including per-point errors, output hashes and assessment provenance. This saved-output assessment is outside the original timers; the performance figures remain single v0.1.0 measurements.
 
 ## Native Linux MRI results
 
