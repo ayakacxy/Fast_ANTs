@@ -20,8 +20,10 @@ Planned priorities, in implementation order:
 
 ### 1. Multi-case quality assessment
 
+Use the existing Fast ANTs algorithms for standard-dataset validation. Official ANTs comparisons remain in the published benchmarks; this work runs Fast ANTs only.
+
 - Define a reproducible case list using manually labelled datasets such as [LPBA40](https://loni.usc.edu/research/atlases), covering different image orientations, voxel spacings and acquisition settings.
-- Compare backends with precision-matched official ANTs. Report label Dice, NCC, landmark error where annotations are available, Jacobian statistics, failure rate and runtime distributions. Separate first-use and cached timings.
+- Evaluate transformed moving-image labels against fixed-image manual labels. Report label Dice, NCC, landmark error where annotations are available, Jacobian statistics, failure rate and runtime distributions. Separate first-use and cached timings.
 - Completion: the case list reproduces per-case results and an aggregate report, with input provenance, configuration and software versions recorded.
 
 ### 2. Environment diagnostics and automated tests
