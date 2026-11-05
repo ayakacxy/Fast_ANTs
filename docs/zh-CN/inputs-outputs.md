@@ -66,7 +66,7 @@ W(x)=M(T(x)),\qquad T:\Omega_F\rightarrow\Omega_M.
 
 布局兼容的标量和位移场 NIfTI 默认使用无损 gzip level 0。可将 `FAST_ANTS_GZIP_LEVEL` 设为 0 到 9 选择压缩级别，解压后的头和数组保持不变。可选 pigz 写出器和回退行为见[使用说明](usage.md)。
 
-仿射读写支持读取器实现的 ANTs MAT-v4 和 ITK 文本格式。形变场 NIfTI 存储采用 `[x,y,z,1,3]`，读取器也接受 `[x,y,z,3]`。尽管 NIfTI 仿射矩阵使用 RAS 坐标，位移向量分量仍为 LPS 毫米。
+仿射读写支持读取器实现的 ANTs MAT-v4 和 ITK 文本格式。位移场 NIfTI 存储采用 `[x,y,z,1,3]`，读取器也接受 `[x,y,z,3]`。尽管 NIfTI 仿射矩阵使用 RAS 坐标，位移向量分量仍为 LPS 毫米。
 
 ## 应用已保存的变换
 
@@ -80,4 +80,4 @@ warped = apply_image(moving, fixed.grid, pull, interpolation="Linear")
 save_image(warped, "reapplied.nii.gz")
 ```
 
-标量强度图像使用 `Linear`，整数标签使用 `NearestNeighbor`。保存和重采样时，应将位移场与其网格信息一起处理。变换复合公式见[算法](algorithms.md)。
+标量强度图像使用 `Linear`，整数标签使用 `NearestNeighbor`。保存和重采样时，应将位移场与其网格信息一起处理。变换复合公式见[配准算法](algorithms.md)。

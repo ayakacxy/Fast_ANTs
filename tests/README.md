@@ -8,7 +8,7 @@
 | `cpu_fp64/` | FP64 metrics, optimization, fields, and registration |
 | `cpu_fp32/` | FP32 operators, numerical stability, workspaces, and host controls |
 | `metal/` | Metal GPU operators and registration components |
-| `cuda/` | CUDA operators, registration, retained state, and final QA |
+| `cuda/` | CUDA operators, registration, retained state, and final quality checks |
 | `contracts/` | CLI arguments, benchmark metadata, logging, and mocked orchestration |
 | `fixtures/` | Small shared reference inputs and metadata |
 
@@ -34,4 +34,4 @@ CUDA tests require CuPy and an accessible NVIDIA GPU:
 python -B scripts/maintenance/run_tests.py --suite cuda
 ```
 
-`--suite all` includes both CPU and GPU tests. Registration quality metrics and ANTs comparisons are described in [testing and evaluation](../docs/en/validation.md).
+`--suite all` includes both CPU and GPU tests. Registration quality metrics and ANTs comparisons are described in [Testing and quality assessment](../docs/en/validation.md).

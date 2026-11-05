@@ -2,7 +2,7 @@
 
 [English](CONTRIBUTING.md) · [简体中文](CONTRIBUTING.zh-CN.md) · [Development guide](../docs/en/development.md)
 
-Contributions to registration algorithms, CPU, Metal and CUDA kernels, image I/O, tests, and documentation are welcome. Before a substantial change, describe the problem and the affected backend or registration stage. The [roadmap](../docs/en/roadmap.md) lists planned work and validation.
+Contributions to registration algorithms, CPU, Metal and CUDA kernels, image I/O, tests, and documentation are welcome. Before a substantial change, describe the problem and the affected backend or registration stage. The [Roadmap](../docs/en/roadmap.md) lists planned work and validation.
 
 ## Development setup
 
@@ -14,7 +14,7 @@ python -m pip install -e '.[metal]'
 python -m pip install -e '.[cuda]'
 ```
 
-See [architecture](../docs/en/architecture.md) for the module layout. Shared image types, configuration, and host-side optimization belong in `core` or `pipeline`; numerical execution belongs in the appropriate backend.
+See [Architecture](../docs/en/architecture.md) for the module layout. Shared image types, configuration, and host-side optimization belong in `core` or `pipeline`; numerical execution belongs in the appropriate backend.
 
 ## Code changes
 
@@ -36,7 +36,7 @@ python -B scripts/maintenance/check_markdown_links.py
 npx --yes markdownlint-cli2@0.23.2
 ```
 
-Use `--list` to inspect the selection. Metal tests require an Apple GPU and `--suite metal`; CUDA tests require an NVIDIA GPU and `--suite cuda`; see [tests](../tests/README.md). For numerical changes, check registration quality as described in [testing and evaluation](../docs/en/validation.md). Documentation changes do not require registration runs.
+Use `--list` to inspect the selection. Metal tests require an Apple GPU and `--suite metal`; CUDA tests require an NVIDIA GPU and `--suite cuda`; see [tests](../tests/README.md). For numerical changes, check registration quality as described in [Testing and quality assessment](../docs/en/validation.md). Documentation changes do not require registration runs.
 
 Markdown checks require Node.js and use `.markdownlint-cli2.jsonc`. The configuration covers both language versions, disables the line-length limit, and allows `div` and `h1` for README centering.
 

@@ -1,6 +1,6 @@
 # Validation tools
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [Testing and quality assessment](../docs/en/validation.md) · [Optimizations](../docs/en/optimizations.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [Testing and quality assessment](../docs/en/validation.md) · [Implementation optimizations](../docs/en/optimizations.md)
 
 This directory contains tools for checking numerical operators, generating ANTs reference results, evaluating saved transforms, and measuring execution time. Normal image registration uses `fast_ants register` and does not require these tools.
 
@@ -47,7 +47,7 @@ The index lists the available commands. Source-comparison tools accept the sourc
 
 ## Quality evaluation
 
-Compare images on the same physical grid and evaluate forward/inverse fields separately. Common measurements include NCC, normalized mean squared error, landmark TRE, Jacobian determinants, and inverse consistency. Details and equations are in [testing and quality assessment](../docs/en/validation.md).
+Compare images on the same physical grid and evaluate forward/inverse fields separately. Common measurements include NCC, normalized mean squared error, landmark TRE, Jacobian determinants, and inverse consistency. Details and equations are in [Testing and quality assessment](../docs/en/validation.md).
 
 For ANTs comparisons, select `--float 0` for CPU FP64 and `--float 1` for CPU FP32 or Metal, with matching images, stage parameters, interpolation, sampling, and input geometry. [Quality settings](configs/registration_quality_policy.json) describe the evaluation options.
 

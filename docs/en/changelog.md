@@ -4,14 +4,10 @@
 
 ## 0.3.0
 
-This version documents native Windows CPU and NVIDIA CUDA registration, alongside the retained Linux and Apple M5 results.
-
-- Add `--cpu-threads` as the explicit name for the Numba CPU worker count, retaining `--threads` as an alias and the existing recipe default.
-- Clarify CPU thread settings in startup logs, CLI help and usage examples; Metal and CUDA manage GPU parallelism separately.
-- Add a `cuda13` extra for CuPy with CUDA 13.x, retaining `cuda` for CUDA 12.x.
-- Add Windows process timing and peak working-set measurements, plus optional CPU FP64 and ANTs float0 runs in the CUDA benchmark tool.
-- Document isolated Windows installation, native ANTs comparison, separate compilation caches and saved-output quality assessment. See [performance](performance.md) and [quality assessment](validation.md).
-- Windows 11, i5-14400F and RTX 4060 Ti, 16 threads: CUDA FP32 7.43 s, CPU FP32 76.29 s, CPU FP64 93.88 s for native 256×256×150 MRI, using the median of two cached complete processes.
+- Add native Windows CPU and CUDA measurements. On Windows 11 with i5-14400F, RTX 4060 Ti and 16 threads, complete 256×256×150 MRI registration takes 7.43 s with CUDA FP32, 76.29 s with CPU FP32 and 93.88 s with CPU FP64 (medians of two runs using existing compilation caches). See [Performance measurements](performance.md) and [Testing and quality assessment](validation.md).
+- Add the `cuda13` extra for CUDA 13.x; `cuda` remains available for CUDA 12.x.
+- Add `--cpu-threads` to set Numba CPU workers, retaining `--threads` as an alias and the recipe default.
+- Support Windows process timing and peak working-set measurements. The CUDA benchmark tool can also measure CPU FP64 and ANTs FP64.
 
 ## 0.2.0
 
@@ -21,7 +17,7 @@ This version adds NVIDIA CUDA execution to the CPU and Apple Metal registration 
 
 - CUDA FP32 rigid, affine, and standard greedy SyN registration through optional CuPy dependencies.
 - `register_cuda` Python API and `fast_ants register --backend cuda --precision fp32`.
-- Native FP64 final field QA on CUDA, including inverse consistency, finite checks and exact percentile summaries; fitting remains FP32.
+- Native FP64 final field quality checks on CUDA, including inverse consistency, finite checks and exact percentile summaries; fitting remains FP32.
 - Default English CLI progress logs, interactive per-level `tqdm` bars on Metal and CUDA, and plain-text diagnostic logs in `console.log`.
 - `--quiet` disables progress and verbose diagnostics; `--log-every` controls GPU iteration logging.
 - Project-local CUDA conda environment named `ants`; CPU imports remain independent of CuPy and MLX.
@@ -31,10 +27,10 @@ This version adds NVIDIA CUDA execution to the CPU and Apple Metal registration 
 - Device-resident images and four-field SyN state, with shared geometry and host-side optimizer controls.
 - CUDA Graph replay for Mattes evaluation, grouped fixed-bin histograms, value-only evaluation and bounded pinned control transfers.
 - Paired CC updates and inverse-field scheduling, coalesced field filtering and reusable geometry buffers.
-- Native FP64 output QA without downloading dense QA scratch arrays.
+- Native FP64 output quality checks run on the device without downloading dense temporary arrays.
 - Streaming NIfTI output with gzip level 0 by default and optional pigz; `FAST_ANTS_GZIP_LEVEL` selects compression level.
 - Native 256×256×150 MRI registration on RTX 2080 Ti and dual Xeon Gold 6230 with 32 threads: CUDA FP32 8.24 s, CPU FP32 51.79 s and CPU FP64 85.58 s, using the median of two complete fresh processes with existing caches.
-- Independent saved-output checks for all measured backends and official ANTs. See [performance settings](performance.md) and [quality assessment](validation.md); v0.1.0 Apple M5 results remain recorded separately.
+- Independent saved-output checks for all measured backends and official ANTs. See [Performance measurements](performance.md) and [Testing and quality assessment](validation.md); v0.1.0 Apple M5 results remain recorded separately.
 
 ## 0.1.0
 
@@ -44,7 +40,7 @@ Fast ANTs is licensed under GPL-3.0-only, with ANTs and ITK license texts and at
 
 - Three-dimensional rigid, affine, and standard greedy SyN registration.
 - CPU FP64, CPU FP32, and Apple Metal FP32 backends.
-- Mattes mutual information, local cross-correlation, multiresolution image pyramids, and transform application.
+- Mattes mutual information, local normalized cross-correlation, multiresolution image pyramids, and transform application.
 - `fast_ants register` command with the `brain-syn` preset and JSON configuration.
 - NIfTI image and displacement-field I/O, affine transform I/O, and registration quality summaries.
 - English progress logs and Python registration API.

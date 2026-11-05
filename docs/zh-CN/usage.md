@@ -4,26 +4,21 @@
 
 ## 命令行配准
 
-将移动图像配准到固定图像网格：
-
-以下示例使用 v0.3.0 提供的 `--cpu-threads`，原有 `--threads` 别名仍然可用。
+使用 CPU FP64 将移动图像配准到固定图像网格。以下命令适用于 PowerShell 和 Bash；Windows 的 `.venv` 安装需将 `fast_ants` 替换为 `.\.venv\Scripts\fast_ants.exe`。
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-metal \
-  --backend metal --precision fp32 \
-  --preset brain-syn --cpu-threads 10 --verbose
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cpu --backend cpu --precision fp64 --preset brain-syn --cpu-threads 10
 ```
 
-使用 `--backend cpu --precision fp64` 或 `--backend cpu --precision fp32` 选择 CPU 后端。`python -m fast_ants` 调用相同的命令行接口。
+CPU FP32 使用 `--precision fp32`。`python -m fast_ants` 调用相同的命令行接口。
 
-使用 NVIDIA CUDA 时，激活 [CUDA 环境](installation.md#cuda-环境)并运行：
+使用 NVIDIA CUDA 时，安装 [CUDA 依赖](installation.md#cuda-环境)并运行：
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --cpu-threads 10 --verbose
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cuda --backend cuda --precision fp32 --preset brain-syn --cpu-threads 10
 ```
+
+Apple Silicon macOS 安装 `metal` 可选依赖后，使用 `--backend metal --precision fp32`。
 
 | 选项 | 默认值 | 说明 |
 | --- | --- | --- |
@@ -40,7 +35,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 
 输出目录需要是新目录，CPU 线程数应按机器配置设置。Metal 和 CUDA 支持 FP32；CPU 支持两种精度。预设使用随机种子 20261022。
 
-`--cpu-threads` 可省略，指定时覆盖配置中的 `threads` 值。原有 `--threads` 保留为行为相同的别名。该设置在所有后端中控制 Numba 的 CPU 工作线程数；Metal 和 CUDA 单独管理 GPU 并行度。图像读写线程和 gzip 工作线程使用各自的设置。启动日志显示 `cpu_threads=N (Numba)`，选用 GPU 后端时会进一步说明作用范围。配置文件和 `run.json` 中的 `threads` 字段继续表示 Numba CPU 工作线程数。
+`--cpu-threads` 覆盖配置中的 `threads` 值，`--threads` 为其别名。该参数在所有后端中控制 Numba CPU 工作线程数；GPU 并行度、图像读写和 gzip 工作线程分别设置。
 
 默认 scanner 几何选项要求图像具有 scanner-anatomical sform。使用标准 NiBabel NIfTI 几何和强度缩放时，添加：
 
@@ -48,21 +43,19 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 --geometry-policy nifti --scaling-policy nifti
 ```
 
-详见[图像几何](inputs-outputs.md)。
+详见[输入与输出](inputs-outputs.md)。
 
 ## 配准参数
 
-`brain-syn` 使用四层分辨率：刚体和仿射阶段采用 Mattes 互信息，随后进行局部 CC 的 SyN 配准。迭代次数、平滑、采样和收敛参数见[配置说明](../../configs/README.zh-CN.md)。
+`brain-syn` 使用四层分辨率：刚体和仿射阶段采用 Mattes 互信息，随后进行局部 CC 的 SyN 配准。迭代次数、平滑、采样和收敛参数见[配准参数](../../configs/README.zh-CN.md)。
 
 使用其他参数时，复制[预设 JSON](../../src/fast_ants/presets/brain-syn.json)，修改后传入文件路径：
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-custom --backend cpu --precision fp64 \
-  --config my-recipe.json --cpu-threads 10
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-custom --backend cpu --precision fp64 --config my-recipe.json --cpu-threads 10
 ```
 
-`--config` 替换完整预设，与 `--preset` 互斥。命令行流程使用密集采样、线性插值和无掩膜图像，关闭直方图匹配、winsorization 及逆向重采样强度图像输出。配置中包含不支持的值时会报错。
+`--config` 替换完整预设，与 `--preset` 互斥。命令行流程使用稠密采样、线性插值和无掩膜图像，关闭直方图匹配、winsorization 及逆向重采样强度图像输出。配置中包含不支持的值时会报错。
 
 ## Python 接口
 
@@ -116,11 +109,18 @@ DIAGNOSTIC,Iteration,metricValue,convergenceValue,ITERATION_TIME_INDEX,SINCE_LAS
 ## Gzip 输出
 
 兼容布局的标量／场 NIfTI 输出默认使用无损 gzip level 0，以减少浮点数组写出耗时。
-解压后的头和体素字节不变，文件可能更大。可显式选择压缩级别：
+解压后的头和体素字节不变，文件可能更大。PowerShell 中可设置压缩级别：
+
+```powershell
+$env:FAST_ANTS_GZIP_LEVEL = "1"
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-compressed --backend cpu --precision fp64 --preset brain-syn --cpu-threads 10
+```
+
+Linux 或 macOS 的 Bash 使用：
 
 ```bash
 FAST_ANTS_GZIP_LEVEL=1 fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-compressed --backend cuda --precision fp32 \
+  --output registration-compressed --backend cpu --precision fp64 \
   --preset brain-syn --cpu-threads 10
 ```
 
@@ -132,6 +132,6 @@ FAST_ANTS_GZIP_LEVEL=1 fast_ants register fixed.nii.gz moving.nii.gz \
 
 ## 输出与错误处理
 
-命令行程序将变换、重采样图像、配置、迭代记录和质量检查结果写入输出目录。`run.json` 记录输入文件、配置哈希、后端、精度和线程设置；`console.log` 保存终端输出。详见[输出文件](inputs-outputs.md)。
+命令行程序将变换、重采样图像、配置、迭代记录和质量检查结果写入输出目录。`run.json` 记录输入文件、配置哈希、后端、精度和线程设置；`console.log` 保存终端输出。详见[输入与输出](inputs-outputs.md)。
 
 参数错误、文件缺失、不支持的图像几何或 GPU 设备不可用时，程序会停止并输出错误信息，不会静默选择 CPU 执行。失败运行的日志保留在输出目录中，重新运行时请使用新目录。

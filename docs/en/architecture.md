@@ -38,7 +38,7 @@ src/fast_ants/
 | `backends/cpu/fp32` | Single-precision registration stages and Numba operators |
 | `backends/cpu/common` | Shared CPU geometry and reduction functions |
 | `backends/metal` | Single-precision device kernels and GPU scheduling |
-| `backends/cuda` | CuPy device arrays, CUDA kernels, registration and final QA |
+| `backends/cuda` | CuPy device arrays, CUDA kernels, registration and final quality checks |
 | `quality` | Image/field quality metrics and final output checks |
 | `progress` | English stage and iteration logging |
 | `presets` | Registration configurations distributed with the package |
@@ -53,7 +53,7 @@ src/fast_ants/
 4. Compose the final forward/inverse maps and resample the moving image.
 5. Compute output quality metrics and write the transforms, image, and logs.
 
-The entry points are [CPU FP64 registration](../../src/fast_ants/backends/cpu/fp64/registration.py), [CPU FP32 registration](../../src/fast_ants/backends/cpu/fp32/registration.py), [Metal registration](../../src/fast_ants/backends/metal/registration.py), and [CUDA registration](../../src/fast_ants/backends/cuda/registration.py). Their data flow follows the [algorithm description](algorithms.md).
+The entry points are [CPU FP64 registration](../../src/fast_ants/backends/cpu/fp64/registration.py), [CPU FP32 registration](../../src/fast_ants/backends/cpu/fp32/registration.py), [Metal registration](../../src/fast_ants/backends/metal/registration.py), and [CUDA registration](../../src/fast_ants/backends/cuda/registration.py). Their data flow follows the [Registration algorithms](algorithms.md).
 
 ## Shared geometry and optimization
 
@@ -79,7 +79,7 @@ Mattes MI is divided into sampling, histogram construction, derivatives, and fin
 
 Images and fields stay on the GPU during fitting. The host handles small geometry/coefficient calculations and optimizer control. Final arrays are downloaded for output and CPU quality checks. Independent GPU work can be submitted before a host read; later iterations still wait for the values needed to decide their next step.
 
-See [implementation optimizations](optimizations.md) for details.
+See [Implementation optimizations](optimizations.md) for details.
 
 ## CUDA operators and registration
 
@@ -91,4 +91,4 @@ Images and displacement fields use FP32 on the GPU during registration. Small ge
 
 Small geometry matrices, filter coefficients, optimizer updates and convergence decisions are computed on the CPU. Final field quality checks run on the GPU in FP64, calculating exact percentiles and checking finite values; the program downloads the summaries, final fields and warped image for output. CUDA Mattes histograms accumulate samples in tiles and merge those tiles in order. Floating-point accumulation order can affect the last bits and later iterations, so alignment, deformation and inverse consistency are evaluated on matching inputs.
 
-See [development](development.md) and the [roadmap](roadmap.md) for testing and planned validation and optimization work.
+See [Development guide](development.md) and the [Roadmap](roadmap.md) for testing and planned validation and optimization work.

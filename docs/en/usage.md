@@ -4,26 +4,21 @@
 
 ## Command-line registration
 
-Register the moving image on the fixed image grid:
-
-These examples use `--cpu-threads`, available in v0.3.0. The `--threads` alias remains supported.
+Register the moving image on the fixed image grid using CPU FP64. These commands work in PowerShell and Bash. For the Windows `.venv` installation, replace `fast_ants` with `.\.venv\Scripts\fast_ants.exe`.
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-metal \
-  --backend metal --precision fp32 \
-  --preset brain-syn --cpu-threads 10 --verbose
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cpu --backend cpu --precision fp64 --preset brain-syn --cpu-threads 10
 ```
 
-Use `--backend cpu --precision fp64` or `--backend cpu --precision fp32` to select CPU execution. `python -m fast_ants` runs the same command-line interface.
+Use `--precision fp32` for CPU FP32. `python -m fast_ants` runs the same command-line interface.
 
-For NVIDIA CUDA, activate the [CUDA environment](installation.md#cuda-environment) and run:
+For NVIDIA CUDA, install the [CUDA dependencies](installation.md#cuda-environment) and run:
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --cpu-threads 10 --verbose
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cuda --backend cuda --precision fp32 --preset brain-syn --cpu-threads 10
 ```
+
+On Apple Silicon macOS, use `--backend metal --precision fp32` with the `metal` extra installed.
 
 | Option | Default | Description |
 | --- | --- | --- |
@@ -40,7 +35,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 
 The output directory must be new. Select a CPU thread count supported by your machine. Metal and CUDA support FP32; CPU supports both precisions. The preset uses random seed 20261022.
 
-`--cpu-threads` is optional and overrides the recipe's `threads` value. `--threads` remains an alias with the same behavior. This setting controls Numba CPU workers on every backend; Metal and CUDA manage GPU parallelism separately. Image I/O workers and gzip workers use their own settings. Startup logs show `cpu_threads=N (Numba)` and explain the scope when a GPU backend is selected. The `threads` field in configuration files and `run.json` continues to mean the Numba CPU worker count.
+`--cpu-threads` overrides the recipe's `threads` value; `--threads` is an alias. It controls Numba CPU workers on every backend. GPU parallelism, image I/O and gzip workers use separate settings.
 
 The default scanner geometry setting requires a scanner-anatomical sform. To use standard NiBabel NIfTI geometry and intensity scaling, add:
 
@@ -48,18 +43,16 @@ The default scanner geometry setting requires a scanner-anatomical sform. To use
 --geometry-policy nifti --scaling-policy nifti
 ```
 
-See [image geometry](inputs-outputs.md) for details.
+See [Inputs and outputs](inputs-outputs.md) for details.
 
 ## Registration parameters
 
-`brain-syn` runs four resolution levels: rigid and affine stages with Mattes MI, followed by SyN with local CC. The [configuration guide](../../configs/README.md) lists its iteration counts, smoothing, sampling, and convergence parameters.
+`brain-syn` runs four resolution levels: rigid and affine stages with Mattes MI, followed by SyN with local CC. The [Registration configuration](../../configs/README.md) page lists its iteration counts, smoothing, sampling, and convergence parameters.
 
 To use another configuration, copy [the preset JSON](../../src/fast_ants/presets/brain-syn.json), edit it, and pass its path:
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-custom --backend cpu --precision fp64 \
-  --config my-recipe.json --cpu-threads 10
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-custom --backend cpu --precision fp64 --config my-recipe.json --cpu-threads 10
 ```
 
 `--config` replaces the complete preset and is mutually exclusive with `--preset`. The command-line workflow uses dense sampling, linear interpolation, and unmasked images. Histogram matching, winsorization, and inverse-warped intensity output are disabled. Unsupported configuration values produce an error.
@@ -97,7 +90,7 @@ For CPU FP64, supplying `initial_transform` to `register` fixes the affine trans
 | Sampling and resampling | `apply_image`, `sample_image`, `transform_to_field` |
 | Registration | `LinearStage`, `SyNStage`, `register_linear`, `register`, `register32`, `register_metal`, `register_cuda` |
 
-See [inputs and outputs](inputs-outputs.md) for transform direction and array layout.
+See [Inputs and outputs](inputs-outputs.md) for transform direction and array layout.
 
 ## Logging
 
@@ -117,11 +110,18 @@ DIAGNOSTIC,Iteration,metricValue,convergenceValue,ITERATION_TIME_INDEX,SINCE_LAS
 
 Compatible scalar/field NIfTI output defaults to lossless gzip level 0 to
 reduce write time for floating-point arrays. Decoded headers and voxel bytes
-are unchanged; files can be larger. Select a compression level explicitly:
+are unchanged; files can be larger. Select a compression level in PowerShell:
+
+```powershell
+$env:FAST_ANTS_GZIP_LEVEL = "1"
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-compressed --backend cpu --precision fp64 --preset brain-syn --cpu-threads 10
+```
+
+In Bash on Linux or macOS:
 
 ```bash
 FAST_ANTS_GZIP_LEVEL=1 fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-compressed --backend cuda --precision fp32 \
+  --output registration-compressed --backend cpu --precision fp64 \
   --preset brain-syn --cpu-threads 10
 ```
 
@@ -135,6 +135,6 @@ The CLI records actual backend, version, level and worker count in
 
 ## Output and errors
 
-The CLI writes transforms, the warped image, configuration, iteration history, and quality summaries to the output directory. `run.json` records input files, configuration hashes, backend, precision, and thread settings; `console.log` captures terminal output. See [output files](inputs-outputs.md).
+The CLI writes transforms, the warped image, configuration, iteration history, and quality summaries to the output directory. `run.json` records input files, configuration hashes, backend, precision, and thread settings; `console.log` captures terminal output. See [Inputs and outputs](inputs-outputs.md).
 
 Invalid parameters, missing files, unsupported image geometry, or an unavailable GPU device stop the run with an error. GPU failures do not silently select CPU execution. Logs from a failed run remain in its output directory; use a new directory when retrying.

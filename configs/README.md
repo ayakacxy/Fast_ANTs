@@ -32,4 +32,4 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 
 `--config` replaces the entire preset and is mutually exclusive with `--preset`. Set `iterations`, `shrink_factors`, and `smoothing_sigmas` with equal lengths for each stage. Image smoothing uses standard deviations; the SyN update and total-field smoothing values are variances.
 
-The CLI supports Rigid/MI → Affine/MI → SyN/CC with dense sampling, linear interpolation, unmasked images, and disabled histogram matching and winsorization. The Python interfaces provide stage objects for direct parameter configuration. See [algorithms](../docs/en/algorithms.md) for parameter definitions.
+The CLI supports Rigid/MI → Affine/MI → SyN/CC with dense sampling, linear interpolation, unmasked images, and disabled histogram matching and winsorization. The Python interfaces provide stage objects for direct parameter configuration. See [Registration algorithms](../docs/en/algorithms.md) for parameter definitions.

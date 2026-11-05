@@ -1,8 +1,8 @@
-# 实现优化
+# 优化实现
 
 [English](../en/optimizations.md) · [简体中文](optimizations.md) · [文档](index.md)
 
-配准会反复执行图像采样、直方图累加、邻域统计和位移场更新。多数优化针对这些运算的内存访问和重复计算，另一些用于减少 kernel 启动或 CPU／GPU 同步。更新公式见[配准算法](algorithms.md)。
+配准会反复执行图像采样、直方图累加、邻域统计和位移场更新。多数优化针对这些运算的内存访问和重复计算，另一些用于减少内核启动或 CPU／GPU 同步。更新公式见[配准算法](algorithms.md)。
 
 ## 下文使用的数组规模
 
@@ -39,7 +39,7 @@ CPU FP32 的部分度量计算使用四路 LLVM 向量，在 Apple Silicon 上�
 
 直方图向量通道不跨样本求和。各分箱和参数通道保留标量累加顺序，不启用 `fastmath` 重排；不足四个元素的尾部使用标量处理。
 
-源码：[共享几何](../../src/fast_ants/backends/cpu/common/geometry.py)、[FP64 滤波 kernel](../../src/fast_ants/backends/cpu/fp64/filter_kernels.py)、[FP32 稠密 kernel](../../src/fast_ants/backends/cpu/fp32/dense_kernels.py)、[FP32 Parzen SIMD](../../src/fast_ants/backends/cpu/fp32/metrics/parzen.py)、[四样本映射](../../src/fast_ants/backends/cpu/fp32/metrics/coordinates.py)。
+源码：[共享几何](../../src/fast_ants/backends/cpu/common/geometry.py)、[FP64 滤波内核](../../src/fast_ants/backends/cpu/fp64/filter_kernels.py)、[FP32 稠密内核](../../src/fast_ants/backends/cpu/fp32/dense_kernels.py)、[FP32 Parzen SIMD](../../src/fast_ants/backends/cpu/fp32/metrics/parzen.py)、[四样本映射](../../src/fast_ants/backends/cpu/fp32/metrics/coordinates.py)。
 
 ## 2. Mattes MI：区分仅值计算与导数计算
 
@@ -66,14 +66,14 @@ flowchart TD
     HistDerivative --> Finalize
 ```
 
-图中是数学数据流，各后端的循环和 kernel 划分不同：
+图中是数学数据流，各后端的循环和内核划分不同：
 
 | 路径 | 采样和直方图之间保留的数据 |
 | --- | --- |
 | CPU FP64 仅值 | `values[N]` 和 `states[N]` |
 | CPU FP64 导数 | 上述数组及 `gradients[N,3]`，参数乘积在直方图累加时计算 |
 | CPU FP32 流式导数 | 每块内部完成采样、梯度、Jacobian 乘积和 PDF 更新，不保留样本规模的梯度或 `[N,P]` 导数数组 |
-| Metal 流式导数 | 强度、状态、`[N,3]` 梯度、移动分箱及小数部分，参数乘积在直方图 kernel 中计算 |
+| Metal 流式导数 | 强度、状态、`[N,3]` 梯度、移动分箱及小数部分，参数乘积在直方图内核中计算 |
 
 因此 CPU FP64 仍保留 $O(N)$ 的采样临时数组，并非将全部计算融合为一次遍历。Metal 导数采样也保留 $O(N)$ 数据，省去的是随参数数增长的完整 $N\times P$ 强度导数数组。
 
@@ -125,7 +125,7 @@ flowchart LR
 
 ### Metal：参数通道共享采样结果
 
-导数采样 kernel 返回 5 个数组：强度、状态、梯度、分箱编号和小数部分，总共包含 $7N$ 个 32 位元素。直方图阶段为各参数通道复用梯度，不保存所有样本／参数乘积。
+导数采样内核返回 5 个数组：强度、状态、梯度、分箱编号和小数部分，总共包含 $7N$ 个 32 位元素。直方图阶段为各参数通道复用梯度，不保存所有样本／参数乘积。
 
 使用固定分箱计划时，导数行划分为 128 份。仅值路径只有一个直方图通道，因此可使用最多 512 份分块来分散大型背景行。SIMD 组累加一个行／块／通道对应的移动端分箱权重。
 
@@ -144,7 +144,7 @@ flowchart LR
 
 平移参数只需选择梯度分量，稀疏仿射列只需计算对应坐标项。导数代码识别这些形式；复合或未识别模型保留通用表达式。仅在几何和系数通过有限值检查时使用精确零梯度省算。
 
-支持的 Metal 控制路径在 GPU 上完成 PDF 归一化、边缘分布、对数、度量值和下降方向。融合 kernel 在参数通道间共享联合／边缘分布及对数准备，使用有限共享存储支持 5–32 个分箱和最多 12 个参数。
+支持的 Metal 控制路径在 GPU 上完成 PDF 归一化、边缘分布、对数、度量值和下降方向。融合内核在参数通道间共享联合／边缘分布及对数准备，使用有限共享存储支持 5–32 个分箱和最多 12 个参数。
 
 配准流程仅对兼容、无移动图像掩膜且至少有 16384 个样本的度量使用这些控制，不支持的组合保留通用 PDF 求值。请求 PDF 细节的公共求值仍返回这些数组。
 
@@ -184,7 +184,7 @@ flowchart TD
 
 ### Metal 窗口与分块
 
-短窗口路径有 3 次遍历：x 方向计算中心化统计，y 方向合并分组，z 方向合并剩余分组并写出双向更新。每份中间结果包含 5 个 FP32 通道和一个 `uint32` 计数，即 $24V$ 字节。数组在最后一个依赖 kernel 使用后释放，实际峰值还包含梯度、更新和生命周期重叠的中间结果。
+短窗口路径有 3 次遍历：x 方向计算中心化统计，y 方向合并分组，z 方向合并剩余分组并写出双向更新。每份中间结果包含 5 个 FP32 通道和一个 `uint32` 计数，即 $24V$ 字节。数组在最后一个依赖内核使用后释放，实际峰值还包含梯度、更新和生命周期重叠的中间结果。
 
 该路径支持半径 0–4。独立的分块路径将固定／移动强度及有效性加载到 threadgroup 共享内存，包括 `16x4x4` 输出块周围的 halo，支持半径不超过 2。两者在半径超出支持范围时使用通用邻域实现，掩膜和边缘截断窗口都计入统计。
 
@@ -224,7 +224,7 @@ Metal 预处理缓存跨阶段复用正 sigma 的平滑图像，键包含源数�
 
 ## 8. CPU／GPU 异步调度
 
-主机回读可能迫使延迟 GPU 计算图求值。先提交独立工作，可以让 CPU 在 GPU 执行队列任务时准备另一项操作。下图展示依赖关系，不表示同一队列中的 kernel 同时执行。
+主机回读可能迫使延迟 GPU 计算图求值。先提交独立工作，可以让 CPU 在 GPU 执行队列任务时准备另一项操作。下图展示依赖关系，不表示同一队列中的内核同时执行。
 
 ```mermaid
 sequenceDiagram
@@ -277,7 +277,7 @@ Metal 输出路径按 CPU 分块计算逆一致性和 Jacobian 摘要，直接�
 
 输入图像对使用最多 2 个线程读取。对布局兼容的连续 NIfTI 数据，`memoryview` 按 1 MiB 分块写入，避免再构造完整图像大小的字节串；需要转换 dtype 或存储布局时仍可能分配。独立图像和场使用最多 3 个写出线程，配准返回前等待全部线程完成。
 
-源码：[输出质量 kernel](../../src/fast_ants/quality/output_kernels.py)、[图像 I/O](../../src/fast_ants/io/images.py)、[NIfTI 写出](../../src/fast_ants/io/nifti.py)、[Metal 输出流程](../../src/fast_ants/backends/metal/registration.py)。
+源码：[输出质量内核](../../src/fast_ants/quality/output_kernels.py)、[图像 I/O](../../src/fast_ants/io/images.py)、[NIfTI 写出](../../src/fast_ants/io/nifti.py)、[Metal 输出流程](../../src/fast_ants/backends/metal/registration.py)。
 
 ## 10. CUDA 配准
 
@@ -285,7 +285,7 @@ Metal 输出路径按 CPU 分块计算逆一致性和 Jacobian 摘要，直接�
 
 CUDA 后端在拟合期间将图像和四个 SyN 状态场保留为设备端 FP32 数组。小型几何矩阵、滤波系数、优化器更新和收敛判断留在主机端。设备几何输入在一次配准的上下文中缓存；公共算子返回的数组保有独立所有权。
 
-Mattes 计算按固定图像的直方图分箱对样本分组。只需要度量值的试探会跳过梯度和参数导数计算。程序将预热后的采样、直方图和终结处理 kernel 放入 CUDA Graph，并使用锁页内存传递少量控制参数和计算结果。每次重放会集中提交这些操作，在 CPU 读取度量和导数前等待 GPU 完成。FP32 直方图累加顺序可能产生差异，因此通过写出结果评估最终配准质量，不要求逐位相同。
+Mattes 计算按固定图像的直方图分箱对样本分组。只需要度量值的试探会跳过梯度和参数导数计算。程序将预热后的采样、直方图和终结处理内核放入 CUDA Graph，并使用锁页内存传递少量控制参数和计算结果。每次重放会集中提交这些操作，在 CPU 读取度量和导数前等待 GPU 完成。FP32 直方图累加顺序可能产生差异，因此通过写出结果评估最终配准质量，不要求逐位相同。
 
 ### CC、滤波与逆场
 
@@ -299,10 +299,10 @@ CUDA 质量检查读取 FP32 场，将数值转为 FP64 后计算物理坐标、
 
 共享 NIfTI 写出器默认使用 gzip level 0。`FAST_ANTS_GZIP_LEVEL=1` 启用压缩，解压后的头和数组不变。可用时 pigz 每个文件使用两个工作线程，进程返回前等待所有输出流完成。
 
-源码：[CUDA 运行时](../../src/fast_ants/backends/cuda/runtime.py)、[Mattes 调度](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py)、[CC 算子](../../src/fast_ants/backends/cuda/metrics/cc/operators.py)、[场滤波](../../src/fast_ants/backends/cuda/filtering.py)、[逆场调度](../../src/fast_ants/backends/cuda/fields/inverse.py)、[输出 QA](../../src/fast_ants/backends/cuda/output_quality.py)和 [NIfTI 写出](../../src/fast_ants/io/nifti.py)。
+源码：[CUDA 运行时](../../src/fast_ants/backends/cuda/runtime.py)、[Mattes 调度](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py)、[CC 算子](../../src/fast_ants/backends/cuda/metrics/cc/operators.py)、[场滤波](../../src/fast_ants/backends/cuda/filtering.py)、[逆场调度](../../src/fast_ants/backends/cuda/fields/inverse.py)、[输出质量检查](../../src/fast_ants/backends/cuda/output_quality.py)和 [NIfTI 写出](../../src/fast_ants/io/nifti.py)。
 
 ## 数值稳定性与性能分析
 
-中心化统计、补偿求和、成对归约、局部坐标和差分驱动的高斯二阶节用于减少相消与累积误差。这些方法使用普通 FP32 或 FP64 算术；融合仍保留样本有效性、场单位、复合顺序和停止条件。
+中心化统计、补偿求和、成对规约、局部坐标和差分驱动的高斯二阶节用于减少相消与累积误差。这些方法使用普通 FP32 或 FP64 算术；融合仍保留样本有效性、场单位、复合顺序和停止条件。
 
 实际耗时取决于图像尺寸、迭代次数、采样密度、内存分配、带宽、编译与同步，可使用[计时工具](../../validation/README.zh-CN.md)分析对应任务。

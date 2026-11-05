@@ -12,7 +12,7 @@
 [![Precision: FP64 / FP32](https://img.shields.io/badge/Precision-FP64%20%2F%20FP32-6D4AFF)](docs/en/architecture.md)
 [![GPU: CUDA](https://img.shields.io/badge/GPU-CUDA_FP32-76B900?logo=nvidia&logoColor=white)](docs/en/installation.md#cuda-environment)
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [Documentation](docs/en/index.md) · [Algorithms](docs/en/algorithms.md) · [Optimizations](docs/en/optimizations.md) · [Performance](docs/en/performance.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [Documentation](docs/en/index.md) · [Registration algorithms](docs/en/algorithms.md) · [Implementation optimizations](docs/en/optimizations.md) · [Performance measurements](docs/en/performance.md)
 
 🧠 **Rigid / affine / SyN** · ⚙️ **Multithreaded CPU** · ⚡ **Metal / CUDA** · 🐍 **Python API & CLI**
 
@@ -20,29 +20,40 @@
 
 ## ⚡ Performance
 
-| Platform / threads | Backend | Time / s | Speedup | Foreground NCC | Mean corresponding-point error / mm |
+| OS · Hardware / threads | Backend | Time / s | Speedup | Foreground NCC | Mean landmark error / mm |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Apple M5 / 10 | Metal FP32 | **15.34** | **33.1×** | 0.6626 | 1.430 |
-| Apple M5 / 10 | CPU FP32 | 42.57 | 11.9× | 0.6645 | 1.438 |
-| Apple M5 / 10 | CPU FP64 | 60.44 | 8.37× | 0.6644 | 1.434 |
-| Apple M5 / 10 | Official ANTs FP32 | 507.48 | — | 0.6644 | 1.432 |
-| Apple M5 / 10 | Official ANTs FP64 | 505.85 | — | 0.6644 | 1.434 |
-| RTX 2080 Ti + dual Xeon / 32 | CUDA FP32 | **8.24** | **40.6×** | 0.6630–0.6644 | 1.431–1.434 |
-| RTX 2080 Ti + dual Xeon / 32 | CPU FP32 | 51.79 | 6.46× | 0.6644 | 1.431 |
-| RTX 2080 Ti + dual Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
-| RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP32 | 334.32 | — | 0.6629–0.6644 | 1.425–1.433 |
-| RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
-| Windows · RTX 4060 Ti + i5-14400F / 16 | CUDA FP32 | **7.43** | **70.54×** | 0.6644 | 1.434–1.436 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CUDA FP32 | **7.43** | **70.54×** | 0.6644 | 1.435 |
 | Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP32 | 76.29 | 6.87× | 0.6644 | 1.435 |
 | Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP64 | 93.88 | 5.71× | 0.6644 | 1.434 |
-| Windows · RTX 4060 Ti + i5-14400F / 16 | Official ANTs FP32 | 524.23 | — | 0.6644 | 1.434–1.435 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | Official ANTs FP32 | 524.23 | — | 0.6644 | 1.435 |
 | Windows · RTX 4060 Ti + i5-14400F / 16 | Official ANTs FP64 | 536.38 | — | 0.6639 | 1.434 |
+| Linux · RTX 2080 Ti + dual Xeon / 32 | CUDA FP32 | **8.24** | **40.6×** | 0.6637 | 1.432 |
+| Linux · RTX 2080 Ti + dual Xeon / 32 | CPU FP32 | 51.79 | 6.46× | 0.6644 | 1.431 |
+| Linux · RTX 2080 Ti + dual Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
+| Linux · RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP32 | 334.32 | — | 0.6637 | 1.429 |
+| Linux · RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
+| macOS · Apple M5 / 10 | Metal FP32 | **15.34** | **33.1×** | 0.6626 | 1.430 |
+| macOS · Apple M5 / 10 | CPU FP32 | 42.57 | 11.9× | 0.6645 | 1.438 |
+| macOS · Apple M5 / 10 | CPU FP64 | 60.44 | 8.37× | 0.6644 | 1.434 |
+| macOS · Apple M5 / 10 | Official ANTs FP32 | 507.48 | — | 0.6644 | 1.432 |
+| macOS · Apple M5 / 10 | Official ANTs FP64 | 505.85 | — | 0.6644 | 1.434 |
 
-Same 256×256×150 MRI pair; Apple M5 v0.1.0 results are single runs, Linux v0.2.0 and Windows v0.3.0 results are medians of two cached runs. Times include startup, reading, registration and complete writing; Fast ANTs also includes quality checks. Speedups compare matching precision with official ANTs. Point errors are the mean distance between four roughly marked corresponding points after registration.
+All platforms use the same 256×256×150 MRI pair. macOS results are single runs; Windows and Linux times, foreground NCC and mean landmark errors are medians of two runs. Fast ANTs uses existing compilation caches. Times include startup, input reading, registration and complete output writing, plus Fast ANTs' built-in quality checks. Speedups compare matching precision on the same hardware.
 
-Apple M5 quality measurements reapply the saved v0.1.0 transforms through the same CPU FP64 sampler. The foreground contains 3,236,832 voxels; landmark errors use four coarse non-expert annotations. Metal has positive Jacobians in both saved fields and a maximum inverse-consistency RMS of 0.02297 mm across the two composition orders.
+Quality metrics use saved transforms reapplied with a common CPU FP64 sampler. Mean landmark error averages the post-registration distances between four landmark pairs from coarse non-expert annotations.
 
-[Benchmark details](docs/en/performance.md) · [Quality assessment](docs/en/validation.md)
+Foreground normalized cross-correlation (NCC) is
+
+```math
+\mathrm{NCC}_{\Omega} =
+\frac{\sum_{i\in\Omega}(F_i-\bar{F})(W_i-\bar{W})}
+{\sqrt{\sum_{i\in\Omega}(F_i-\bar{F})^2}\,
+ \sqrt{\sum_{i\in\Omega}(W_i-\bar{W})^2}}.
+```
+
+$F$ is the fixed image and $W$ the registered moving image on the fixed grid; $\bar{F}$ and $\bar{W}$ are their means over $\Omega$. The foreground $\Omega$ contains fixed-image voxels above the minimum intensity plus 5% of the intensity range. NCC ranges from −1 to 1; values closer to 1 indicate stronger positive intensity correlation.
+
+[Performance measurements](docs/en/performance.md) · [Testing and quality assessment](docs/en/validation.md)
 
 ## 📚 Contents
 
@@ -60,29 +71,31 @@ Fast ANTs follows the rigid → affine → greedy SyN workflow from ANTs/ITK, re
 ## 🧠 Features
 
 - Rigid → affine → SyN registration with multiresolution image pyramids.
-- Mattes mutual information for linear registration and local cross-correlation for SyN.
-- CPU FP64, CPU FP32, Apple GPU FP32, and CUDA FP32 backends.
+- Mattes mutual information for linear registration and local normalized cross-correlation (CC) for SyN.
+- CPU FP64, CPU FP32, Metal FP32, and CUDA FP32 backends.
 - ANTs-compatible affine and displacement-field I/O.
 - Command-line and Python interfaces, English progress logs, and output quality checks.
 
-CPU kernels use multithreading, SIMD, fused metric evaluation, and reusable workspaces. The Metal backend keeps images and fields in GPU arrays, combines sampling and histogram operations, and batches independent work to reduce synchronization. See [implementation optimizations](docs/en/optimizations.md).
+CPU kernels use multithreading, SIMD, fused metric evaluation, and reusable workspaces. The Metal backend keeps images and fields in GPU arrays, combines sampling and histogram operations, and batches independent work to reduce synchronization.
 
-The CUDA backend uses CuPy custom kernels, CUDA Graph replay, device-resident images and fields, and native FP64 final QA. CPU imports remain independent of the optional GPU libraries. See [installation](docs/en/installation.md) and [implementation optimizations](docs/en/optimizations.md).
+The CUDA backend uses CuPy custom kernels, CUDA Graph replay, device-resident images and fields, and native FP64 final quality checks. CPU imports remain independent of the optional GPU libraries. See [Implementation optimizations](docs/en/optimizations.md).
 
 ## 🧮 Algorithm
 
-The [algorithm guide](docs/en/algorithms.md) gives the mathematical formulation of rigid and affine transforms, Mattes MI, local CC, and SyN. It also describes image gradients, multiresolution optimization, field composition, and inverse-field iteration.
+The [Registration algorithms](docs/en/algorithms.md) page gives the mathematical formulation of rigid and affine transforms, Mattes MI, local CC, and SyN. It also describes image gradients, multiresolution optimization, field composition, and inverse-field iteration.
 
 ## 📦 Installation
 
 The Python distribution, import package and command-line entry point are all named `fast_ants`.
 
-Requires Python 3.11 or later. Download the wheel from the [v0.3.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.3.0), or build and install it from the project root:
+Requires Python 3.11 or later. Build and install from the project root:
 
 ```bash
 python -m pip wheel . --no-deps -w dist
 python -m pip install ./dist/fast_ants-0.3.0-py3-none-any.whl
 ```
+
+Wheels for published versions are available on the [Releases page](https://github.com/ayakacxy/Fast_ANTs/releases).
 
 For Apple Silicon macOS with Metal:
 
@@ -96,55 +109,48 @@ For NVIDIA CUDA 12.x:
 python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda]'
 ```
 
-For CUDA 13.x, select `[cuda13]` instead. Install one CuPy variant matching the CUDA runtime. CPU execution uses NumPy, NiBabel and Numba; Metal uses MLX and CUDA uses CuPy. See [installation](docs/en/installation.md) for Windows setup, wheel builds, source installation and conda environments.
+For CUDA 13.x, select `[cuda13]` instead. Install one CuPy variant matching the CUDA runtime. CPU execution uses NumPy, NiBabel and Numba; Metal uses MLX and CUDA uses CuPy. See [Installation](docs/en/installation.md) for Windows setup, wheel builds, source installation and conda environments.
 
 ## 🚀 Quick start
+
+These commands work in PowerShell and Bash. For the Windows `.venv` installation, replace `fast_ants` with `.\.venv\Scripts\fast_ants.exe`.
 
 Register a moving image to a fixed image on CPU:
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-cpu --backend cpu --precision fp64 \
-  --preset brain-syn --cpu-threads 10 --verbose
-```
-
-Use the Apple GPU:
-
-```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-metal --backend metal --precision fp32 \
-  --preset brain-syn --cpu-threads 10 --verbose
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cpu --backend cpu --precision fp64 --preset brain-syn --cpu-threads 10
 ```
 
 Use an NVIDIA GPU:
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --cpu-threads 32
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cuda --backend cuda --precision fp32 --preset brain-syn --cpu-threads 32
 ```
 
-`--cpu-threads` sets the Numba CPU worker count, including CPU work when using Metal or CUDA. GPU parallelism is managed by the backend. When omitted, it uses the recipe's `threads` value (10 for `brain-syn`). `--threads` remains a compatible alias. Both names are available in v0.3.0.
+Use the Apple GPU:
+
+```bash
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-metal --backend metal --precision fp32 --preset brain-syn --cpu-threads 10
+```
+
+`--cpu-threads` sets the Numba CPU worker count, including CPU work when using Metal or CUDA. GPU parallelism is managed by the backend. It defaults to the recipe's `threads` value (10 for `brain-syn`); `--threads` is an alias.
 
 Choose a new output directory and a CPU thread count supported by your machine. The default input settings are `itk_scanner` geometry and `itk` intensity scaling. For standard NiBabel NIfTI handling, add `--geometry-policy nifti --scaling-policy nifti`.
 
 Progress logs are enabled by default. Metal and CUDA show per-level `tqdm` bars in an interactive terminal; `console.log` stores plain-text diagnostics. Use `--quiet` to disable progress and verbose logging.
 
-The output directory contains the affine transform, forward and inverse displacement fields, warped image, iteration history, quality summaries, and `console.log`. See [usage](docs/en/usage.md) and [inputs and outputs](docs/en/inputs-outputs.md).
+The output directory contains the affine transform, forward and inverse displacement fields, warped image, iteration history, quality summaries, and `console.log`. See [Usage](docs/en/usage.md) and [Inputs and outputs](docs/en/inputs-outputs.md).
 
 ## 🐍 Python API
 
 ```python
-from fast_ants import load_images, register_metal
+from fast_ants import load_images, register
 
 fixed, moving = load_images(
     ("fixed.nii.gz", "moving.nii.gz"),
     geometry_policy="itk_scanner", scaling_policy="itk",
 )
-result = register_metal(
-    fixed, moving, output_directory="registration-api",
-    verbose=True, log_every=1,
-)
+result = register(fixed, moving, output_directory="registration-api")
 warped = result.warped
 ```
 
@@ -152,12 +158,12 @@ Use `register` for CPU FP64, `register32` for CPU FP32, `register_metal` for Met
 
 ## 📖 Documentation
 
-- [Configuration](configs/README.md): preset parameters and custom JSON files.
-- [Algorithms](docs/en/algorithms.md): transforms, similarity metrics, and SyN updates.
-- [Optimizations](docs/en/optimizations.md): CPU parallelism, operator fusion, memory reuse, and GPU scheduling.
+- [Registration configuration](configs/README.md): preset parameters and custom JSON files.
+- [Registration algorithms](docs/en/algorithms.md): transforms, similarity metrics, and SyN updates.
+- [Implementation optimizations](docs/en/optimizations.md): CPU parallelism, operator fusion, memory reuse, and GPU scheduling.
 - [Architecture](docs/en/architecture.md): modules and backend implementations.
 - [Testing and quality assessment](docs/en/validation.md).
-- [Development](docs/en/development.md) and [contributing](.github/CONTRIBUTING.md).
+- [Development guide](docs/en/development.md) and [Contributing](.github/CONTRIBUTING.md).
 - [Roadmap](docs/en/roadmap.md).
 
 ## 📄 License and acknowledgements

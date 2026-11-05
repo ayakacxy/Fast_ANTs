@@ -2,7 +2,7 @@
 
 [English](algorithms.md) · [简体中文](../zh-CN/algorithms.md) · [Documentation](index.md)
 
-Fast ANTs uses Mattes mutual information for rigid and affine registration, followed by displacement-field greedy SyN with local normalized cross-correlation. This page describes the mathematical operations performed by these stages. CPU, Metal and CUDA execution details are covered in [implementation optimizations](optimizations.md).
+Fast ANTs uses Mattes mutual information for rigid and affine registration, followed by displacement-field greedy SyN with local normalized cross-correlation. This page describes the mathematical operations performed by these stages. CPU, Metal and CUDA execution details are covered in [Implementation optimizations](optimizations.md).
 
 ## Image sampling and coordinates
 
@@ -20,7 +20,7 @@ All physical coordinates and displacement components use LPS millimetres. Arrays
 x=o+DSi,\qquad i=(DS)^{-1}(x-o).
 ```
 
-NIfTI RAS coordinates are converted with $C=\mathrm{diag}(-1,-1,1)$: $x_{\rm LPS}=Cx_{\rm RAS}$. The same conversion applies to physical vector components. See [inputs and outputs](inputs-outputs.md) for file formats and transform order.
+NIfTI RAS coordinates are converted with $C=\mathrm{diag}(-1,-1,1)$: $x_{\rm LPS}=Cx_{\rm RAS}$. The same conversion applies to physical vector components. See [Inputs and outputs](inputs-outputs.md) for file formats and transform order.
 
 For continuous index $q=n+t$, where $n=\lfloor q\rfloor$ and $t\in[0,1)^3$, trilinear interpolation is
 
@@ -330,7 +330,7 @@ Implementation: [virtual grids](../../src/fast_ants/pipeline/pyramid.py), [CPU l
 
 ## Floating-point calculations
 
-CPU FP64 uses double precision for image and field calculations; selected ANTs parameter conversions and image-filter intermediates retain FP32 conversions. CPU FP32, Metal and CUDA use ordinary FP32 voxel calculations. Small geometry matrices, Gaussian coefficient construction, and convergence calculations use host precision as required by the implementation. Metal output QA uses CPU arithmetic; CUDA output QA promotes field values to native FP64 on the device.
+CPU FP64 uses double precision for image and field calculations; selected ANTs parameter conversions and image-filter intermediates retain FP32 conversions. CPU FP32, Metal and CUDA use ordinary FP32 voxel calculations. Small geometry matrices, Gaussian coefficient construction, and convergence calculations use host precision as required by the implementation. Metal performs output quality checks on the CPU; CUDA promotes field values to native FP64 on the device for these checks.
 
 FP32 stability uses centred CC statistics, compensated or pairwise accumulation, local coordinates for small displacements, and second-order sections for recursive Gaussian filtering. The sections operate on adjacent sample differences and preserve the constant response without subtracting large recurrence terms. No software-expanded floating-point representation is used.
 
@@ -341,7 +341,7 @@ J_\phi(x)=\det(I+\nabla u(x)),\qquad
 e_{\rm inv}(x)=\|\phi^{-1}(\phi(x))-x\|.
 ```
 
-See [testing and quality assessment](validation.md) for available tools.
+See [Testing and quality assessment](validation.md) for available tools.
 
 ## Algorithm references
 

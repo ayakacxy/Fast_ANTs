@@ -1,20 +1,61 @@
-# Testing and registration quality
+# Testing and quality assessment
 
 [English](validation.md) · [简体中文](../zh-CN/validation.md) · [Documentation](index.md)
 
+The native MRI results below use the same 256×256×150 IXI image pair. Saved transforms are reapplied through a common CPU FP64 sampler after timing. The foreground contains 3,236,832 fixed-image voxels with intensity above the minimum plus 5% of the intensity range. Four landmarks are coarse, non-expert annotations. Before registration, foreground NCC is 0.171354 and mean landmark error is 21.4895 mm.
+
+Across these results, resampled images and displacement fields are finite and match the fixed grid. Forward and inverse Jacobian determinants are finite and positive, with zero nonpositive voxels. Windows and Linux NCC and mean landmark error values are medians of two runs; macOS values are from single runs. Table minima include both field directions and all runs; inverse-consistency RMS maxima include both composition orders and all runs.
+
 ## Native Windows MRI results
 
-The [16-thread Windows measurements](performance.md#windows-cuda-and-cpu-16-threads) retain two formal outputs for each of the five engines. Output hashes are checked before every saved transform is reapplied through the same CPU FP64 sampler outside timing. The foreground contains 3,236,832 fixed-image voxels above 5% of the intensity range. Before registration, foreground NCC is 0.171354 and mean error across four coarse landmarks is 21.4895 mm.
+The [16-thread Windows measurements](performance.md#windows-cuda-and-cpu-16-threads) include two runs for each of the five engines.
 
-| Engine | Foreground NCC range | Mean landmark error range / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
+| Engine | Foreground NCC | Mean landmark error / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
 | --- | ---: | ---: | ---: | ---: |
-| CUDA FP32 | 0.664371–0.664384 | 1.4337–1.4357 | 0.161298 | 0.023652 |
+| CUDA FP32 | 0.664377 | 1.4347 | 0.161298 | 0.023652 |
 | CPU FP32 | 0.664385 | 1.4345 | 0.161414 | 0.023654 |
 | CPU FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
-| ANTs FP32 | 0.664366–0.664420 | 1.4339–1.4353 | 0.161264 | 0.023664 |
+| ANTs FP32 | 0.664393 | 1.4346 | 0.161264 | 0.023664 |
 | ANTs FP64 | 0.663937 | 1.4336 | 0.163237 | 0.023333 |
 
-All saved warped images and fields are finite and match the fixed grid. Both field Jacobians are finite and positive, with zero nonpositive voxels. The last column takes the maximum over both composition directions and both runs. The four landmarks are coarse non-expert annotations. Per-run errors, normalized MSE, both inverse-consistency directions and artifact hashes are in the [Windows summary](../assets/benchmarks/windows-native-16t.json).
+Per-run metrics and source records are in the [Windows summary](../assets/benchmarks/windows-native-16t.json).
+
+## Native Linux MRI results
+
+The [32-thread Linux measurements](performance.md#linux-cuda-and-cpu-32-threads) include two runs for each of the five engines.
+
+| Engine | Foreground NCC | Mean landmark error / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
+| --- | ---: | ---: | ---: | ---: |
+| CUDA FP32 | 0.663688 | 1.4324 | 0.161487 | 0.023656 |
+| CPU FP32 | 0.664355 | 1.4309 | 0.160964 | 0.023635 |
+| CPU FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
+| ANTs FP32 | 0.663660 | 1.4293 | 0.161125 | 0.023659 |
+| ANTs FP64 | 0.663937 | 1.4336 | 0.163237 | 0.023333 |
+
+Per-run metrics and source records are in the [Linux summary](../assets/benchmarks/linux-native-32t.json).
+
+## Native macOS MRI results
+
+The [10-thread macOS measurements](performance.md#macos-metal-and-cpu-10-threads) use 10 threads, with one run per engine in v0.1.0.
+
+| Engine | Foreground NCC | Mean landmark error / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
+| --- | ---: | ---: | ---: | ---: |
+| Metal FP32 | 0.662625 | 1.4299 | 0.165859 | 0.022969 |
+| CPU FP32 | 0.664474 | 1.4382 | 0.160806 | 0.023699 |
+| CPU FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
+| ANTs FP32 | 0.664369 | 1.4315 | 0.160959 | 0.023638 |
+| ANTs FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
+
+Metal landmark RMS and maximum errors are 1.8645 and 3.3925 mm; ANTs FP32 values are 1.8650 and 3.3914 mm. Normalized foreground MSE is 0.013558 for Metal and 0.013509 for ANTs FP32.
+
+For Metal, the forward and inverse Jacobian minima are 0.165859 and 0.179500. Inverse consistency uses all 9,830,400 grid points in each direction:
+
+| Composition order | Metal RMS / mm | ANTs FP32 RMS / mm | Metal P99 / mm | ANTs FP32 P99 / mm | Metal maximum / mm | ANTs FP32 maximum / mm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Forward after inverse | 0.022969 | 0.023638 | 0.083221 | 0.085717 | 0.392295 | 0.409191 |
+| Inverse after forward | 0.020985 | 0.021935 | 0.077979 | 0.081582 | 0.478370 | 0.489421 |
+
+Per-point errors, both composition directions and source records are in the [macOS data](../assets/benchmarks/v0.1.0-native.json).
 
 ## Test groups
 
@@ -44,7 +85,7 @@ For a small change, use `--pattern` to select the affected file. [The test direc
 
 Operator tests use small arrays and known transforms to check interpolation, physical gradients, smoothing, local statistics, histogram derivatives, field composition, and inversion. Test points should include the image boundary as well as the interior. Constant images, nearly constant regions, large coordinate origins, and anisotropic grids help expose numerical problems.
 
-Check registration with synthetic transforms whose displacements are known. Inspect both forward and inverse maps, including their units and composition order. Floating-point reductions may produce small differences between backends; compare numerical error and final alignment rather than requiring identical optimizer trajectories.
+Check registration with synthetic transforms whose displacements are known. Inspect both forward and inverse maps, including their units and composition order. Compare numerical error and final alignment across backends, accounting for differences in floating-point reduction order.
 
 ## Image and landmark alignment
 
@@ -52,9 +93,26 @@ Evaluate both implementations on the same fixed-image grid and the same foregrou
 
 | Measure | Interpretation |
 | --- | --- |
-| Normalized cross-correlation (NCC) | Intensity similarity after resampling; larger values indicate stronger correlation |
+| Normalized cross-correlation (NCC) | Intensity similarity after resampling; larger values indicate stronger positive correlation |
 | Normalized mean squared error | Intensity residual after normalization; smaller values indicate closer agreement |
 | Target registration error (TRE) | Distance between corresponding landmarks after applying the transform, in millimetres |
+
+Let $F$ be the fixed image and $W$ the registered moving image resampled on its grid. Foreground NCC is
+
+```math
+\mathrm{NCC}_{\Omega} =
+\frac{\sum_{i\in\Omega}(F_i-\bar{F})(W_i-\bar{W})}
+{\sqrt{\sum_{i\in\Omega}(F_i-\bar{F})^2}\,
+ \sqrt{\sum_{i\in\Omega}(W_i-\bar{W})^2}}.
+```
+
+The means $\bar{F}$ and $\bar{W}$ are computed over the same fixed-image foreground:
+
+```math
+\Omega = \{i\mid F_i \gt F_{\min}+0.05(F_{\max}-F_{\min})\}.
+```
+
+NCC ranges from −1 to 1; values closer to 1 indicate stronger positive intensity correlation. The [assessment tool](../../validation/quality/assess_saved_registration.py) first linearly normalizes intensities using each input image's range, which leaves NCC unchanged. A zero denominator is recorded as `null`. This foreground NCC is a whole-region evaluation metric; SyN uses local CC during optimization.
 
 For fixed landmarks `p_i`, corresponding moving landmarks `q_i`, and the fixed-to-moving map `T`,
 
@@ -74,11 +132,11 @@ Inverse consistency measures the residual after composing the two maps:
 r(x)=\phi^{-1}(\phi(x))-x.
 ```
 
-Check both composition orders and report RMS, percentile, or maximum displacement in millimetres, using points where the composed samples are valid. Also check that fields, resampled images, and summary values are finite. These statistics are saved in `quality.json` or a separate evaluation report; they do not replace visual inspection of the registered images.
+Check both composition orders and report RMS, percentile, or maximum displacement in millimetres, using points where the composed samples are valid. Also check that fields, resampled images, and summary values are finite. Use `quality.json` or a separate evaluation report alongside visual inspection of the registered images.
 
 ## Evaluation data
 
-The evaluation examples use three IXI T1 images: IXI002-Guys-0828, IXI012-HH-1211, and IXI013-HH-1212, with dimensions 256×256×150. [Input metadata](../../validation/sources/input-inventory.json), [download checksums](../../validation/sources/downloaded-files.json), and [data sources](../../validation/sources/public-data.json) describe the files and preparation. The supplied landmarks are coarse annotations.
+The evaluation examples use three IXI T1 images: IXI002-Guys-0828, IXI012-HH-1211, and IXI013-HH-1212, with dimensions 256×256×150. [Input metadata](../../validation/sources/input-inventory.json), [download checksums](../../validation/sources/downloaded-files.json), and [data sources](../../validation/sources/public-data.json) describe the files and preparation.
 
 The original IXI data uses CC BY-SA 3.0. The Zenodo republication lists CC BY 4.0 for its added material; use the original dataset's terms for the MRI files. Data is not included in the Python package.
 
@@ -95,41 +153,4 @@ For comparisons with ANTs, use the same images, image geometry, preprocessing, s
 
 ## CUDA checks
 
-CUDA operator and complete-registration tests live in `tests/cuda`. Enable them with `FAST_ANTS_TEST_CUDA=1` on NVIDIA hardware. They cover image sampling, filtering, Mattes controls, fields, inverse stopping, retained state, saved transform reapplication and native FP64 final QA. Real MRI results are assessed after timing using a common CPU FP64 sampler, foreground similarity, exploratory landmarks, positive Jacobians in both directions and inverse consistency.
-
-## Apple M5 native MRI results
-
-The [Apple M5 measurements](performance.md#apple-m5-release-measurements) use the native 256×256×150 IXI pair and 10 threads. Saved outputs are verified against the published timing checksums and fitting receipts, then reapplied through one CPU FP64 sampler. The foreground mask contains 3,236,832 fixed-image voxels above 5% of the intensity range. Before registration, foreground NCC is 0.171354 and mean error across four coarse landmarks is 21.4895 mm.
-
-| Engine | Foreground NCC | Mean landmark error / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
-| --- | ---: | ---: | ---: | ---: |
-| Metal FP32 | 0.662625 | 1.4299 | 0.165859 | 0.022969 |
-| CPU FP32 | 0.664474 | 1.4382 | 0.160806 | 0.023699 |
-| CPU FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
-| ANTs FP32 | 0.664369 | 1.4315 | 0.160959 | 0.023638 |
-| ANTs FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
-
-Metal landmark RMS and maximum errors are 1.8645 and 3.3925 mm; ANTs FP32 values are 1.8650 and 3.3914 mm. Normalized foreground MSE is 0.013558 for Metal and 0.013509 for ANTs FP32. The four landmarks are coarse non-expert annotations; these values describe this image pair's alignment.
-
-Both saved fields and all resampled images are finite and match the fixed grid. Forward and inverse Jacobians are finite and positive for all five engines, with zero nonpositive voxels. The last column takes the larger RMS of the two nonlinear composition orders. For Metal, the forward and inverse Jacobian minima are 0.165859 and 0.179500. Inverse consistency uses all 9,830,400 grid points in each direction:
-
-| Composition order | Metal RMS / mm | ANTs FP32 RMS / mm | Metal P99 / mm | ANTs FP32 P99 / mm | Metal maximum / mm | ANTs FP32 maximum / mm |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Forward after inverse | 0.022969 | 0.023638 | 0.083221 | 0.085717 | 0.392295 | 0.409191 |
-| Inverse after forward | 0.020985 | 0.021935 | 0.077979 | 0.081582 | 0.478370 | 0.489421 |
-
-Inverse-consistency residuals measure how well a map and its inverse compose to identity; landmark errors measure alignment to marked points. The [Apple M5 data](../assets/benchmarks/v0.1.0-native.json) records both, including per-point errors, output hashes and assessment provenance. This saved-output assessment is outside the original timers; the performance figures remain single v0.1.0 measurements.
-
-## Native Linux MRI results
-
-The [32-thread Linux measurements](performance.md#linux-cuda-and-cpu-32-threads) retain ten formal saved outputs, two per engine. All were reapplied through the same CPU FP64 sampler after timing. The foreground mask contains 3,236,832 fixed-image voxels above 5% of the intensity range. Before registration, foreground NCC is 0.171354 and mean error across four coarse landmarks is 21.4895 mm.
-
-| Engine | Foreground NCC range | Mean landmark error range / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
-| --- | ---: | ---: | ---: | ---: |
-| CUDA FP32 | 0.662979–0.664397 | 1.4310–1.4337 | 0.161487 | 0.023656 |
-| CPU FP32 | 0.664355–0.664355 | 1.4309–1.4309 | 0.160964 | 0.023635 |
-| CPU FP64 | 0.664417–0.664417 | 1.4345–1.4345 | 0.161804 | 0.023478 |
-| ANTs FP32 | 0.662904–0.664416 | 1.4253–1.4333 | 0.161125 | 0.023659 |
-| ANTs FP64 | 0.663937–0.663937 | 1.4336–1.4336 | 0.163237 | 0.023333 |
-
-All saved warped images and fields are finite and retain the fixed grid geometry. Every forward and inverse Jacobian is finite and positive. The last column takes the maximum RMS over both composition directions and both repeats. The four landmarks are coarse, non-expert annotations used to assess alignment. Source, input and output hashes and per-run metrics are in the [Linux summary](../assets/benchmarks/linux-native-32t.json).
+CUDA operator and complete-registration tests live in `tests/cuda`. Enable them with `FAST_ANTS_TEST_CUDA=1` on NVIDIA hardware. They cover image sampling, filtering, Mattes controls, fields, inverse stopping, retained state, saved transform reapplication and native FP64 final quality checks.

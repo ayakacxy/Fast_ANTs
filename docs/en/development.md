@@ -1,4 +1,4 @@
-# Development
+# Development guide
 
 [English](development.md) · [简体中文](../zh-CN/development.md) · [Documentation](index.md)
 
@@ -6,21 +6,17 @@
 
 ```bash
 python -m pip install -e '.[test,build]'
-# Optional Metal dependencies:
-python -m pip install -e '.[metal]'
-# Optional CUDA dependencies:
-python -m pip install -e '.[cuda]'
 ```
 
-The package uses NumPy for arrays, NiBabel for image I/O, Numba for CPU kernels, and MLX for custom Metal kernels. See [installation](installation.md) for conda environments and [architecture](architecture.md) for the source layout.
+The package uses NumPy for arrays, NiBabel for image I/O, Numba for CPU kernels, and MLX for custom Metal kernels. See [Installation](installation.md) for conda environments and [Architecture](architecture.md) for the source layout.
 
-The CUDA backend uses CuPy custom kernels under `backends/cuda`, with shared geometry, stage settings and host-side optimization. Install the optional `cuda` extra and use an accessible NVIDIA GPU. The test runner enables CUDA tests with `--suite cuda`; direct test invocation requires `FAST_ANTS_TEST_CUDA=1`.
+CUDA kernels are in `backends/cuda`. Select `cuda` for CUDA 12.x or `cuda13` for CUDA 13.x. Run CUDA tests with `--suite cuda`; direct test invocation uses `FAST_ANTS_TEST_CUDA=1`.
 
 ## Adding or modifying an operator
 
 Place the implementation in the relevant backend and stage. Keep shared image types, configuration, and host-side calculations in `core` or `pipeline`. Use explicit array dtypes and document the array layout, units, interpolation rules, and treatment of values outside the image.
 
-CPU kernels should compile in Numba's nopython mode. Parallelize independent work and merge reductions in a numerically stable order. For Metal and CUDA, keep intermediate arrays on the device, combine related operations, and reuse buffers where possible. GPU-to-CPU reads should be limited to control values and final outputs. [Optimizations](optimizations.md) describes the existing implementations.
+CPU kernels should compile in Numba's nopython mode. Parallelize independent work and merge reductions in a numerically stable order. For Metal and CUDA, keep intermediate arrays on the device, combine related operations, and reuse buffers where possible. GPU-to-CPU reads should be limited to control values and final outputs. [Implementation optimizations](optimizations.md) describes the existing implementations.
 
 Workspaces belong to a registration call or pyramid level. Functions returning arrays must keep them independent of buffers that later iterations overwrite. Callback data needs the same treatment. CPU modules must remain importable without MLX or CuPy; new logging should use already computed values.
 
@@ -47,7 +43,7 @@ On an NVIDIA system, select the CUDA group:
 python -B scripts/maintenance/run_tests.py --suite cuda
 ```
 
-New numerical tests should include relevant image boundaries, constant images, invalid values, anisotropic spacing, oblique grids, and large origins with small displacements. Compare operators with small reference calculations before evaluating complete registrations. Use [registration quality metrics](validation.md) when changing an optimizer, reduction, or field update.
+New numerical tests should include relevant image boundaries, constant images, invalid values, anisotropic spacing, oblique grids, and large origins with small displacements. Compare operators with small reference calculations before evaluating complete registrations. Use [Testing and quality assessment](validation.md) when changing an optimizer, reduction, or field update.
 
 ## Profiling
 
@@ -58,8 +54,6 @@ Run only the tests needed for a change. A documentation edit needs Markdown lint
 ## Documentation and packaging
 
 Maintain English and Chinese pages together. Keep commands, defaults, filenames, and mathematical notation consistent. Runtime logs and CLI messages are English.
-
-Code comments and docstrings are English. The CUDA benchmark runner also supports Windows process timing and the optional CPU FP64 comparison; use the commands in [performance](performance.md) when maintaining those measurements.
 
 Use fenced `math` blocks for displayed equations and `$...$` for inline equations. Separate inline equations from adjacent Chinese text or punctuation with a space. Upright labels and function names use `\mathrm{...}`.
 

@@ -2,7 +2,7 @@
 
 [English](optimizations.md) · [简体中文](../zh-CN/optimizations.md) · [Documentation](index.md)
 
-Registration repeatedly samples images, accumulates histograms, computes neighbourhood statistics, and updates displacement fields. Most optimizations target memory traffic and repeated work in those operations. Others reduce kernel launches or CPU/GPU synchronization. The update equations are described in [registration algorithms](algorithms.md).
+Registration repeatedly samples images, accumulates histograms, computes neighbourhood statistics, and updates displacement fields. Most optimizations target memory traffic and repeated work in those operations. Others reduce kernel launches or CPU/GPU synchronization. The update equations are described in [Registration algorithms](algorithms.md).
 
 ## Array sizes used below
 
@@ -295,11 +295,11 @@ Inverse-field solves queue work for the two directions before a shared control r
 
 ### Output quality and writing
 
-CUDA output QA reads FP32 fields and promotes values to native FP64 for physical coordinates, interpolation and Jacobian arithmetic. Exact percentile statistics and finite checks run on the device; bounded summaries and the final output arrays are downloaded. Fitting itself remains FP32.
+CUDA output quality checks read FP32 fields and promote values to native FP64 for physical coordinates, interpolation and Jacobian arithmetic. Exact percentile statistics and finite checks run on the device; bounded summaries and the final output arrays are downloaded. Fitting itself remains FP32.
 
 The shared NIfTI writer defaults to gzip level 0. `FAST_ANTS_GZIP_LEVEL=1` enables compression without changing decoded headers or arrays. When available, pigz uses two workers per file; all output streams are joined before the process returns.
 
-Source: [CUDA runtime](../../src/fast_ants/backends/cuda/runtime.py), [Mattes scheduling](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py), [CC operators](../../src/fast_ants/backends/cuda/metrics/cc/operators.py), [field filtering](../../src/fast_ants/backends/cuda/filtering.py), [inverse scheduling](../../src/fast_ants/backends/cuda/fields/inverse.py), [output QA](../../src/fast_ants/backends/cuda/output_quality.py), and [NIfTI writer](../../src/fast_ants/io/nifti.py).
+Source: [CUDA runtime](../../src/fast_ants/backends/cuda/runtime.py), [Mattes scheduling](../../src/fast_ants/backends/cuda/metrics/mattes/metric.py), [CC operators](../../src/fast_ants/backends/cuda/metrics/cc/operators.py), [field filtering](../../src/fast_ants/backends/cuda/filtering.py), [inverse scheduling](../../src/fast_ants/backends/cuda/fields/inverse.py), [output quality checks](../../src/fast_ants/backends/cuda/output_quality.py), and [NIfTI writer](../../src/fast_ants/io/nifti.py).
 
 ## Numerical stability and profiling
 

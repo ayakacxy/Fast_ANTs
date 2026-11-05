@@ -1,6 +1,6 @@
 # 验证工具
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [测试与质量评估](../docs/zh-CN/validation.md) · [优化方法](../docs/zh-CN/optimizations.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [测试与质量评估](../docs/zh-CN/validation.md) · [优化实现](../docs/zh-CN/optimizations.md)
 
 本目录包含数值算子检查、ANTs 参考结果生成、已保存变换评估和运行时间测量工具。日常图像配准使用 `fast_ants register`，不需要这些工具。
 
@@ -8,8 +8,8 @@
 
 | 目录 | 内容 |
 | --- | --- |
-| [benchmarks/](benchmarks/) | 五后端计时、源码／开关对比及专项算子计时 |
-| [quality/](quality/) | 已保存图像、形变场评估及参考结果对比 |
+| [benchmarks/](benchmarks/) | 五引擎计时、源码／开关对比及专项算子计时 |
+| [quality/](quality/) | 已保存图像、位移场评估及参考结果对比 |
 | [operators/](operators/) | 独立前缀和、规约及串行 watchdog 检查；日常算子测试位于 `tests/` |
 | [reference_tools/](reference_tools/) | 数据准备和官方参考结果生成 |
 | [maintenance/](maintenance/) | 依赖及实现检查 |
@@ -64,13 +64,13 @@ python -B -m validation.quality.assess_native_benchmark \
 
 ## 计时
 
-记录影像尺寸、配准参数、后端、精度、线程数、软件版本、预热次数和重复运行次数。GPU 任务完成后需要同步，并等待所有结果文件写入完成。分别说明计时是否包含进程启动、编译、影像 I/O 和最终质量统计。
+记录图像尺寸、配准参数、后端、精度、线程数、软件版本、预热次数和重复运行次数。GPU 任务完成后需要同步，并等待所有结果文件写入完成。分别说明计时是否包含进程启动、编译、图像 I/O 和最终质量统计。
 
-Numba、Metal 和 CUDA 首次运行时会编译 kernel，编译耗时应与重复执行耗时分开统计。对比任务顺序运行，保持相近的系统负载和供电状态。
+Numba、Metal 和 CUDA 首次运行时会编译内核，编译耗时应与重复执行耗时分开统计。对比任务顺序运行，保持相近的系统负载和供电状态。
 
 ## 数据
 
-[cases.json](cases.json)、[输入信息](sources/input-inventory.json)、[下载校验值](sources/downloaded-files.json)和[数据来源](sources/public-data.json)记录三份 IXI 测试图像。不同分辨率存放在 `data/public`、`data/p11-half` 和 `data/prepared`。影像数据和生成结果不包含在 Python 软件包中。
+[cases.json](cases.json)、[输入信息](sources/input-inventory.json)、[下载校验值](sources/downloaded-files.json)和[数据来源](sources/public-data.json)记录三份 IXI 测试图像。不同分辨率存放在 `data/public`、`data/p11-half` 和 `data/prepared`。图像数据和生成结果不包含在 Python 软件包中。
 
 模板和图谱资源保存在本地 `templates/` 目录中，分别遵循原始来源的许可。
 

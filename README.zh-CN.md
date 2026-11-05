@@ -12,7 +12,7 @@
 [![Precision: FP64 / FP32](https://img.shields.io/badge/Precision-FP64%20%2F%20FP32-6D4AFF)](docs/zh-CN/architecture.md)
 [![GPU: CUDA](https://img.shields.io/badge/GPU-CUDA_FP32-76B900?logo=nvidia&logoColor=white)](docs/zh-CN/installation.md#cuda-环境)
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [文档](docs/zh-CN/index.md) · [算法](docs/zh-CN/algorithms.md) · [优化实现](docs/zh-CN/optimizations.md) · [性能测试](docs/zh-CN/performance.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [文档](docs/zh-CN/index.md) · [配准算法](docs/zh-CN/algorithms.md) · [优化实现](docs/zh-CN/optimizations.md) · [性能测试](docs/zh-CN/performance.md)
 
 🧠 **刚体 / 仿射 / SyN** · ⚙️ **CPU 多线程** · ⚡ **Metal / CUDA** · 🐍 **Python 与命令行**
 
@@ -20,29 +20,40 @@
 
 ## ⚡ 性能
 
-| 平台 / 线程 | 后端 | 耗时 / s | 加速比 | 前景 NCC | 对应点平均误差 / mm |
+| 操作系统 · 硬件 / 线程 | 后端 | 耗时 / s | 加速比 | 前景 NCC | 平均地标误差 / mm |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Apple M5 / 10 | Metal FP32 | **15.34** | **33.1×** | 0.6626 | 1.430 |
-| Apple M5 / 10 | CPU FP32 | 42.57 | 11.9× | 0.6645 | 1.438 |
-| Apple M5 / 10 | CPU FP64 | 60.44 | 8.37× | 0.6644 | 1.434 |
-| Apple M5 / 10 | 官方 ANTs FP32 | 507.48 | — | 0.6644 | 1.432 |
-| Apple M5 / 10 | 官方 ANTs FP64 | 505.85 | — | 0.6644 | 1.434 |
-| RTX 2080 Ti + 双路 Xeon / 32 | CUDA FP32 | **8.24** | **40.6×** | 0.6630–0.6644 | 1.431–1.434 |
-| RTX 2080 Ti + 双路 Xeon / 32 | CPU FP32 | 51.79 | 6.46× | 0.6644 | 1.431 |
-| RTX 2080 Ti + 双路 Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
-| RTX 2080 Ti + 双路 Xeon / 32 | 官方 ANTs FP32 | 334.32 | — | 0.6629–0.6644 | 1.425–1.433 |
-| RTX 2080 Ti + 双路 Xeon / 32 | 官方 ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
-| Windows · RTX 4060 Ti + i5-14400F / 16 | CUDA FP32 | **7.43** | **70.54×** | 0.6644 | 1.434–1.436 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CUDA FP32 | **7.43** | **70.54×** | 0.6644 | 1.435 |
 | Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP32 | 76.29 | 6.87× | 0.6644 | 1.435 |
 | Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP64 | 93.88 | 5.71× | 0.6644 | 1.434 |
-| Windows · RTX 4060 Ti + i5-14400F / 16 | 官方 ANTs FP32 | 524.23 | — | 0.6644 | 1.434–1.435 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | 官方 ANTs FP32 | 524.23 | — | 0.6644 | 1.435 |
 | Windows · RTX 4060 Ti + i5-14400F / 16 | 官方 ANTs FP64 | 536.38 | — | 0.6639 | 1.434 |
+| Linux · RTX 2080 Ti + 双路 Xeon / 32 | CUDA FP32 | **8.24** | **40.6×** | 0.6637 | 1.432 |
+| Linux · RTX 2080 Ti + 双路 Xeon / 32 | CPU FP32 | 51.79 | 6.46× | 0.6644 | 1.431 |
+| Linux · RTX 2080 Ti + 双路 Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
+| Linux · RTX 2080 Ti + 双路 Xeon / 32 | 官方 ANTs FP32 | 334.32 | — | 0.6637 | 1.429 |
+| Linux · RTX 2080 Ti + 双路 Xeon / 32 | 官方 ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
+| macOS · Apple M5 / 10 | Metal FP32 | **15.34** | **33.1×** | 0.6626 | 1.430 |
+| macOS · Apple M5 / 10 | CPU FP32 | 42.57 | 11.9× | 0.6645 | 1.438 |
+| macOS · Apple M5 / 10 | CPU FP64 | 60.44 | 8.37× | 0.6644 | 1.434 |
+| macOS · Apple M5 / 10 | 官方 ANTs FP32 | 507.48 | — | 0.6644 | 1.432 |
+| macOS · Apple M5 / 10 | 官方 ANTs FP64 | 505.85 | — | 0.6644 | 1.434 |
 
-使用同一组 256×256×150 MRI 图像；Apple M5 的 v0.1.0 结果为单次测量，Linux 的 v0.2.0 与 Windows 的 v0.3.0 结果为两次缓存运行的中位数。耗时包含启动、读取、配准和完整写出，Fast ANTs 还包含质量检查。加速比与相同精度的官方 ANTs 比较；对应点误差是配准后四组粗略标注位置的平均距离，越小表示对齐越好。
+各平台使用同一组 256×256×150 MRI 图像。macOS 为单次测量；Windows 和 Linux 的耗时、前景 NCC 和平均地标误差均取两次测量的中位数。Fast ANTs 使用已有编译缓存。耗时包含启动、输入读取、配准和完整写出，以及 Fast ANTs 的内置质量检查。加速比与同一硬件上相同精度的官方 ANTs 比较。
 
-Apple M5 质量指标通过同一 CPU FP64 采样器重新应用 v0.1.0 已保存变换计算，前景包含 3,236,832 个体素，地标来自四组非专家粗略标注。Metal 保存的正逆场 Jacobian 均为正，两个复合方向中较大的逆一致性 RMS 为 0.02297 mm。
+质量指标通过同一 CPU FP64 采样器重新应用已保存变换计算。平均地标误差为四组非专家粗略标注对应点在配准后的平均距离。
 
-[性能测试详情](docs/zh-CN/performance.md) · [质量评估](docs/zh-CN/validation.md)
+前景归一化互相关（NCC）的计算公式为：
+
+```math
+\mathrm{NCC}_{\Omega} =
+\frac{\sum_{i\in\Omega}(F_i-\bar{F})(W_i-\bar{W})}
+{\sqrt{\sum_{i\in\Omega}(F_i-\bar{F})^2}\,
+ \sqrt{\sum_{i\in\Omega}(W_i-\bar{W})^2}}.
+```
+
+$F$ 为固定图像， $W$ 为配准后重采样到固定网格的移动图像， $\bar{F}$ 和 $\bar{W}$ 为二者在前景 $\Omega$ 内的均值。 $\Omega$ 包含固定图像中强度大于最小值加上强度范围 5% 的体素。NCC 的取值范围为 −1 至 1，越接近 1 表示强度正相关性越强。
+
+[性能测试](docs/zh-CN/performance.md) · [测试与质量评估](docs/zh-CN/validation.md)
 
 ## 📚 目录
 
@@ -60,29 +71,31 @@ Apple M5 质量指标通过同一 CPU FP64 采样器重新应用 v0.1.0 已保�
 ## 🧠 功能
 
 - 刚体 → 仿射 → SyN 配准，支持多分辨率图像金字塔。
-- 线性配准使用 Mattes 互信息，SyN 使用局部交叉相关。
-- 提供 CPU FP64、CPU FP32、Apple GPU FP32 和 CUDA FP32 后端。
-- 支持 ANTs 兼容的仿射变换与形变场读写。
+- 线性配准使用 Mattes 互信息，SyN 使用局部归一化互相关（CC）。
+- 提供 CPU FP64、CPU FP32、Metal FP32 和 CUDA FP32 后端。
+- 支持 ANTs 兼容的仿射变换与位移场读写。
 - 提供命令行和 Python 接口、英文运行日志及输出质量检查。
 
-CPU 内核采用多线程、SIMD、度量计算融合和工作区复用。Metal 后端在 GPU 数组中保存图像与形变场，融合采样和直方图计算，并批量提交独立任务以减少同步。详见[优化实现](docs/zh-CN/optimizations.md)。
+CPU 内核采用多线程、SIMD、度量计算融合和工作区复用。Metal 后端在 GPU 数组中保存图像与位移场，融合采样和直方图计算，并批量提交独立任务以减少同步。
 
-CUDA 后端使用 CuPy 自定义 kernel 和 CUDA Graph，在 GPU 上保留图像和位移场，并使用 FP64 完成最终质量检查。CPU 导入不依赖可选 GPU 运行库。详见[安装说明](docs/zh-CN/installation.md)和[实现优化](docs/zh-CN/optimizations.md)。
+CUDA 后端使用 CuPy 自定义内核和 CUDA Graph，在 GPU 上保留图像和位移场，并使用 FP64 完成最终质量检查。CPU 导入不依赖可选 GPU 运行库。详见[优化实现](docs/zh-CN/optimizations.md)。
 
 ## 🧮 算法原理
 
-[算法原理文档](docs/zh-CN/algorithms.md)介绍刚体与仿射变换、Mattes 互信息、局部 CC 和 SyN 的数学实现，并说明图像梯度、多分辨率优化、形变场复合及逆场迭代。
+[配准算法](docs/zh-CN/algorithms.md)介绍刚体与仿射变换、Mattes 互信息、局部 CC 和 SyN 的数学实现，并说明图像梯度、多分辨率优化、位移场复合及逆场迭代。
 
 ## 📦 安装
 
 Python 发行包名、导入名和命令行入口均为 `fast_ants`。
 
-要求 Python 3.11 或更新版本。可从 [v0.3.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.3.0)下载 wheel，或在项目根目录构建并安装：
+要求 Python 3.11 或更新版本。在项目根目录构建并安装：
 
 ```bash
 python -m pip wheel . --no-deps -w dist
 python -m pip install ./dist/fast_ants-0.3.0-py3-none-any.whl
 ```
+
+已发布版本的 wheel 可从 [Releases 页面](https://github.com/ayakacxy/Fast_ANTs/releases)下载。
 
 Apple Silicon macOS 使用 Metal 后端时：
 
@@ -100,51 +113,44 @@ CUDA 13.x 改用 `[cuda13]`，同一环境只安装与 CUDA 运行库对应的�
 
 ## 🚀 快速开始
 
+以下命令适用于 PowerShell 和 Bash；Windows 的 `.venv` 安装需将 `fast_ants` 替换为 `.\.venv\Scripts\fast_ants.exe`。
+
 使用 CPU 将移动图像配准到固定图像：
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-cpu --backend cpu --precision fp64 \
-  --preset brain-syn --cpu-threads 10 --verbose
-```
-
-使用 Apple GPU：
-
-```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-metal --backend metal --precision fp32 \
-  --preset brain-syn --cpu-threads 10 --verbose
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cpu --backend cpu --precision fp64 --preset brain-syn --cpu-threads 10
 ```
 
 使用 NVIDIA GPU：
 
 ```bash
-fast_ants register fixed.nii.gz moving.nii.gz \
-  --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --cpu-threads 32
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-cuda --backend cuda --precision fp32 --preset brain-syn --cpu-threads 32
 ```
 
-`--cpu-threads` 设置 Numba 的 CPU 工作线程数，在 Metal 或 CUDA 模式下仍用于 CPU 辅助运算。GPU 并行度由后端管理。该参数可省略，此时使用配置中的 `threads` 值（`brain-syn` 为 10）。原有 `--threads` 保留为兼容别名，v0.3.0 支持两种名称。
+使用 Apple GPU：
+
+```bash
+fast_ants register fixed.nii.gz moving.nii.gz --output registration-metal --backend metal --precision fp32 --preset brain-syn --cpu-threads 10
+```
+
+`--cpu-threads` 设置 Numba 的 CPU 工作线程数，在 Metal 或 CUDA 模式下仍用于 CPU 辅助运算。GPU 并行度由后端管理。默认使用配置中的 `threads` 值（`brain-syn` 为 10），`--threads` 为其别名。
 
 输出目录需要是新目录，CPU 线程数应按机器配置设置。默认输入选项为 `itk_scanner` 图像几何和 `itk` 强度缩放；使用标准 NiBabel NIfTI 读取方式时，添加 `--geometry-policy nifti --scaling-policy nifti`。
 
 命令行默认输出进度日志；Metal 和 CUDA 在交互式终端按层显示 `tqdm` 进度条，`console.log` 保存纯文本诊断。使用 `--quiet` 可关闭进度和详细日志。
 
-输出包括仿射变换、正向和逆向形变场、重采样图像、迭代记录、质量检查结果及 `console.log`。详见[使用说明](docs/zh-CN/usage.md)和[输入与输出](docs/zh-CN/inputs-outputs.md)。
+输出包括仿射变换、正向和逆向位移场、重采样图像、迭代记录、质量检查结果及 `console.log`。详见[使用说明](docs/zh-CN/usage.md)和[输入与输出](docs/zh-CN/inputs-outputs.md)。
 
 ## 🐍 Python 接口
 
 ```python
-from fast_ants import load_images, register_metal
+from fast_ants import load_images, register
 
 fixed, moving = load_images(
     ("fixed.nii.gz", "moving.nii.gz"),
     geometry_policy="itk_scanner", scaling_policy="itk",
 )
-result = register_metal(
-    fixed, moving, output_directory="registration-api",
-    verbose=True, log_every=1,
-)
+result = register(fixed, moving, output_directory="registration-api")
 warped = result.warped
 ```
 
@@ -152,12 +158,12 @@ warped = result.warped
 
 ## 📖 文档
 
-- [参数配置](configs/README.zh-CN.md)：预设参数和自定义 JSON 文件。
-- [算法](docs/zh-CN/algorithms.md)：变换模型、相似性度量与 SyN 更新。
+- [配准参数](configs/README.zh-CN.md)：预设参数和自定义 JSON 文件。
+- [配准算法](docs/zh-CN/algorithms.md)：变换模型、相似性度量与 SyN 更新。
 - [优化实现](docs/zh-CN/optimizations.md)：CPU 并行、算子融合、内存复用与 GPU 调度。
 - [代码结构](docs/zh-CN/architecture.md)：模块组织和各后端实现。
 - [测试与质量评估](docs/zh-CN/validation.md)。
-- [开发说明](docs/zh-CN/development.md)与[贡献指南](.github/CONTRIBUTING.zh-CN.md)。
+- [开发指南](docs/zh-CN/development.md)与[贡献指南](.github/CONTRIBUTING.zh-CN.md)。
 - [开发计划](docs/zh-CN/roadmap.md)。
 
 ## 📄 许可与致谢
