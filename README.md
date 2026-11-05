@@ -4,7 +4,7 @@
 
 **An accelerated Python implementation of ANTs registration algorithms.**
 
-[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-5D5FEF)](docs/en/changelog.md)
+[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-5D5FEF)](docs/en/changelog.md)
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-blue)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![CPU: Numba](https://img.shields.io/badge/CPU-Numba-00A3E0)](docs/en/optimizations.md)
@@ -32,8 +32,13 @@
 | RTX 2080 Ti + dual Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
 | RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP32 | 334.32 | — | 0.6629–0.6644 | 1.425–1.433 |
 | RTX 2080 Ti + dual Xeon / 32 | Official ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CUDA FP32 | **7.43** | **70.54×** | 0.6644 | 1.434–1.436 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP32 | 76.29 | 6.87× | 0.6644 | 1.435 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP64 | 93.88 | 5.71× | 0.6644 | 1.434 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | Official ANTs FP32 | 524.23 | — | 0.6644 | 1.434–1.435 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | Official ANTs FP64 | 536.38 | — | 0.6639 | 1.434 |
 
-Same 256×256×150 MRI pair; Apple M5 v0.1.0 results are single runs, Linux v0.2.0 results are medians of two cached runs. Times include startup, reading, registration and complete writing; Fast ANTs also includes quality checks. Speedups compare matching precision with official ANTs. Point errors are the mean distance between four roughly marked corresponding points after registration.
+Same 256×256×150 MRI pair; Apple M5 v0.1.0 results are single runs, Linux v0.2.0 and Windows v0.3.0 results are medians of two cached runs. Times include startup, reading, registration and complete writing; Fast ANTs also includes quality checks. Speedups compare matching precision with official ANTs. Point errors are the mean distance between four roughly marked corresponding points after registration.
 
 Apple M5 quality measurements reapply the saved v0.1.0 transforms through the same CPU FP64 sampler. The foreground contains 3,236,832 voxels; landmark errors use four coarse non-expert annotations. Metal has positive Jacobians in both saved fields and a maximum inverse-consistency RMS of 0.02297 mm across the two composition orders.
 
@@ -72,26 +77,26 @@ The [algorithm guide](docs/en/algorithms.md) gives the mathematical formulation 
 
 The Python distribution, import package and command-line entry point are all named `fast_ants`.
 
-Requires Python 3.11 or later. Download the wheel from the [v0.2.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0), or build and install it from the project root:
+Requires Python 3.11 or later. Download the wheel from the [v0.3.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.3.0), or build and install it from the project root:
 
 ```bash
 python -m pip wheel . --no-deps -w dist
-python -m pip install ./dist/fast_ants-0.2.0-py3-none-any.whl
+python -m pip install ./dist/fast_ants-0.3.0-py3-none-any.whl
 ```
 
 For Apple Silicon macOS with Metal:
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[metal]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[metal]'
 ```
 
 For NVIDIA CUDA 12.x:
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[cuda]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda]'
 ```
 
-CPU execution uses NumPy, NiBabel and Numba. Metal uses MLX; CUDA uses CuPy. See [installation](docs/en/installation.md) for wheel builds, source installation, conda environments and the retained v0.1.0 release.
+For CUDA 13.x, select `[cuda13]` instead. Install one CuPy variant matching the CUDA runtime. CPU execution uses NumPy, NiBabel and Numba; Metal uses MLX and CUDA uses CuPy. See [installation](docs/en/installation.md) for Windows setup, wheel builds, source installation and conda environments.
 
 ## 🚀 Quick start
 
@@ -119,7 +124,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
   --preset brain-syn --cpu-threads 32
 ```
 
-`--cpu-threads` sets the Numba CPU worker count, including CPU work when using Metal or CUDA. GPU parallelism is managed by the backend. When omitted, it uses the recipe's `threads` value (10 for `brain-syn`). `--threads` remains a compatible alias. The new name is available in the source tree; use `--threads` with the published v0.2.0 wheel.
+`--cpu-threads` sets the Numba CPU worker count, including CPU work when using Metal or CUDA. GPU parallelism is managed by the backend. When omitted, it uses the recipe's `threads` value (10 for `brain-syn`). `--threads` remains a compatible alias. Both names are available in v0.3.0.
 
 Choose a new output directory and a CPU thread count supported by your machine. The default input settings are `itk_scanner` geometry and `itk` intensity scaling. For standard NiBabel NIfTI handling, add `--geometry-policy nifti --scaling-policy nifti`.
 

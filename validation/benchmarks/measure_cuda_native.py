@@ -73,20 +73,33 @@ def selected_case(directory):
 
 
 def command_for(args, config, case, engine, output):
-    if engine == "ants-float1":
-        return pipeline.float1_command(config, case, output, args.ants_registration)
+    if engine.startswith("ants-"):
+        command = pipeline.float1_command(config, case, output, args.ants_registration)
+        command[command.index("--float") + 1] = "0" if engine == "ants-float0" else "1"
+        return command
+    backend = "cpu" if engine == "cpu-fp64" else engine
+    precision = "fp64" if engine == "cpu-fp64" else "fp32"
     return [sys.executable, "-B", "-m", "fast_ants", "register", case["fixed"], case["moving"],
-            "--output", str(output), "--backend", engine, "--precision", "fp32",
+            "--output", str(output), "--backend", backend, "--precision", precision,
             "--config", str(args.config), "--threads", str(args.threads),
             "--geometry-policy", "itk_scanner", "--scaling-policy", "itk"]
 
 
-def schedule(repeats, official_warmup=True):
+def engines(include_fp64=False):
+    return ("cuda", "cpu", "cpu-fp64", "ants-float1", "ants-float0") if include_fp64 else ENGINES
+
+
+def schedule(repeats, official_warmup=True, include_fp64=False):
     rows = [("cuda", "cold"), ("cuda", "warmup"), ("cpu", "warmup")]
+    if include_fp64:
+        rows.append(("cpu-fp64", "warmup"))
     if official_warmup:
         rows.append(("ants-float1", "warmup"))
+        if include_fp64:
+            rows.append(("ants-float0", "warmup"))
     for repeat in range(1, repeats + 1):
-        order = ENGINES if repeat % 2 else tuple(reversed(ENGINES))
+        selected = engines(include_fp64)
+        order = selected if repeat % 2 else tuple(reversed(selected))
         rows.extend((engine, "repeat-" + str(repeat)) for engine in order)
     return rows
 
@@ -110,7 +123,7 @@ def integrity(provenance):
 
 
 def artifacts(output, engine):
-    names = pipeline.ANTS_ARTIFACTS if engine == "ants-float1" else pipeline.OWN_ARTIFACTS
+    names = pipeline.ANTS_ARTIFACTS if engine.startswith("ants-") else pipeline.OWN_ARTIFACTS
     result = {}
     for role, name in names.items():
         path = output / name
@@ -124,11 +137,10 @@ def run_one(args, config, report, engine, label):
     directory = args.output / engine / label
     directory.mkdir(parents=True, exist_ok=False)
     output = directory / "outputs"
-    if engine == "ants-float1":
+    if engine.startswith("ants-"):
         output.mkdir()
     command = command_for(args, config, report["case"], engine, output)
-    # Cold CUDA starts with empty CuPy, driver and Numba caches. Subsequent
-    # warmup and repeats share a different cache populated by the full warmup.
+    # Cold runs use empty caches; warmup and formal runs share separate caches.
     cache_root = directory if label == "cold" else args.output
     env = task_environment(cache_root, args.threads, config["random_seed"], args.source)
     stats = directory / "process.json"
@@ -179,7 +191,7 @@ def run_one(args, config, report, engine, label):
                    artifacts=artifacts(output, engine), integrity=integrity(report["provenance"]))
         if not all(row["integrity"].values()):
             raise RuntimeError("Source, input, tool or binary changed during measurement")
-        if engine != "ants-float1":
+        if not engine.startswith("ants-"):
             status = json.loads((output / "run.json").read_text())
             if status.get("status") != "registration_completed_quality_metrics_recorded":
                 raise RuntimeError("CLI did not report completed registration")
@@ -197,7 +209,7 @@ def run_one(args, config, report, engine, label):
 
 def summarize(report):
     summary = {}
-    for engine in ENGINES:
+    for engine in report.get("engines", ENGINES):
         rows = [row for row in report["runs"] if row["engine"] == engine and row["label"].startswith("repeat-")]
         values = [row["whole_process_seconds"] for row in rows]
         summary[engine] = {"formal_repeats": len(values), "whole_process_seconds": values,
@@ -207,7 +219,28 @@ def summarize(report):
     reference = summary["ants-float1"]["median_seconds"]
     for engine in ("cuda", "cpu"):
         summary[engine]["official_median_divided_by_backend_median"] = reference / summary[engine]["median_seconds"]
+    if "cpu-fp64" in summary:
+        summary["cpu-fp64"]["official_median_divided_by_backend_median"] = (
+            summary["ants-float0"]["median_seconds"] / summary["cpu-fp64"]["median_seconds"])
     return summary
+
+
+def installed_packages():
+    """Record the installed CuPy distribution without assuming a CUDA major version."""
+    result = {name: importlib.metadata.version(name) for name in ("numpy", "numba", "nibabel", "tqdm")}
+    for name in ("cupy-cuda12x", "cupy-cuda13x", "cupy"):
+        try:
+            result[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            pass
+    return result
+
+
+def cpu_observation():
+    if os.name == "nt":
+        return read_observation(["powershell.exe", "-NoProfile", "-Command",
+            "Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores,NumberOfLogicalProcessors | ConvertTo-Json"])
+    return read_observation(["lscpu"])
 
 
 def benchmark(args):
@@ -228,21 +261,21 @@ def benchmark(args):
     compressor=shutil.which('pigz')
     if compressor is not None:pinned.append(Path(compressor))
     pinned += sorted((args.ants_registration.parent.parent / "conda-meta").glob("*.json"))
-    order = schedule(args.repeats, not args.skip_official_warmup)
+    order = schedule(args.repeats, not args.skip_official_warmup, args.include_fp64)
     report = {"schema_version": 1, "status": "planned" if args.plan_only else "running",
         "started_at_utc": utc(), "case": case, "shape_xyz": headers, "recipe": config,
-        "threads": args.threads, "repeats_per_engine": args.repeats,
+        "threads": args.threads, "repeats_per_engine": args.repeats, "engines": engines(args.include_fp64),
         "provenance": {"source": str(args.source), "source_sha256": source_hashes(args.source),
             "input_sha256": {case[side]: digest(case[side]) for side in ("fixed", "moving")},
             "file_sha256": {str(path): digest(path) for path in pinned}, "tool_sha256": tools_hashes(),
             "ants_version": version},
         "environment": {"platform": platform.platform(), "python": sys.version,
-            "packages": {name: importlib.metadata.version(name) for name in ("numpy", "numba", "nibabel", "cupy-cuda12x")},
-            "cpu": read_observation(["lscpu"]), "gpu": read_observation(["nvidia-smi"]),
+            "packages": installed_packages(),
+            "cpu": cpu_observation(), "gpu": read_observation(["nvidia-smi"]),
             "gpu_visibility": os.environ.get("CUDA_VISIBLE_DEVICES", "all visible devices")},
         "measurement_scope": "Fresh target process startup/imports, image reads, registration, GPU synchronization, built-in QA and final writes; runner startup excluded",
         "qa_timing_asymmetry": "Fast ANTs includes built-in host output QA; official ANTs omits that extra QA; no time subtraction",
-        "logging": "Quiet Fast ANTs CLI; official ANTs verbose log retained, matching the historical native benchmark policy",
+        "logging": "Default Fast ANTs progress and official ANTs verbose output retained in console.log",
         "cold_scope": "Empty task-owned CuPy, driver and Numba caches; filesystem input/page caches and system GPU state are not reset",
         "warmup_policy": "One full excluded CUDA and CPU warmup; official warmup " + ("omitted explicitly" if args.skip_official_warmup else "included"),
         "statistics_scope": "Single native MRI direction, alternating serial formal order; no cross-platform Metal speed ratio",
@@ -361,6 +394,7 @@ def parse_args(argv=None):
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--timeout", type=float, default=7200)
     parser.add_argument("--skip-official-warmup", action="store_true")
+    parser.add_argument("--include-fp64", action="store_true", help="Also measure CPU FP64 and official ANTs --float 0")
     parser.add_argument("--plan-only", action="store_true")
     parser.add_argument("--assess-report", type=Path)
     args = parser.parse_args(argv)

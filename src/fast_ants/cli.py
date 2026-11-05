@@ -34,7 +34,7 @@ def version():
     try:
         return metadata.version("fast_ants")
     except metadata.PackageNotFoundError:
-        return "0.2.0"
+        return "0.3.0"
 
 
 def parser():

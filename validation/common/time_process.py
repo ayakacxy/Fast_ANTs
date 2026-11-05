@@ -1,11 +1,9 @@
-"""Measure one fresh child without macOS time(1)'s restricted sysctl query.
+"""Measure one fresh target process, excluding the timer's own startup.
 
-Only the target child's launch, execution and wait enter wall_seconds. This
-runner's Python startup is excluded. A fresh runner has exactly one child, so
-RUSAGE_CHILDREN describes that run rather than the maximum over prior repeats.
+Unix uses RUSAGE_CHILDREN; Windows queries the retained target process handle.
 """
 
-# Permit both direct script execution and python -m invocation.
+# Support both direct script execution and python -m invocation.
 from pathlib import Path as _ToolPath
 import sys as _tool_sys
 _tool_sys.path.insert(0, str(_ToolPath(__file__).resolve().parents[2]))
@@ -15,10 +13,41 @@ from validation.common.paths import PROJECT as _TOOL_PROJECT, VALIDATION as _TOO
 import argparse
 import json
 from pathlib import Path
-import resource
+import os
 import subprocess
 import sys
 import time
+
+
+def windows_usage(process):
+    """Read Windows CPU times and peak working set from the retained process handle."""
+    import ctypes
+    from ctypes import wintypes
+
+    class MemoryCounters(ctypes.Structure):
+        _fields_ = [("cb", wintypes.DWORD), ("PageFaultCount", wintypes.DWORD)] + [
+            (name, ctypes.c_size_t) for name in (
+                "PeakWorkingSetSize", "WorkingSetSize", "QuotaPeakPagedPoolUsage",
+                "QuotaPagedPoolUsage", "QuotaPeakNonPagedPoolUsage", "QuotaNonPagedPoolUsage",
+                "PagefileUsage", "PeakPagefileUsage")]
+
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+    kernel.GetProcessTimes.restype = wintypes.BOOL
+    kernel.K32GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(MemoryCounters), wintypes.DWORD]
+    kernel.K32GetProcessMemoryInfo.restype = wintypes.BOOL
+    created, exited, system, user = (wintypes.FILETIME() for _ in range(4))
+    if not kernel.GetProcessTimes(int(process._handle), created, exited, system, user):
+        raise ctypes.WinError(ctypes.get_last_error())
+    counters = MemoryCounters()
+    counters.cb = ctypes.sizeof(counters)
+    if not kernel.K32GetProcessMemoryInfo(int(process._handle), ctypes.byref(counters), counters.cb):
+        raise ctypes.WinError(ctypes.get_last_error())
+    def seconds(value):
+        return ((value.dwHighDateTime << 32) + value.dwLowDateTime) / 10_000_000
+    return {"user_seconds": seconds(user), "system_seconds": seconds(system),
+            "peak_process_rss_bytes": int(counters.PeakWorkingSetSize),
+            "memory_method": "Windows GetProcessMemoryInfo PeakWorkingSetSize; one target child"}
 
 
 def main():
@@ -32,20 +61,26 @@ def main():
         parser.error("a command and positive timeout are required")
     started = time.perf_counter()
     timed_out = False
-    try:
-        result = subprocess.run(command, timeout=args.timeout)
-        returncode = result.returncode
-    except subprocess.TimeoutExpired:
-        timed_out, returncode = True, 124
-    elapsed = time.perf_counter()-started
-    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    with subprocess.Popen(command) as process:
+        try:
+            returncode = process.wait(timeout=args.timeout)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+            timed_out, returncode = True, 124
+        elapsed = time.perf_counter()-started
+        if os.name == "nt":
+            usage = windows_usage(process)
+        else:
+            import resource
+            record = resource.getrusage(resource.RUSAGE_CHILDREN)
+            usage = {"user_seconds": record.ru_utime, "system_seconds": record.ru_stime,
+                     "peak_process_rss_bytes": int(record.ru_maxrss * (1 if sys.platform == "darwin" else 1024)),
+                     "memory_method": "fresh runner RUSAGE_CHILDREN; exactly one target child"}
     args.output.write_text(json.dumps({
         "command": command, "wall_seconds": elapsed, "returncode": returncode,
-        "timed_out": timed_out, "user_seconds": usage.ru_utime,
-        "system_seconds": usage.ru_stime,
-        "peak_process_rss_bytes": int(usage.ru_maxrss*(1 if sys.platform == "darwin" else 1024)),
+        "timed_out": timed_out, **usage,
         "scope": "one fresh target process; imports, input reads, registration and output writes included; runner startup excluded",
-        "memory_method": "fresh runner RUSAGE_CHILDREN; exactly one target child"
     }, indent=2)+"\n")
     raise SystemExit(returncode if returncode >= 0 else 128-returncode)
 

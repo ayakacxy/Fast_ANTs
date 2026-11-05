@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_ants"
-version = "0.2.0"
+version = "0.3.0"
 description = "Accelerated Python implementation of ANTs registration on CPU and GPU"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -21,6 +21,7 @@ dependencies = ["numpy", "nibabel", "numba", "tqdm>=4.66"]
 
 [project.optional-dependencies]
 cuda = ["cupy-cuda12x>=14,<15"]
+cuda13 = ["cupy-cuda13x>=14,<15"]
 metal = ["mlx==0.32.4; sys_platform == 'darwin' and platform_machine == 'arm64'"]
 test = ["pytest>=8"]
 build = ["build>=1", "wheel"]

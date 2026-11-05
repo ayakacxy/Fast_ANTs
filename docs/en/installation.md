@@ -7,7 +7,7 @@
 - Python 3.11 or later.
 - NumPy, NiBabel, and Numba for CPU execution.
 - Apple Silicon macOS and MLX for the optional Metal backend.
-- An NVIDIA GPU, CUDA 12.x toolkit and CuPy for the optional CUDA backend.
+- An NVIDIA GPU, compatible CUDA 12.x or 13.x libraries and CuPy for the optional CUDA backend.
 
 The CPU and GPU registration implementations are included in this package. Official ANTs is used by the comparison tools in `validation/`.
 
@@ -15,13 +15,13 @@ The Python distribution, import package and command-line entry point are all nam
 
 ## Install a wheel
 
-Download the wheel from the [v0.2.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0), or create a virtual environment and build and install it from the source tree:
+Download the wheel from the [v0.3.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.3.0), or create a virtual environment and build and install it from the source tree:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip wheel . --no-deps -w dist
-python -m pip install ./dist/fast_ants-0.2.0-py3-none-any.whl
+python -m pip install ./dist/fast_ants-0.3.0-py3-none-any.whl
 fast_ants --version
 ```
 
@@ -30,27 +30,27 @@ For Windows PowerShell, activate the environment with `.venv\Scripts\Activate.ps
 To enable Metal on Apple Silicon macOS:
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[metal]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[metal]'
 fast_ants register --help
 ```
 
-To enable CUDA on a compatible NVIDIA system:
+To enable CUDA with an installed CUDA 12.x toolkit:
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[cuda]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda]'
 ```
 
 Metal and CUDA fitting use FP32; CPU execution supports FP64 and FP32 and loads independently of MLX and CuPy. The [v0.1.0 release](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0) remains available with its CPU and Metal wheel.
 
 ## Install from source
 
-The project source is maintained in the [Fast_ANTs repository](https://github.com/ayakacxy/Fast_ANTs). From the root of a v0.2.0 source tree, install the CPU dependencies:
+The project source is maintained in the [Fast_ANTs repository](https://github.com/ayakacxy/Fast_ANTs). From the root of a v0.3.0 source tree, install the CPU dependencies:
 
 ```bash
 python -m pip install -e .
 ```
 
-For Metal, install with `python -m pip install -e '.[metal]'`; for CUDA, use `python -m pip install -e '.[cuda]'`. To build a wheel, run `python -m pip wheel . --no-deps -w dist`. The complete source tree includes examples, tests and validation tools; the Python source distribution contains the installable package and documentation.
+For Metal, install with `python -m pip install -e '.[metal]'`; for CUDA 12.x, use `python -m pip install -e '.[cuda]'`, or select `.[cuda13]` for CUDA 13.x. To build a wheel, run `python -m pip wheel . --no-deps -w dist`. The complete source tree includes examples, tests and validation tools; the Python source distribution contains the installable package and documentation.
 
 ## Conda environments
 
@@ -99,6 +99,32 @@ Repeat the environment-variable exports before activating `ants` in a new shell.
 Select `--backend cuda --precision fp32` for full rigid, affine, and SyN registration, or call `register_cuda` from Python. An unavailable CUDA runtime or device raises an error without switching to CPU. See [usage](usage.md) and [development](development.md).
 
 CUDA fitting is FP32. Final field quality checks use native FP64; the implementation does not provide FP64 CUDA fitting. Current real-MRI and device coverage is described in [performance](performance.md) and [quality assessment](validation.md).
+
+## Windows PowerShell
+
+Create a separate environment in the project directory. These commands use its Python directly and leave existing Python and conda environments unchanged:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda13]'
+.\.venv\Scripts\fast_ants.exe --version
+```
+
+The `cuda13` extra selects `cupy-cuda13x>=14,<15`; `cuda` selects `cupy-cuda12x>=14,<15`. Choose one variant matching the installed CUDA libraries. If CUDA libraries are not installed, CuPy's `[ctk]` extra can install them inside the environment, for example `.\.venv\Scripts\python.exe -m pip install 'cupy-cuda13x[ctk]>=14,<15'`. A compatible NVIDIA driver is still required. See the [CuPy installation guide](https://docs.cupy.dev/en/stable/install.html).
+
+To keep compilation caches inside the project in the current shell:
+
+```powershell
+$env:CUPY_CACHE_DIR = "$PWD\setup\windows\cache\cupy"
+$env:CUDA_CACHE_PATH = "$PWD\setup\windows\cache\cuda"
+$env:NUMBA_CACHE_DIR = "$PWD\setup\windows\cache\numba"
+New-Item -ItemType Directory -Force -Path $env:CUPY_CACHE_DIR,$env:CUDA_CACHE_PATH,$env:NUMBA_CACHE_DIR | Out-Null
+.\.venv\Scripts\fast_ants.exe register fixed.nii.gz moving.nii.gz --output registration-cuda --backend cuda --precision fp32 --preset brain-syn --cpu-threads 16
+```
+
+Select a CPU thread count supported by your machine. First use compiles Numba and CUDA kernels. The [Windows benchmark](performance.md#windows-cuda-and-cpu-16-threads) separates that startup from repeated runs.
+
+Official ANTs is needed only for comparison tests. Download the Windows archive from the [ANTs 2.6.5 release](https://github.com/ANTsX/ANTs/releases/tag/v2.6.5), extract it under `setup/windows/reference`, and pass the full path to `antsRegistration.exe` with `--ants-registration`. No system PATH change is required.
 
 ## Development setup
 

@@ -2,6 +2,26 @@
 
 [English](../en/performance.md) · [简体中文](performance.md) · [文档](index.md)
 
+## Windows CUDA 与 CPU，16 线程
+
+Fast ANTs v0.3.0 使用与下文一致的 `brain-syn` 参数，在 256×256×150 分辨率下将 IXI012-HH-1211 配准到 IXI002-Guys-0828。原生 Windows 对照使用 16 个 CPU 线程，各后端与相同精度的官方 ANTs 比较。
+
+| 后端 | 第一次 / s | 第二次 / s | 中位数 / s | 同精度 ANTs / 本后端 |
+| --- | ---: | ---: | ---: | ---: |
+| CUDA FP32 | 7.49 | 7.38 | 7.43 | 70.54× |
+| CPU FP32 | 77.38 | 75.20 | 76.29 | 6.87× |
+| CPU FP64 | 99.72 | 88.05 | 93.88 | 5.71× |
+| ANTs FP32 | 522.11 | 526.36 | 524.23 | — |
+| ANTs FP64 | 535.93 | 536.83 | 536.38 | — |
+
+每次运行均启动新进程。Fast ANTs 各后端在正式计时前完整运行一次以准备编译缓存，两轮正式测量使用相反顺序。官方 ANTs 使用编译好的 C++ 程序，没有单独执行完整预热。表中列出两次测量和中位数。另一次使用空的任务专用 CuPy、CUDA 驱动和 Numba 缓存的 CUDA 单次运行耗时为 **27.26 s**；文件系统缓存和 GPU 状态没有重置。
+
+计时包含启动、导入模块、读取输入、刚体／仿射／SyN 配准、适用后端的 GPU 同步与下载，以及完整写出。Fast ANTs 还包含内置 QA，写出使用 Python gzip level 0，每个文件一个写入线程；官方 ANTs 保留原生写出设置，不运行额外 QA。双方均不扣除任何耗时。计时器自身启动不计入，Windows CPU 时间和峰值工作集通过目标进程句柄读取。
+
+硬件为 Intel Core i5-14400F，10 个物理核心、16 个逻辑 CPU，32 GB 内存及 8 GB 显存的 RTX 4060 Ti；系统为 Windows 11 专业工作站版，内部版本 26200。依赖为 Python 3.11.14、NumPy 2.3.0、Numba 0.64.0、llvmlite 0.46.0、NiBabel 5.3.3、tqdm 4.70.0、CuPy 14.2.0（`cupy-cuda13x`），CUDA 运行库为 13.2，NVIDIA 驱动为 610.60。官方 ANTs 为 Windows 2.6.5-gfdce4d2 可执行程序。Numba 和 ITK 使用 16 线程，BLAS 和 OMP 限制为 1，温度和后台负载没有固定。
+
+[Windows 测试数据](../assets/benchmarks/windows-native-16t.json)记录参数、源码与输入输出校验值、冷启动和预热耗时、两轮正式结果及独立质量检查。十份正式变换均在计时之外通过同一 CPU FP64 采样器重新应用，详见 [Windows 质量结果](validation.md#windows-原始-mri-结果)。
+
 ## Linux CUDA 与 CPU，32 线程
 
 CPU 和 CUDA 后端使用 `brain-syn`，在 256×256×150 原始分辨率下将 IXI012-HH-1211 配准到 IXI002-Guys-0828，线程数为 32。v0.2.0 使用相同的配准算法和参数。[测试数据](../assets/benchmarks/linux-native-32t.json)记录了完整配置和源码校验值。
@@ -88,3 +108,15 @@ python -B validation/benchmarks/measure_fp32_pipeline.py \
 测试 Metal 时，将后端设为 `--engine metal`，并使用另一个输出目录。内核首次调用所需的编译会计入耗时；GPU 测量需要可用的 Metal 设备。
 
 [计时工具](../../validation/README.zh-CN.md)还支持 CPU FP64、官方 ANTs、多次测量和性能分析，配置、日志及输出校验值保存在指定目录。
+
+### Windows 复现方法
+
+使用 [Windows 安装说明](installation.md#windows-powershell)中的独立环境和原生 ANTs 程序。在项目根目录下载固定的公开输入，并选择新的输出目录：
+
+```powershell
+python -B -m validation.reference_tools.fetch_public_data
+python -B -m validation.benchmarks.measure_cuda_native --source src --data validation/data/public --ants-registration .\setup\windows\reference\ants-2.6.5\bin\antsRegistration.exe --threads 16 --repeats 2 --include-fp64 --skip-official-warmup --timeout 3600 --output validation/reports/windows-native-16t
+python -B -m validation.benchmarks.measure_cuda_native --assess-report validation/reports/windows-native-16t/report.json --threads 16 --output validation/reports/windows-native-16t-quality
+```
+
+性能测试命令在输出目录中分别创建冷启动缓存和预热共享缓存，保留全部输出。评估命令核验运行记录与校验值，再检查已保存图像和正逆场，不重复配准。ANTs 路径应替换为实际的 `antsRegistration.exe` 位置，线程数按本机配置选择。

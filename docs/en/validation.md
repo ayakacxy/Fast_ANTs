@@ -2,6 +2,20 @@
 
 [English](validation.md) · [简体中文](../zh-CN/validation.md) · [Documentation](index.md)
 
+## Native Windows MRI results
+
+The [16-thread Windows measurements](performance.md#windows-cuda-and-cpu-16-threads) retain two formal outputs for each of the five engines. Output hashes are checked before every saved transform is reapplied through the same CPU FP64 sampler outside timing. The foreground contains 3,236,832 fixed-image voxels above 5% of the intensity range. Before registration, foreground NCC is 0.171354 and mean error across four coarse landmarks is 21.4895 mm.
+
+| Engine | Foreground NCC range | Mean landmark error range / mm | Minimum forward or inverse Jacobian | Maximum inverse-consistency RMS / mm |
+| --- | ---: | ---: | ---: | ---: |
+| CUDA FP32 | 0.664371–0.664384 | 1.4337–1.4357 | 0.161298 | 0.023652 |
+| CPU FP32 | 0.664385 | 1.4345 | 0.161414 | 0.023654 |
+| CPU FP64 | 0.664417 | 1.4345 | 0.161804 | 0.023478 |
+| ANTs FP32 | 0.664366–0.664420 | 1.4339–1.4353 | 0.161264 | 0.023664 |
+| ANTs FP64 | 0.663937 | 1.4336 | 0.163237 | 0.023333 |
+
+All saved warped images and fields are finite and match the fixed grid. Both field Jacobians are finite and positive, with zero nonpositive voxels. The last column takes the maximum over both composition directions and both runs. The four landmarks are coarse non-expert annotations. Per-run errors, normalized MSE, both inverse-consistency directions and artifact hashes are in the [Windows summary](../assets/benchmarks/windows-native-16t.json).
+
 ## Test groups
 
 Tests cover image geometry and I/O, numerical operators, optimization, and complete registration. CPU FP64 is compared with ANTs `--float 0`; CPU FP32, Metal and CUDA are compared with `--float 1`.

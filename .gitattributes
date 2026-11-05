@@ -1,6 +1,7 @@
 * text=auto
 *.py text eol=lf
 *.metal text eol=lf
+*.cuh text eol=lf
 *.md text eol=lf
 *.json text eol=lf
 *.nii binary

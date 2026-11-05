@@ -6,7 +6,7 @@
 
 将移动图像配准到固定图像网格：
 
-以下示例使用源码树中的 `--cpu-threads`。使用已发布的 v0.2.0 wheel 时，请用 `--threads` 设置相同的 CPU 线程数。
+以下示例使用 v0.3.0 提供的 `--cpu-threads`，原有 `--threads` 别名仍然可用。
 
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \

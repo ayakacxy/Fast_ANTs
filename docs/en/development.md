@@ -59,6 +59,8 @@ Run only the tests needed for a change. A documentation edit needs Markdown lint
 
 Maintain English and Chinese pages together. Keep commands, defaults, filenames, and mathematical notation consistent. Runtime logs and CLI messages are English.
 
+Code comments and docstrings are English. The CUDA benchmark runner also supports Windows process timing and the optional CPU FP64 comparison; use the commands in [performance](performance.md) when maintaining those measurements.
+
 Use fenced `math` blocks for displayed equations and `$...$` for inline equations. Separate inline equations from adjacent Chinese text or punctuation with a space. Upright labels and function names use `\mathrm{...}`.
 
 ```bash

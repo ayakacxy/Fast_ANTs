@@ -14,6 +14,8 @@
 
 The CUDA backend implements FP32 image and field operations, Mattes MI, paired CC updates, four-field SyN and native FP64 output QA through CuPy. Small optimizer and geometry controls remain on the host. CUDA dependencies are optional and an unavailable device raises an error.
 
+Native MRI measurements cover Linux with an RTX 2080 Ti and Windows with an RTX 4060 Ti, including CPU FP32/FP64 and precision-matched official ANTs. Hardware, dependencies, timings and quality results are recorded in [performance](performance.md) and [validation](validation.md).
+
 Planned work includes broader MRI/geometry coverage, memory and synchronization profiling, and evaluation on more NVIDIA devices. FP64 fitting requires separate implementation and validation; final FP64 QA does not provide FP64 fitting support.
 
 ## Other planned work

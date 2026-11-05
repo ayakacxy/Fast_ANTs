@@ -59,6 +59,8 @@ python -B scripts/maintenance/run_tests.py --suite cuda
 
 中英文文档同步维护，命令、默认值、文件名和数学符号保持一致。运行日志和 CLI 消息使用英文。
 
+代码注释和 docstring 使用英文。CUDA 性能测试工具也支持 Windows 进程计时及可选的 CPU FP64 对照，维护相关数据时使用[性能测试](performance.md)中的命令。
+
 独立公式使用 `math` 代码围栏，行内公式使用 `$...$`，并与相邻中文文字或标点留一个空格。正体标签和函数名使用 `\mathrm{...}`。
 
 ```bash

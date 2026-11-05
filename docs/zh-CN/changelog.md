@@ -2,10 +2,16 @@
 
 [English](../en/changelog.md) · [简体中文](changelog.md)
 
-## 未发布
+## 0.3.0
+
+本版本补充原生 Windows CPU 和 NVIDIA CUDA 配准说明，并保留 Linux 与 Apple M5 的独立测试结果。
 
 - 新增 `--cpu-threads`，明确设置 Numba CPU 工作线程数，保留 `--threads` 别名和现有配置默认值。
 - 启动日志、命令行帮助和使用示例明确 CPU 线程设置的含义；Metal 和 CUDA 单独管理 GPU 并行度。
+- 新增面向 CUDA 13.x CuPy 的 `cuda13` 可选依赖，保留 CUDA 12.x 的 `cuda`。
+- 增加 Windows 进程计时和峰值工作集统计，CUDA 性能测试工具可同时测量 CPU FP64 与 ANTs float0。
+- 补充 Windows 独立环境安装、原生 ANTs 对照、编译缓存隔离和已保存结果的质量评估方法。详见[性能测试](performance.md)和[质量评估](validation.md)。
+- Windows 11、i5-14400F 与 RTX 4060 Ti、16 线程下，256×256×150 原始 MRI 完整流程耗时中位数：CUDA FP32 7.43 s、CPU FP32 76.29 s、CPU FP64 93.88 s，取两次使用已有缓存的新进程测量值。
 
 ## 0.2.0
 

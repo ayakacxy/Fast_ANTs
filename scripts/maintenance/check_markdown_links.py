@@ -8,8 +8,7 @@ from urllib.parse import unquote, urlsplit
 PROJECT = Path(__file__).resolve().parents[2]
 DEFAULTS = ("README.md", "README.zh-CN.md", ".github", "licenses",
             "docs/en", "docs/zh-CN", "configs",
-            "validation/README.md", "validation/README.zh-CN.md", "templates/README.md",
-            "templates/README.zh-CN.md",
+            "validation/README.md", "validation/README.zh-CN.md",
             "tests/README.md", "tests/README.zh-CN.md")
 
 
@@ -41,7 +40,7 @@ def check(paths):
         if not path.is_file():
             failures.append((str(path), "Document does not exist"))
             continue
-        content = re.sub(r"```.*?```", "", path.read_text(), flags=re.S)
+        content = re.sub(r"```.*?```", "", path.read_text(encoding="utf-8"), flags=re.S)
         for match in re.finditer(r"(?<!!)\[[^\]\n]+\]\((<[^>]+>|[^)\n]+)\)", content):
             link = match.group(1).strip().strip("<>")
             parts = urlsplit(link)
@@ -65,7 +64,7 @@ def check_languages(paths):
         current, counterpart = language(path)
         if current is None:
             continue
-        content = re.sub(r"```.*?```", "", path.read_text(), flags=re.S)
+        content = re.sub(r"```.*?```", "", path.read_text(encoding="utf-8"), flags=re.S)
         for match in re.finditer(r"(?<!!)\[([^\]\n]+)\]\((<[^>]+>|[^)\n]+)\)", content):
             label, link = match.groups()
             parts = urlsplit(link.strip().strip("<>"))

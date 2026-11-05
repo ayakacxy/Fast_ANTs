@@ -6,8 +6,8 @@
 
 - Fast ANTs 是基于 ANTs/ITK 配准算法的加速项目。介绍项目时，开头说明这一定位，并准确区分已经支持和计划支持的功能。
 - 仓库名为 `Fast_ANTs`，Python 发行包、导入模块和命令行名称均为 `fast_ants`。不要重新引入 `fast-ants` 命令。已有 conda 环境名不随命令行名称变动。
-- v0.1.0 提供 CPU FP64、CPU FP32 和 Apple Metal FP32；v0.2.0 在此基础上增加可选的 CUDA FP32 后端。CUDA 已在 Linux NVIDIA 设备验证，其他硬件与 FP64 拟合等未验证或未实现的内容仍列为计划。说明版本可用性时区分本地构建与 GitHub 已发布的发行包。
-- 代码按后端和配准阶段组织。共用配置、图像几何及流程控制与设备算子分开，具体见[代码结构](docs/zh-CN/architecture.md)。运行日志、CLI 消息和异常说明统一使用英文。
+- v0.1.0 提供 CPU FP64、CPU FP32 和 Apple Metal FP32；v0.2.0 在此基础上增加可选的 CUDA FP32 后端。v0.3.0 补充 Windows 原生 CPU 和 CUDA 测量；CUDA 已在 Linux 与 Windows NVIDIA 设备验证，其他硬件与 FP64 拟合等未验证或未实现的内容仍列为计划。说明版本可用性时区分本地构建与 GitHub 已发布的发行包。
+- 代码按后端和配准阶段组织。共用配置、图像几何及流程控制与设备算子分开，具体见[代码结构](docs/zh-CN/architecture.md)。代码注释、docstring、运行日志、CLI 消息和异常说明统一使用英文。
 
 ## 文档写法
 

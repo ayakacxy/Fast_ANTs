@@ -14,6 +14,8 @@
 
 CUDA 后端通过 CuPy 实现 FP32 图像与场运算、Mattes MI、双向 CC 更新、四场 SyN 和原生 FP64 输出 QA。小型优化和几何控制仍在主机端执行。CUDA 依赖保持可选，设备不可用时明确报错。
 
+原始 MRI 测量覆盖 RTX 2080 Ti 的 Linux 平台和 RTX 4060 Ti 的 Windows 平台，同时包含 CPU FP32／FP64 及同精度官方 ANTs 对照。硬件、依赖、耗时和质量结果见[性能测试](performance.md)与[质量评估](validation.md)。
+
 后续工作包括补充 MRI／几何测试、分析内存和同步开销，以及在更多 NVIDIA 设备上验证。FP64 拟合需要独立实现和验证；最终 FP64 QA 不等于支持 FP64 拟合。
 
 ## 其他后续工作

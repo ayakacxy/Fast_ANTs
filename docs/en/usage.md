@@ -6,7 +6,7 @@
 
 Register the moving image on the fixed image grid:
 
-These examples use `--cpu-threads` from the source tree. With the published v0.2.0 wheel, use `--threads` for the same CPU setting.
+These examples use `--cpu-threads`, available in v0.3.0. The `--threads` alias remains supported.
 
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \

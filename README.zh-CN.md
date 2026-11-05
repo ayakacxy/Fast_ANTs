@@ -4,7 +4,7 @@
 
 **基于 ANTs 配准算法的 Python 加速项目。**
 
-[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-5D5FEF)](docs/zh-CN/changelog.md)
+[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-5D5FEF)](docs/zh-CN/changelog.md)
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-blue)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 [![CPU: Numba](https://img.shields.io/badge/CPU-Numba-00A3E0)](docs/zh-CN/optimizations.md)
@@ -32,8 +32,13 @@
 | RTX 2080 Ti + 双路 Xeon / 32 | CPU FP64 | 85.58 | 4.63× | 0.6644 | 1.434 |
 | RTX 2080 Ti + 双路 Xeon / 32 | 官方 ANTs FP32 | 334.32 | — | 0.6629–0.6644 | 1.425–1.433 |
 | RTX 2080 Ti + 双路 Xeon / 32 | 官方 ANTs FP64 | 396.34 | — | 0.6639 | 1.434 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CUDA FP32 | **7.43** | **70.54×** | 0.6644 | 1.434–1.436 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP32 | 76.29 | 6.87× | 0.6644 | 1.435 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | CPU FP64 | 93.88 | 5.71× | 0.6644 | 1.434 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | 官方 ANTs FP32 | 524.23 | — | 0.6644 | 1.434–1.435 |
+| Windows · RTX 4060 Ti + i5-14400F / 16 | 官方 ANTs FP64 | 536.38 | — | 0.6639 | 1.434 |
 
-使用同一组 256×256×150 MRI 图像；Apple M5 的 v0.1.0 结果为单次测量，Linux 的 v0.2.0 结果为两次缓存运行的中位数。耗时包含启动、读取、配准和完整写出，Fast ANTs 还包含质量检查。加速比与相同精度的官方 ANTs 比较；对应点误差是配准后四组粗略标注位置的平均距离，越小表示对齐越好。
+使用同一组 256×256×150 MRI 图像；Apple M5 的 v0.1.0 结果为单次测量，Linux 的 v0.2.0 与 Windows 的 v0.3.0 结果为两次缓存运行的中位数。耗时包含启动、读取、配准和完整写出，Fast ANTs 还包含质量检查。加速比与相同精度的官方 ANTs 比较；对应点误差是配准后四组粗略标注位置的平均距离，越小表示对齐越好。
 
 Apple M5 质量指标通过同一 CPU FP64 采样器重新应用 v0.1.0 已保存变换计算，前景包含 3,236,832 个体素，地标来自四组非专家粗略标注。Metal 保存的正逆场 Jacobian 均为正，两个复合方向中较大的逆一致性 RMS 为 0.02297 mm。
 
@@ -72,26 +77,26 @@ CUDA 后端使用 CuPy 自定义 kernel 和 CUDA Graph，在 GPU 上保留图像
 
 Python 发行包名、导入名和命令行入口均为 `fast_ants`。
 
-要求 Python 3.11 或更新版本。可从 [v0.2.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0)下载 wheel，或在项目根目录构建并安装：
+要求 Python 3.11 或更新版本。可从 [v0.3.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.3.0)下载 wheel，或在项目根目录构建并安装：
 
 ```bash
 python -m pip wheel . --no-deps -w dist
-python -m pip install ./dist/fast_ants-0.2.0-py3-none-any.whl
+python -m pip install ./dist/fast_ants-0.3.0-py3-none-any.whl
 ```
 
 Apple Silicon macOS 使用 Metal 后端时：
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[metal]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[metal]'
 ```
 
 NVIDIA CUDA 12.x 使用：
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[cuda]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda]'
 ```
 
-CPU 后端依赖 NumPy、NiBabel 和 Numba，Metal 使用 MLX，CUDA 使用 CuPy。wheel 构建、源码安装、conda 环境和保留的 v0.1.0 发行包见[安装说明](docs/zh-CN/installation.md)。
+CUDA 13.x 改用 `[cuda13]`，同一环境只安装与 CUDA 运行库对应的一种 CuPy。CPU 后端依赖 NumPy、NiBabel 和 Numba，Metal 使用 MLX，CUDA 使用 CuPy。Windows 环境设置、wheel 构建、源码安装和 conda 环境见[安装说明](docs/zh-CN/installation.md)。
 
 ## 🚀 快速开始
 
@@ -119,7 +124,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
   --preset brain-syn --cpu-threads 32
 ```
 
-`--cpu-threads` 设置 Numba 的 CPU 工作线程数，在 Metal 或 CUDA 模式下仍用于 CPU 辅助运算。GPU 并行度由后端管理。该参数可省略，此时使用配置中的 `threads` 值（`brain-syn` 为 10）。原有 `--threads` 保留为兼容别名。新名称在源码树中可用，已发布的 v0.2.0 wheel 使用 `--threads`。
+`--cpu-threads` 设置 Numba 的 CPU 工作线程数，在 Metal 或 CUDA 模式下仍用于 CPU 辅助运算。GPU 并行度由后端管理。该参数可省略，此时使用配置中的 `threads` 值（`brain-syn` 为 10）。原有 `--threads` 保留为兼容别名，v0.3.0 支持两种名称。
 
 输出目录需要是新目录，CPU 线程数应按机器配置设置。默认输入选项为 `itk_scanner` 图像几何和 `itk` 强度缩放；使用标准 NiBabel NIfTI 读取方式时，添加 `--geometry-policy nifti --scaling-policy nifti`。
 

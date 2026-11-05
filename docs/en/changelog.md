@@ -2,10 +2,16 @@
 
 [English](changelog.md) · [简体中文](../zh-CN/changelog.md)
 
-## Unreleased
+## 0.3.0
+
+This version documents native Windows CPU and NVIDIA CUDA registration, alongside the retained Linux and Apple M5 results.
 
 - Add `--cpu-threads` as the explicit name for the Numba CPU worker count, retaining `--threads` as an alias and the existing recipe default.
 - Clarify CPU thread settings in startup logs, CLI help and usage examples; Metal and CUDA manage GPU parallelism separately.
+- Add a `cuda13` extra for CuPy with CUDA 13.x, retaining `cuda` for CUDA 12.x.
+- Add Windows process timing and peak working-set measurements, plus optional CPU FP64 and ANTs float0 runs in the CUDA benchmark tool.
+- Document isolated Windows installation, native ANTs comparison, separate compilation caches and saved-output quality assessment. See [performance](performance.md) and [quality assessment](validation.md).
+- Windows 11, i5-14400F and RTX 4060 Ti, 16 threads: CUDA FP32 7.43 s, CPU FP32 76.29 s, CPU FP64 93.88 s for native 256×256×150 MRI, using the median of two cached complete processes.
 
 ## 0.2.0
 

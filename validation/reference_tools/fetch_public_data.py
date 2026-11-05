@@ -49,7 +49,7 @@ def fetch(entry):
             raise RuntimeError(f"Downloaded file checksum/size mismatch: {name}")
         temporary.replace(destination)
         print(f"verified {name}", flush=True)
-    return {**entry, "path": str(destination.relative_to(ROOT.parent)),
+    return {**entry, "path": destination.relative_to(ROOT.parent).as_posix(),
             "sha256": digest(destination, "sha256")}
 
 

@@ -80,6 +80,12 @@ def command_for(args, config, case, engine, directory):
 
 
 def stop_group(process):
+    if os.name == "nt":
+        if process.poll() is None:
+            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                           capture_output=True, check=False)
+        process.wait()
+        return
     try:
         os.killpg(process.pid, signal.SIGTERM)
     except ProcessLookupError:

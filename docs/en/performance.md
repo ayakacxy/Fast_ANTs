@@ -2,6 +2,26 @@
 
 [English](performance.md) · [简体中文](../zh-CN/performance.md) · [Documentation](index.md)
 
+## Windows CUDA and CPU, 16 threads
+
+Fast ANTs v0.3.0 registers IXI012-HH-1211 to IXI002-Guys-0828 at 256×256×150 with the same `brain-syn` recipe used below. The native Windows comparison uses 16 CPU threads and matches official ANTs precision for each backend.
+
+| Backend | Run 1 / s | Run 2 / s | Median / s | Precision-matched ANTs / backend |
+| --- | ---: | ---: | ---: | ---: |
+| CUDA FP32 | 7.49 | 7.38 | 7.43 | 70.54× |
+| CPU FP32 | 77.38 | 75.20 | 76.29 | 6.87× |
+| CPU FP64 | 99.72 | 88.05 | 93.88 | 5.71× |
+| ANTs FP32 | 522.11 | 526.36 | 524.23 | — |
+| ANTs FP64 | 535.93 | 536.83 | 536.38 | — |
+
+Each backend runs in a fresh process. Fast ANTs runs once to prepare its compilation caches before formal timing; the two formal passes run in opposite orders. Official ANTs uses compiled C++ and has no separate full warmup. The table reports the two measurements and their median. CUDA with empty task-owned CuPy, CUDA driver and Numba caches took **27.26 s** in a separate single run; filesystem caches and GPU state were not reset.
+
+Timing includes startup, imports, input reading, rigid/affine/SyN fitting, GPU synchronization and downloads where applicable, and completed writes. Fast ANTs also includes built-in QA. Its outputs use Python gzip level 0 with one writer thread per file; official ANTs uses its native writer defaults and does not run the additional QA. Nothing is subtracted. The timer's startup is excluded; Windows process handles supply CPU times and peak working set.
+
+Hardware is an Intel Core i5-14400F, 10 physical cores / 16 logical CPUs, 32 GB RAM and an RTX 4060 Ti with 8 GB VRAM, running Windows 11 Pro for Workstations, build 26200. Python is 3.11.14, NumPy 2.3.0, Numba 0.64.0, llvmlite 0.46.0, NiBabel 5.3.3, tqdm 4.70.0 and CuPy 14.2.0 (`cupy-cuda13x`), with CUDA runtime 13.2 and NVIDIA driver 610.60. Official ANTs is the Windows 2.6.5-gfdce4d2 binary. Numba and ITK use 16 threads; BLAS and OMP limits are 1. Temperature and background load were not fixed.
+
+The [Windows benchmark data](../assets/benchmarks/windows-native-16t.json) records parameters, source/input/output hashes, cold and warmup timings, both formal runs, and independent saved-output checks. All ten formal transforms are reapplied through the same CPU FP64 sampler outside timing; see [Windows quality results](validation.md#native-windows-mri-results).
+
 ## Linux CUDA and CPU, 32 threads
 
 The CPU and CUDA backends register IXI012-HH-1211 to IXI002-Guys-0828 at 256×256×150 using `brain-syn` and 32 threads. The same registration algorithm and parameters are used in v0.2.0. The [benchmark data](../assets/benchmarks/linux-native-32t.json) records the test configuration and source hashes.
@@ -88,3 +108,15 @@ python -B validation/benchmarks/measure_fp32_pipeline.py \
 For Metal, select `--engine metal` and a different output directory. On the first use of a kernel, compilation is included in the elapsed time. GPU measurements require a working Metal device.
 
 The [benchmark tools](../../validation/README.md) also support CPU FP64, official ANTs, repeated measurements and profiling. They save configurations, logs and output checksums under the selected directory.
+
+### Windows reproduction
+
+Use the isolated environment and native ANTs binary described in [Windows installation](installation.md#windows-powershell). From the project root, fetch the pinned public inputs and select a new output directory:
+
+```powershell
+python -B -m validation.reference_tools.fetch_public_data
+python -B -m validation.benchmarks.measure_cuda_native --source src --data validation/data/public --ants-registration .\setup\windows\reference\ants-2.6.5\bin\antsRegistration.exe --threads 16 --repeats 2 --include-fp64 --skip-official-warmup --timeout 3600 --output validation/reports/windows-native-16t
+python -B -m validation.benchmarks.measure_cuda_native --assess-report validation/reports/windows-native-16t/report.json --threads 16 --output validation/reports/windows-native-16t-quality
+```
+
+The first benchmark command creates separate cold-start and shared warmup caches inside its output directory. It retains all outputs. The assessment command verifies fitting receipts and hashes, then evaluates saved images and both fields without rerunning registration. Use the actual location of your `antsRegistration.exe` and a supported thread count.

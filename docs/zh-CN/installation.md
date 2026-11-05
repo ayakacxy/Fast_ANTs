@@ -7,7 +7,7 @@
 - Python 3.11 或更新版本。
 - CPU 后端依赖 NumPy、NiBabel 和 Numba。
 - Metal 后端需要 Apple Silicon macOS 和 MLX。
-- CUDA 后端需要 NVIDIA GPU、CUDA 12.x toolkit 和 CuPy。
+- CUDA 后端需要 NVIDIA GPU、兼容的 CUDA 12.x 或 13.x 运行库和 CuPy。
 
 CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具使用官方 ANTs。
 
@@ -15,13 +15,13 @@ CPU 和 GPU 配准实现在软件包中提供；`validation/` 中的对照工具
 
 ## 安装 wheel
 
-从 [v0.2.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.2.0)下载 wheel，或在源码树中创建虚拟环境、构建并安装：
+从 [v0.3.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.3.0)下载 wheel，或在源码树中创建虚拟环境、构建并安装：
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip wheel . --no-deps -w dist
-python -m pip install ./dist/fast_ants-0.2.0-py3-none-any.whl
+python -m pip install ./dist/fast_ants-0.3.0-py3-none-any.whl
 fast_ants --version
 ```
 
@@ -30,27 +30,27 @@ Windows PowerShell 中使用 `.venv\Scripts\Activate.ps1` 激活环境。
 Apple Silicon macOS 启用 Metal 后端：
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[metal]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[metal]'
 fast_ants register --help
 ```
 
-兼容的 NVIDIA 系统启用 CUDA 后端：
+已安装 CUDA 12.x toolkit 的 NVIDIA 系统启用 CUDA 后端：
 
 ```bash
-python -m pip install './dist/fast_ants-0.2.0-py3-none-any.whl[cuda]'
+python -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda]'
 ```
 
 Metal 和 CUDA 拟合使用 FP32；CPU 支持 FP64 和 FP32，可独立于 MLX 和 CuPy 加载。[v0.1.0 发布页](https://github.com/ayakacxy/Fast_ANTs/releases/tag/v0.1.0)保留了 CPU 和 Metal wheel。
 
 ## 从源码安装
 
-项目源码维护在 [Fast_ANTs 仓库](https://github.com/ayakacxy/Fast_ANTs)。在 v0.2.0 源码树根目录安装 CPU 依赖：
+项目源码维护在 [Fast_ANTs 仓库](https://github.com/ayakacxy/Fast_ANTs)。在 v0.3.0 源码树根目录安装 CPU 依赖：
 
 ```bash
 python -m pip install -e .
 ```
 
-Metal 使用 `python -m pip install -e '.[metal]'`，CUDA 使用 `python -m pip install -e '.[cuda]'`。构建 wheel 可运行 `python -m pip wheel . --no-deps -w dist`。完整源码树包含示例、测试和验证工具；Python 源码发行包包含可安装的软件包和文档。
+Metal 使用 `python -m pip install -e '.[metal]'`，CUDA 12.x 使用 `python -m pip install -e '.[cuda]'`，CUDA 13.x 改用 `.[cuda13]`。构建 wheel 可运行 `python -m pip wheel . --no-deps -w dist`。完整源码树包含示例、测试和验证工具；Python 源码发行包包含可安装的软件包和文档。
 
 ## Conda 环境
 
@@ -99,6 +99,32 @@ python -m pip install -e '.[cuda]'
 通过 `--backend cuda --precision fp32` 运行完整刚体、仿射与 SyN 配准，或在 Python 中调用 `register_cuda`。CUDA 运行时或设备不可用时会报错，不会切换到 CPU。详见[使用说明](usage.md)和[开发指南](development.md)。
 
 CUDA 拟合使用 FP32，最终场质量检查使用原生 FP64；当前不提供 CUDA FP64 拟合。真实 MRI 和设备覆盖范围见[性能测试](performance.md)和[质量评估](validation.md)。
+
+## Windows PowerShell
+
+在项目目录创建独立环境。以下命令直接调用该环境的 Python，不改动现有 Python 或 conda 环境：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install './dist/fast_ants-0.3.0-py3-none-any.whl[cuda13]'
+.\.venv\Scripts\fast_ants.exe --version
+```
+
+`cuda13` 可选依赖使用 `cupy-cuda13x>=14,<15`，`cuda` 使用 `cupy-cuda12x>=14,<15`。按已安装的 CUDA 运行库选择一种。如果尚未安装 CUDA 运行库，可通过 CuPy 的 `[ctk]` 将运行库安装到独立环境中，例如 `.\.venv\Scripts\python.exe -m pip install 'cupy-cuda13x[ctk]>=14,<15'`；仍需兼容的 NVIDIA 驱动。详见 [CuPy 安装指南](https://docs.cupy.dev/en/stable/install.html)。
+
+在当前 shell 中将编译缓存保存在项目内：
+
+```powershell
+$env:CUPY_CACHE_DIR = "$PWD\setup\windows\cache\cupy"
+$env:CUDA_CACHE_PATH = "$PWD\setup\windows\cache\cuda"
+$env:NUMBA_CACHE_DIR = "$PWD\setup\windows\cache\numba"
+New-Item -ItemType Directory -Force -Path $env:CUPY_CACHE_DIR,$env:CUDA_CACHE_PATH,$env:NUMBA_CACHE_DIR | Out-Null
+.\.venv\Scripts\fast_ants.exe register fixed.nii.gz moving.nii.gz --output registration-cuda --backend cuda --precision fp32 --preset brain-syn --cpu-threads 16
+```
+
+CPU 线程数按本机配置选择。首次运行会编译 Numba 和 CUDA 内核，[Windows 性能测试](performance.md#windows-cuda-与-cpu16-线程)分别记录首次启动和后续运行。
+
+官方 ANTs 仅用于对照测试。从 [ANTs 2.6.5 发布页](https://github.com/ANTsX/ANTs/releases/tag/v2.6.5)下载 Windows 压缩包，解压到 `setup/windows/reference`，通过 `--ants-registration` 传入 `antsRegistration.exe` 的完整路径，无需修改系统 PATH。
 
 ## 开发环境
 

@@ -16,7 +16,7 @@ This directory contains tools for checking numerical operators, generating ANTs 
 | [common/](common/) | Shared paths, process helpers, and tool index |
 | [configs/](configs/) | Reference recipes, quality policy, and small-case matrix |
 | [sources/](sources/) | Input provenance and checksum records |
-| `reports/` | Local measured outputs; excluded warmup volumes are discarded |
+| `reports/` | Local measured outputs; each runner records its output-retention policy |
 
 A [tool index](common/tool-index.json) maps script names to modules. Use the module path for new commands. The root `measure_fp32_pipeline.py`, `measure_fp64_cpu.py`, and `assess_saved_registration.py` also provide command-line entry points.
 
@@ -26,12 +26,15 @@ Run from the project root:
 
 ```bash
 python -m validation.benchmarks.measure_current_native --help
+python -m validation.benchmarks.measure_cuda_native --help
 python -m validation.benchmarks.measure_fp32_pipeline --help
 python -m validation.benchmarks.measure_fp64_cpu --help
 python -m validation.quality.assess_saved_registration --help
 ```
 
 The native-resolution runner executes CPU FP64, ANTs float0, CPU FP32, Metal FP32 and ANTs float1 serially using the specified source directory. Reports include source hashes, parameters, timings and output files. The FP32 pipeline tool compares CPU FP32, Metal and ANTs float1; the FP64 tool compares CPU FP64 with ANTs float0. Saved-output assessment evaluates transforms and images without repeating the fit.
+
+On Windows or Linux, `measure_cuda_native` compares CUDA FP32, CPU FP32 and ANTs float1; `--include-fp64` adds CPU FP64 and ANTs float0. It records a CUDA cold start, full backend warmups and fresh-process repeats in alternating order. The Windows timer uses process CPU times and peak working set. All outputs are retained for independent assessment. See [Windows reproduction commands](../docs/en/performance.md#windows-reproduction).
 
 A script can also be selected by name:
 
@@ -63,7 +66,7 @@ Use the original report path and a new output directory. This reads saved inputs
 
 Record image dimensions, registration parameters, backend, precision, thread count, software versions, warmups, and repeated runs. Synchronize GPU work before recording completion and wait for all output files to be written. Report separately whether timing includes process startup, compilation, image I/O, and final quality calculations.
 
-Numba and Metal compile kernels on first use. Keep compilation separate from repeated-execution measurements. Run comparisons sequentially under similar system load and power conditions.
+Numba, Metal and CUDA compile kernels on first use. Keep compilation separate from repeated-execution measurements. Run comparisons sequentially under similar system load and power conditions.
 
 ## Data
 
@@ -79,4 +82,4 @@ python -B scripts/maintenance/run_tests.py --suite cpu-fp64 --pattern test_field
 python -B scripts/maintenance/run_tests.py --suite cpu-fp32 --pattern test_gaussian_sections32.py
 ```
 
-Use `--list` to inspect selected tests. GPU tests require an Apple GPU and explicit `--suite metal` selection. The [test directory](../tests/README.md) describes all groups.
+Use `--list` to inspect selected tests. Select `--suite metal` on Apple GPUs or `--suite cuda` on NVIDIA GPUs. The [test directory](../tests/README.md) describes all groups.
