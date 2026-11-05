@@ -16,7 +16,7 @@ Measurements on Linux and Windows are reported in [Performance measurements](per
 
 ## v0.4.0: quality assessment and batch processing
 
-Planned priorities, in implementation order:
+Validation is limited to MRI. Planned priorities, in implementation order:
 
 ### 1. Multi-case quality assessment
 
