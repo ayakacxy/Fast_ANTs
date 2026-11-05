@@ -100,7 +100,7 @@ Register a moving image to a fixed image on CPU:
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cpu --backend cpu --precision fp64 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 Use the Apple GPU:
@@ -108,7 +108,7 @@ Use the Apple GPU:
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal --backend metal --precision fp32 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 Use an NVIDIA GPU:
@@ -116,10 +116,12 @@ Use an NVIDIA GPU:
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --threads 32
+  --preset brain-syn --cpu-threads 32
 ```
 
-Choose a new output directory and a thread count supported by your machine. The default input settings are `itk_scanner` geometry and `itk` intensity scaling. For standard NiBabel NIfTI handling, add `--geometry-policy nifti --scaling-policy nifti`.
+`--cpu-threads` sets the Numba CPU worker count, including CPU work when using Metal or CUDA. GPU parallelism is managed by the backend. When omitted, it uses the recipe's `threads` value (10 for `brain-syn`). `--threads` remains a compatible alias. The new name is available in the source tree; use `--threads` with the published v0.2.0 wheel.
+
+Choose a new output directory and a CPU thread count supported by your machine. The default input settings are `itk_scanner` geometry and `itk` intensity scaling. For standard NiBabel NIfTI handling, add `--geometry-policy nifti --scaling-policy nifti`.
 
 Progress logs are enabled by default. Metal and CUDA show per-level `tqdm` bars in an interactive terminal; `console.log` stores plain-text diagnostics. Use `--quiet` to disable progress and verbose logging.
 

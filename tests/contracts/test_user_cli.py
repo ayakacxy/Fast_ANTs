@@ -38,11 +38,17 @@ class UserCLITests(unittest.TestCase):
         self.assertEqual((metal.precision, metal.verbose, metal.log_every), ("fp32", True, 4))
         cuda = cli.parse_args(self.arguments("--backend", "cuda"))
         self.assertEqual(cuda.precision, "fp32")
+        for backend in ("cpu", "metal", "cuda"):
+            for option in ("--cpu-threads", "--threads"):
+                with self.subTest(backend=backend, option=option):
+                    args = cli.parse_args(self.arguments("--backend", backend, option, "2"))
+                    self.assertEqual(args.threads, 2)
         self.assertFalse(self.output.exists())
 
     def test_invalid_combinations_and_positive_controls(self):
         for options in (("--backend", "metal", "--precision", "fp64"),
                         ("--backend", "cuda", "--precision", "fp64"), ("--threads", "0"),
+                        ("--cpu-threads", "0"), ("--cpu-threads", "1.5"),
                         ("--log-every", "0"), ("--log-every", "1.5"),
                         ("--config", str(self.fixed), "--preset", "brain-syn")):
             with self.subTest(options=options), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
@@ -115,7 +121,7 @@ class UserCLITests(unittest.TestCase):
             with self.subTest(backend=backend, precision=precision):
                 output = self.root / (backend + precision)
                 args = cli.parse_args(self.arguments("--output", str(output), "--backend", backend,
-                                                      "--precision", precision, "--threads", "2", "--verbose"))
+                                                      "--precision", precision, "--cpu-threads", "2", "--verbose"))
                 calls = []
                 def implementation(name):
                     def fit(fixed, moving, **options):
@@ -127,8 +133,9 @@ class UserCLITests(unittest.TestCase):
                     LinearStage=lambda **kw: SimpleNamespace(**kw), SyNStage=lambda **kw: SimpleNamespace(**kw),
                     **{name: implementation(name) for name in ("register", "register32", "register_metal", "register_cuda")})
                 terminal = io.StringIO()
-                with patch.object(cli, "_runtime", return_value=(api, SimpleNamespace(get_num_threads=lambda: 2))), redirect_stdout(terminal):
+                with patch.object(cli, "_runtime", return_value=(api, SimpleNamespace(get_num_threads=lambda: 2))) as runtime, redirect_stdout(terminal):
                     self.assertEqual(cli.run_registration(args), 0)
+                runtime.assert_called_once_with(2)
                 self.assertEqual(calls[0][0], expected)
                 self.assertEqual(calls[0][1]["seed"], 20261022)
                 self.assertEqual(calls[0][1].get("verbose"), True if backend != "cpu" else None)

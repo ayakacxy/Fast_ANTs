@@ -6,11 +6,13 @@
 
 将移动图像配准到固定图像网格：
 
+以下示例使用源码树中的 `--cpu-threads`。使用已发布的 v0.2.0 wheel 时，请用 `--threads` 设置相同的 CPU 线程数。
+
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal \
   --backend metal --precision fp32 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 使用 `--backend cpu --precision fp64` 或 `--backend cpu --precision fp32` 选择 CPU 后端。`python -m fast_ants` 调用相同的命令行接口。
@@ -20,7 +22,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 | 选项 | 默认值 | 说明 |
@@ -29,14 +31,16 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 | `--precision` | CPU 为 `fp64`，Metal／CUDA 为 `fp32` | 计算精度 |
 | `--preset` | `brain-syn` | 包内配准预设 |
 | `--config` | — | 完整的自定义 JSON 配置 |
-| `--threads` | 预设值：10 | CPU 线程数 |
+| `--cpu-threads`、`--threads` | 配置值；`brain-syn` 为 10 | Numba CPU 工作线程数，Metal／CUDA 模式下仍用于 CPU 辅助运算 |
 | `--geometry-policy` | `itk_scanner` | 输入图像几何读取方式 |
 | `--scaling-policy` | `itk` | 输入体素强度缩放方式 |
 | `--verbose`、`-v` | 开启 | 输出英文进度和诊断日志 |
 | `--quiet`、`-q` | 关闭 | 关闭进度和详细诊断日志 |
 | `--log-every` | 1 | GPU 迭代诊断日志间隔 |
 
-输出目录需要是新目录，线程数应按机器配置设置。Metal 和 CUDA 支持 FP32；CPU 支持两种精度。预设使用随机种子 20261022。
+输出目录需要是新目录，CPU 线程数应按机器配置设置。Metal 和 CUDA 支持 FP32；CPU 支持两种精度。预设使用随机种子 20261022。
+
+`--cpu-threads` 可省略，指定时覆盖配置中的 `threads` 值。原有 `--threads` 保留为行为相同的别名。该设置在所有后端中控制 Numba 的 CPU 工作线程数；Metal 和 CUDA 单独管理 GPU 并行度。图像读写线程和 gzip 工作线程使用各自的设置。启动日志显示 `cpu_threads=N (Numba)`，选用 GPU 后端时会进一步说明作用范围。配置文件和 `run.json` 中的 `threads` 字段继续表示 Numba CPU 工作线程数。
 
 默认 scanner 几何选项要求图像具有 scanner-anatomical sform。使用标准 NiBabel NIfTI 几何和强度缩放时，添加：
 
@@ -55,7 +59,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-custom --backend cpu --precision fp64 \
-  --config my-recipe.json --threads 10
+  --config my-recipe.json --cpu-threads 10
 ```
 
 `--config` 替换完整预设，与 `--preset` 互斥。命令行流程使用密集采样、线性插值和无掩膜图像，关闭直方图匹配、winsorization 及逆向重采样强度图像输出。配置中包含不支持的值时会报错。
@@ -117,7 +121,7 @@ DIAGNOSTIC,Iteration,metricValue,convergenceValue,ITERATION_TIME_INDEX,SINCE_LAS
 ```bash
 FAST_ANTS_GZIP_LEVEL=1 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-compressed --backend cuda --precision fp32 \
-  --preset brain-syn --threads 10
+  --preset brain-syn --cpu-threads 10
 ```
 
 `FAST_ANTS_GZIP_LEVEL` 接受 0 到 9 的整数，默认 0。

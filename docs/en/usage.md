@@ -6,11 +6,13 @@
 
 Register the moving image on the fixed image grid:
 
+These examples use `--cpu-threads` from the source tree. With the published v0.2.0 wheel, use `--threads` for the same CPU setting.
+
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal \
   --backend metal --precision fp32 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 Use `--backend cpu --precision fp64` or `--backend cpu --precision fp32` to select CPU execution. `python -m fast_ants` runs the same command-line interface.
@@ -20,7 +22,7 @@ For NVIDIA CUDA, activate the [CUDA environment](installation.md#cuda-environmen
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 | Option | Default | Description |
@@ -29,14 +31,16 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 | `--precision` | `fp64` on CPU; `fp32` on Metal/CUDA | Numerical precision |
 | `--preset` | `brain-syn` | Bundled registration parameters |
 | `--config` | — | Complete custom JSON configuration |
-| `--threads` | Preset value: 10 | CPU thread count |
+| `--cpu-threads`, `--threads` | Recipe value; `brain-syn`: 10 | Numba CPU worker count, including CPU work with Metal/CUDA |
 | `--geometry-policy` | `itk_scanner` | Input image geometry handling |
 | `--scaling-policy` | `itk` | Input voxel intensity scaling |
 | `--verbose`, `-v` | On | Print English progress and diagnostic logs |
 | `--quiet`, `-q` | Off | Disable progress and verbose diagnostics |
 | `--log-every` | 1 | GPU iteration diagnostic logging interval |
 
-The output directory must be new. Select a thread count supported by your machine. Metal and CUDA support FP32; CPU supports both precisions. The preset uses random seed 20261022.
+The output directory must be new. Select a CPU thread count supported by your machine. Metal and CUDA support FP32; CPU supports both precisions. The preset uses random seed 20261022.
+
+`--cpu-threads` is optional and overrides the recipe's `threads` value. `--threads` remains an alias with the same behavior. This setting controls Numba CPU workers on every backend; Metal and CUDA manage GPU parallelism separately. Image I/O workers and gzip workers use their own settings. Startup logs show `cpu_threads=N (Numba)` and explain the scope when a GPU backend is selected. The `threads` field in configuration files and `run.json` continues to mean the Numba CPU worker count.
 
 The default scanner geometry setting requires a scanner-anatomical sform. To use standard NiBabel NIfTI geometry and intensity scaling, add:
 
@@ -55,7 +59,7 @@ To use another configuration, copy [the preset JSON](../../src/fast_ants/presets
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-custom --backend cpu --precision fp64 \
-  --config my-recipe.json --threads 10
+  --config my-recipe.json --cpu-threads 10
 ```
 
 `--config` replaces the complete preset and is mutually exclusive with `--preset`. The command-line workflow uses dense sampling, linear interpolation, and unmasked images. Histogram matching, winsorization, and inverse-warped intensity output are disabled. Unsupported configuration values produce an error.
@@ -118,7 +122,7 @@ are unchanged; files can be larger. Select a compression level explicitly:
 ```bash
 FAST_ANTS_GZIP_LEVEL=1 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-compressed --backend cuda --precision fp32 \
-  --preset brain-syn --threads 10
+  --preset brain-syn --cpu-threads 10
 ```
 
 `FAST_ANTS_GZIP_LEVEL` accepts integers 0 through 9, with default 0.

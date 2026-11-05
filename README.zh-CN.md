@@ -100,7 +100,7 @@ CPU 后端依赖 NumPy、NiBabel 和 Numba，Metal 使用 MLX，CUDA 使用 CuPy
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cpu --backend cpu --precision fp64 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 使用 Apple GPU：
@@ -108,7 +108,7 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-metal --backend metal --precision fp32 \
-  --preset brain-syn --threads 10 --verbose
+  --preset brain-syn --cpu-threads 10 --verbose
 ```
 
 使用 NVIDIA GPU：
@@ -116,10 +116,12 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 ```bash
 fast_ants register fixed.nii.gz moving.nii.gz \
   --output registration-cuda --backend cuda --precision fp32 \
-  --preset brain-syn --threads 32
+  --preset brain-syn --cpu-threads 32
 ```
 
-输出目录需要是新目录，线程数应按机器配置设置。默认输入选项为 `itk_scanner` 图像几何和 `itk` 强度缩放；使用标准 NiBabel NIfTI 读取方式时，添加 `--geometry-policy nifti --scaling-policy nifti`。
+`--cpu-threads` 设置 Numba 的 CPU 工作线程数，在 Metal 或 CUDA 模式下仍用于 CPU 辅助运算。GPU 并行度由后端管理。该参数可省略，此时使用配置中的 `threads` 值（`brain-syn` 为 10）。原有 `--threads` 保留为兼容别名。新名称在源码树中可用，已发布的 v0.2.0 wheel 使用 `--threads`。
+
+输出目录需要是新目录，CPU 线程数应按机器配置设置。默认输入选项为 `itk_scanner` 图像几何和 `itk` 强度缩放；使用标准 NiBabel NIfTI 读取方式时，添加 `--geometry-policy nifti --scaling-policy nifti`。
 
 命令行默认输出进度日志；Metal 和 CUDA 在交互式终端按层显示 `tqdm` 进度条，`console.log` 保存纯文本诊断。使用 `--quiet` 可关闭进度和详细日志。
 

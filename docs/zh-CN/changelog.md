@@ -2,6 +2,11 @@
 
 [English](../en/changelog.md) · [简体中文](changelog.md)
 
+## 未发布
+
+- 新增 `--cpu-threads`，明确设置 Numba CPU 工作线程数，保留 `--threads` 别名和现有配置默认值。
+- 启动日志、命令行帮助和使用示例明确 CPU 线程设置的含义；Metal 和 CUDA 单独管理 GPU 并行度。
+
 ## 0.2.0
 
 本版本在 v0.1.0 的 CPU 和 Apple Metal 配准流程基础上，增加 NVIDIA CUDA 计算。

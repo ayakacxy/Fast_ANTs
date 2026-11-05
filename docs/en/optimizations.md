@@ -22,7 +22,7 @@ The diagrams show data flow and dependencies, not measured durations. Memory exp
 
 Numba compiles voxel and sample loops into native code. Independent rows, slices, sample blocks, and filter lines use `prange`. Each worker writes a separate output region or private histogram, followed by a reduction. This avoids concurrent floating-point updates to a shared PDF cell.
 
-Small arrays use serial paths to avoid thread scheduling overhead. `--threads` controls the worker budget; operators also check input size before enabling parallel work. Compiled functions are cached for later processes.
+Small arrays use serial paths to avoid thread scheduling overhead. `--cpu-threads` (alias `--threads`) controls the Numba CPU worker budget; operators also check input size before enabling parallel work. Compiled functions are cached for later processes.
 
 The useful parallel unit depends on the operator: image sampling splits samples, field operations split rows or slices, and recursive filtering splits lines while retaining the recurrence order within each line.
 

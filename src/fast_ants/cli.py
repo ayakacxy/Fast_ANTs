@@ -50,7 +50,10 @@ def parser():
     recipe = register.add_mutually_exclusive_group()
     recipe.add_argument("--preset", choices=PRESETS, help="Bundled recipe (default: brain-syn)")
     recipe.add_argument("--config", type=Path, help="Complete recipe JSON replacing the preset; no implicit merge")
-    register.add_argument("--threads", type=positive_integer, help="Numba thread budget (default: recipe value)")
+    register.add_argument("--cpu-threads", "--threads", dest="threads", type=positive_integer, metavar="N",
+                          help="CPU worker count for Numba, including CPU work with Metal/CUDA; "
+                               "GPU parallelism is managed by the backend "
+                               "(default: recipe value; brain-syn: 10). --threads is an alias")
     register.add_argument("--geometry-policy", choices=("itk_scanner", "nifti"), default="itk_scanner",
                           help="Input geometry policy (default: itk_scanner; requires scanner sform)")
     register.add_argument("--scaling-policy", choices=("itk", "nifti"), default="itk",
@@ -268,7 +271,9 @@ def _execute(args, recipe, provenance, threads):
     progress = create_progress(args.verbose, args.log_every)
     started = time.perf_counter()
     if progress is not None:
-        progress.message("setup", f"backend={args.backend} precision={args.precision} threads={threads} recipe={provenance['source']}")
+        progress.message("setup", f"backend={args.backend} precision={args.precision} cpu_threads={threads} (Numba) recipe={provenance['source']}")
+        if args.backend in ("metal", "cuda"):
+            progress.message("setup", "GPU parallelism is managed by the backend; cpu_threads applies to CPU work only")
     api, numba = _runtime(threads)
     read = progress.start("read", "Loading fixed and moving images") if progress is not None else None
     fixed, moving = api.load_images((args.fixed, args.moving), geometry_policy=args.geometry_policy,

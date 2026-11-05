@@ -21,6 +21,8 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 
 ## Custom parameters
 
+The preset's `threads` value is 10 and controls Numba CPU workers on every backend, including CPU work with Metal/CUDA. Override it with `--cpu-threads N` (`--threads N` remains an alias). GPU parallelism is managed by the backend.
+
 Copy the preset JSON to another file and edit its supported values:
 
 ```bash

@@ -21,6 +21,8 @@ fast_ants register fixed.nii.gz moving.nii.gz \
 
 ## 自定义参数
 
+预设的 `threads` 值为 10，在所有后端中控制 Numba CPU 工作线程数，包括 Metal／CUDA 模式下的 CPU 辅助运算。使用 `--cpu-threads N` 可覆盖此值（`--threads N` 保留为别名）。GPU 并行度由后端管理。
+
 将预设 JSON 复制到其他文件，修改支持的参数：
 
 ```bash

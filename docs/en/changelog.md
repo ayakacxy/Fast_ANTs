@@ -2,6 +2,11 @@
 
 [English](changelog.md) · [简体中文](../zh-CN/changelog.md)
 
+## Unreleased
+
+- Add `--cpu-threads` as the explicit name for the Numba CPU worker count, retaining `--threads` as an alias and the existing recipe default.
+- Clarify CPU thread settings in startup logs, CLI help and usage examples; Metal and CUDA manage GPU parallelism separately.
+
 ## 0.2.0
 
 This version adds NVIDIA CUDA execution to the CPU and Apple Metal registration workflows introduced in v0.1.0.
